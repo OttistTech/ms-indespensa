@@ -10,6 +10,7 @@ Este repositório é um microserviço usado pelo aplicativo InDespensa, que foi 
 - **Linguagem de Programação**: Java
 - **Framework**: Spring
 - **Banco de Dados**: PostgreSQL
+- **Serviço de Hospedagem**: Não sabemos ainda
 
 ## 🤝 Colaboradores
 <table>
