@@ -24,7 +24,7 @@ Este repositório é um microserviço usado pelo aplicativo InDespensa, que foi 
     </td>
     <td align="center">
       <a href="https://github.com/Davipiassi" title="Perfil do Davi Piassi">
-        <img src="https://s2.glbimg.com/FUcw2usZfSTL6yCCGj3L3v3SpJ8=/smart/e.glbimg.com/og/ed/f/original/2019/04/25/zuckerberg_podcast.jpg" width="100px;" alt="Foto do Davi Piassi no GitHub"/><br>
+        <img src="https://github.com/Davipiassi.png" width="100px;" alt="Foto do Davi Piassi no GitHub"/><br>
         <sub>
           <b>Davi Piassi</b>
         </sub>
