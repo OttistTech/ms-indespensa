@@ -34,7 +34,7 @@ Este repositório é um microserviço usado pelo aplicativo InDespensa, que foi 
 </table>
 
 ## 📝 Licença
-Esse projeto está sob licença. Veja o arquivo [LICENÇA](LICENSE.md) para mais detalhes.
+Esse projeto está sob licença. Veja o arquivo [LICENÇA](LICENSE) para mais detalhes.
 
 ## ✍ Contato
 Para dúvidas ou suporte, entre em contato com ottis.indespensa@gmail.com
