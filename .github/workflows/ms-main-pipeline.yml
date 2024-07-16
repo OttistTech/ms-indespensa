@@ -1,4 +1,4 @@
-name: WebIndespensa Workflow - Main
+name: MsIndespensa Workflow - Main
 
 on:
   pull_request:
