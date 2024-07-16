@@ -34,6 +34,21 @@ Este repositório é um microserviço usado pelo aplicativo InDespensa, que foi 
   </tr>
 </table>
 
+## 🔡 Padrões de Branch
+Para organização, novas branches devem ser criadas seguindo o seguinte padrão: `tipo/numeroDaTarefa/nomeDescritivo`
+#### Tipos de Branch
+| Tipo   | Decrição            |
+| ------ | ------------------- |
+| feat   | Nova funcionalidade | 
+| debug  | Correção de bug     |
+| config | Configuração        |
+| doc    | Documentação        |
+#### Número da Tarefa
+Código da tarefa no quadro do [Trello](https://trello.com/b/5BLwrWfB/indespensa)
+#### Nome Descritivo
+Nome extremamente breve que represente o que foi feito naquela modificação
+
+
 ## 📝 Licença
 Esse projeto está sob licença. Veja o arquivo [LICENÇA](LICENSE) para mais detalhes.
 
