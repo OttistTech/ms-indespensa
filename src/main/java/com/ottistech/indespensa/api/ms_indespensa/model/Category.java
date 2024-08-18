@@ -12,15 +12,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "category")
+@Table(name = "categories")
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "user_id")
-    private Integer categoryId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_id")
+    private Long categoryId;
 
-    @Column(name = "category_name")
+    @Column(name = "category_name", nullable = false, length = 255, unique = true)
     @NotNull(message = "Field categoryName is required")
     private String categoryName;
 }

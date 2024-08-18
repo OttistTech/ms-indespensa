@@ -14,40 +14,45 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "product")
+@Table(name = "products")
 public class Product {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
-    private Integer productId;
+    private Long productId;
 
-    @Column(name = "ean_code")
+    @Column(name = "ean_code", length = 50, unique = true)
     private String eanCode;
 
     @NotNull(message = "Field name is required")
+    @Column(name = "name", nullable = false, length = 255)
     private String name;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", length = 255)
     private String imageUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "food_id")
-    private Food food;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "food_id", referencedColumnName = "food_id")
+    private Food foodId;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "category_id", referencedColumnName = "category_id")
+    private Category categoryId;
 
     @NotNull(message = "Field description is required")
+    @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "brand", length = 255)
     private String brand;
 
-    @Column(precision = 10, scale = 2)
+    @Column(name = "amount", precision = 10, scale = 2)
     private BigDecimal amount;
 
+    @Column(name = "unit", length = 50)
     private String unit;
 
+    @Column(name = "type", length = 50)
     private String type;
 }

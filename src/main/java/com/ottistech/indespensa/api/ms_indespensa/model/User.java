@@ -8,58 +8,48 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "'user'")
+@Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Integer userId;
+    private Long userId;
 
     @NotNull(message = "Field type is required")
+    @Column(name = "type", nullable = false, length = 50)
     private String type;
 
     @NotNull(message = "Field name is required")
+    @Column(name = "name", nullable = false, length = 255)
     private String name;
 
-    @Column(name = "enterprise_type")
+    @Column(name = "enterprise_type", length = 100)
     private String enterpriseType;
 
     @Email(message = "Email isn't right")
     @NotNull(message = "Field email is required")
+    @Column(name = "email", nullable = false, length = 255, unique = true)
     private String email;
 
     @NotNull(message = "Field password is required")
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @NotNull(message = "Field cep is required")
-    private String cep;
-
-    @Column(name = "address_number")
-    private Integer addressNumber;
-
-    @NotNull(message = "Field street is required")
-    private String street;
-
-    @NotNull(message = "Field city is required")
-    private String city;
-
-    @NotNull(message = "Field state is required")
-    private String state;
-
-    @Column(name = "created_at")
-    private Date createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "deactivated_at")
-    private Date deactivatedAt;
+    private LocalDateTime deactivatedAt;
 
     @Column(name = "is_premium")
-    private boolean isPremium;
+    private Boolean isPremium = Boolean.FALSE;
 }

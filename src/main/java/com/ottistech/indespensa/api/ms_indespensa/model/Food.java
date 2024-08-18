@@ -7,19 +7,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "food")
+@Table(name = "foods")
 public class Food {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "food_id")
-    private Integer foodId;
+    private Long foodId;
 
     @NotNull(message = "Field foodName is required")
+    @Column(name = "food_name", nullable = false, unique = true, length = 255)
     private String foodName;
 }
