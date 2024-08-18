@@ -5,6 +5,7 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.SignUpUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.UserCredentialsResponse;
 import com.ottistech.indespensa.api.ms_indespensa.exception.EmailAlreadyInUseException;
 import com.ottistech.indespensa.api.ms_indespensa.exception.IncorrectPasswordException;
+import com.ottistech.indespensa.api.ms_indespensa.exception.UserAlreadyDeactivatedException;
 import com.ottistech.indespensa.api.ms_indespensa.exception.UserNotFoundException;
 import com.ottistech.indespensa.api.ms_indespensa.model.Address;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
@@ -12,6 +13,7 @@ import com.ottistech.indespensa.api.ms_indespensa.repository.AddressRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -57,5 +59,22 @@ public class UserService {
         } else {
             throw new IncorrectPasswordException("Password does not match");
         }
+    }
+
+    public void deactivateUserById(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if(userOptional.isEmpty()) {
+            throw new UserNotFoundException("User does not exist");
+        }
+
+        User user = userOptional.get();
+
+        if (user.getDeactivatedAt() != null) {
+            throw new UserAlreadyDeactivatedException("User already deactivated");
+        }
+
+        user.setDeactivatedAt(LocalDateTime.now());
+        userRepository.save(user);
     }
 }
