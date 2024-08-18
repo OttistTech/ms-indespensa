@@ -42,4 +42,13 @@ public class Address {
     @Column(name = "state", nullable = false, length = 100)
     @NotNull(message = "Field state is required")
     private String state;
+
+    public Address(User user, String cep, Integer addressNumber, String street, String city, String state) {
+        this.user = user;
+        this.cep = cep;
+        this.addressNumber = addressNumber;
+        this.street = street;
+        this.city = city;
+        this.state = state;
+    }
 }
