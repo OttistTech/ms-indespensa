@@ -58,4 +58,13 @@ public class GlobalExceptionHandler {
 
         return problemDetail;
     }
+
+    @ExceptionHandler(UserAlreadyDeactivatedException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ProblemDetail handleUserAlreadyDeactivatedException(UserAlreadyDeactivatedException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        problemDetail.setTitle("User already deactivated");
+
+        return problemDetail;
+    }
 }
