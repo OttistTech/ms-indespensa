@@ -40,4 +40,22 @@ public class GlobalExceptionHandler {
 
         return problemDetail;
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ProblemDetail handleUserNotFoundException(UserNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problemDetail.setTitle("User not found");
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(IncorrectPasswordException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ProblemDetail handleIncorrectPasswordException(IncorrectPasswordException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        problemDetail.setTitle("Incorrect password");
+
+        return problemDetail;
+    }
 }
