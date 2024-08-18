@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -33,7 +32,7 @@ public class User {
     private String name;
 
     @Column(name = "enterprise_type", length = 100)
-    private String enterpriseType;
+    private String enterpriseType = null;
 
     @Email(message = "Email isn't right")
     @NotNull(message = "Field email is required")
@@ -48,8 +47,16 @@ public class User {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "deactivated_at")
-    private LocalDateTime deactivatedAt;
+    private LocalDateTime deactivatedAt = null;
 
     @Column(name = "is_premium")
     private Boolean isPremium = Boolean.FALSE;
+
+    public User(String type, String name, String enterpriseType, String email, String password) {
+        this.type = type;
+        this.name = name;
+        this.enterpriseType = enterpriseType;
+        this.email = email;
+        this.password = password;
+    }
 }
