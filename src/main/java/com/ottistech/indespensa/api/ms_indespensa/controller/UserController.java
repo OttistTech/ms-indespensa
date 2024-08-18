@@ -1,6 +1,8 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
+import com.ottistech.indespensa.api.ms_indespensa.dto.LoginUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.SignUpUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.UserCredentialsResponse;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import com.ottistech.indespensa.api.ms_indespensa.service.UserService;
 import jakarta.validation.Valid;
@@ -27,5 +29,13 @@ public class UserController {
         User user = userService.singUpUser(signUpUserDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody @Valid LoginUserDTO loginUserDTO) {
+
+        UserCredentialsResponse userCredentials = userService.getUserCredentials(loginUserDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body(userCredentials);
     }
 }
