@@ -48,7 +48,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getFullInfoUser(@PathVariable("id") Long userId,
+    public ResponseEntity<?> getUserFullInfo(@PathVariable("id") Long userId,
                                              @RequestParam("full-info") boolean fullInfo) {
 
         if (fullInfo) {
