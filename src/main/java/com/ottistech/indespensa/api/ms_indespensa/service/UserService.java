@@ -3,10 +3,8 @@ package com.ottistech.indespensa.api.ms_indespensa.service;
 import com.ottistech.indespensa.api.ms_indespensa.dto.LoginUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.SignUpUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.UserCredentialsResponse;
-import com.ottistech.indespensa.api.ms_indespensa.exception.EmailAlreadyInUseException;
-import com.ottistech.indespensa.api.ms_indespensa.exception.IncorrectPasswordException;
-import com.ottistech.indespensa.api.ms_indespensa.exception.UserAlreadyDeactivatedException;
-import com.ottistech.indespensa.api.ms_indespensa.exception.UserNotFoundException;
+import com.ottistech.indespensa.api.ms_indespensa.dto.UserFullInfoResponse;
+import com.ottistech.indespensa.api.ms_indespensa.exception.*;
 import com.ottistech.indespensa.api.ms_indespensa.model.Address;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import com.ottistech.indespensa.api.ms_indespensa.repository.AddressRepository;
@@ -76,5 +74,56 @@ public class UserService {
 
         user.setDeactivatedAt(LocalDateTime.now());
         userRepository.save(user);
+    }
+
+    public UserFullInfoResponse getFullInfoUser(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if(userOptional.isEmpty()) {
+            throw new UserNotFoundException("User does not exist");
+        }
+
+        User user = userOptional.get();
+
+        Optional<Address> addressOptional = addressRepository.findByUserId(user.getUserId());
+
+        if (addressOptional.isEmpty()) {
+            throw new AddressNotFoundException("Address is not connect with this user");
+        }
+
+        Address address = addressOptional.get();
+
+        return new UserFullInfoResponse(
+                user.getUserId().toString(),
+                user.getType(),
+                user.getName(),
+                user.getEnterpriseType(),
+                user.getEmail(),
+                user.getPassword(),
+                address.getCep(),
+                address.getAddressNumber(),
+                address.getStreet(),
+                address.getCity(),
+                address.getState(),
+                user.getIsPremium()
+        );
+    }
+
+    public UserCredentialsResponse getHalfInfoUser(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+
+        if(userOptional.isEmpty()) {
+            throw new UserNotFoundException("User does not exist");
+        }
+
+        User user = userOptional.get();
+
+        return new UserCredentialsResponse(
+                user.getUserId(),
+                user.getType(),
+                user.getName(),
+                user.getEnterpriseType(),
+                user.getIsPremium()
+        );
     }
 }
