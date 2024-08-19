@@ -67,4 +67,13 @@ public class GlobalExceptionHandler {
 
         return problemDetail;
     }
+
+    @ExceptionHandler(AddressNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ProblemDetail handleUserAddressNotFound(AddressNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problemDetail.setTitle("Address not found with this user");
+
+        return problemDetail;
+    }
 }
