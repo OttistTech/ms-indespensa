@@ -52,11 +52,11 @@ public class UserController {
                                              @RequestParam("full-info") boolean fullInfo) {
 
         if (fullInfo) {
-            UserFullInfoResponse userFullInfo = userService.getFullInfoUser(userId);
+            UserFullInfoResponse userFullInfo = userService.getUserFullInfo(userId);
             return ResponseEntity.ok(userFullInfo);
         }
 
-        UserCredentialsResponse userHalfInfo = userService.getHalfInfoUser(userId);
+        UserCredentialsResponse userHalfInfo = userService.getUserHalfInfo(userId);
 
         return ResponseEntity.ok(userHalfInfo);
     }
@@ -72,7 +72,7 @@ public class UserController {
     @GetMapping("/admin/{id}")
     public ResponseEntity<UserFullInfoResponse> getOneUserFullInfo(@PathVariable("id") Long userId) {
 
-        UserFullInfoResponse userFullInfo = userService.getFullInfoUser(userId);
+        UserFullInfoResponse userFullInfo = userService.getUserFullInfo(userId);
 
         return ResponseEntity.ok(userFullInfo);
     }

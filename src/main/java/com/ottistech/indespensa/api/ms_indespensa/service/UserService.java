@@ -78,7 +78,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public UserFullInfoResponse getFullInfoUser(Long userId) {
+    public UserFullInfoResponse getUserFullInfo(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if(userOptional.isEmpty()) {
@@ -111,7 +111,7 @@ public class UserService {
         );
     }
 
-    public UserCredentialsResponse getHalfInfoUser(Long userId) {
+    public UserCredentialsResponse getUserHalfInfo(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if(userOptional.isEmpty()) {
