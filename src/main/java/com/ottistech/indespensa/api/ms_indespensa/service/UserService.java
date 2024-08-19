@@ -12,6 +12,8 @@ import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -88,13 +90,13 @@ public class UserService {
         Optional<Address> addressOptional = addressRepository.findByUserId(user.getUserId());
 
         if (addressOptional.isEmpty()) {
-            throw new AddressNotFoundException("Address is not connect with this user");
+            throw new AddressNotFoundException("Address is not found for this user");
         }
 
         Address address = addressOptional.get();
 
         return new UserFullInfoResponse(
-                user.getUserId().toString(),
+                user.getUserId(),
                 user.getType(),
                 user.getName(),
                 user.getEnterpriseType(),
@@ -125,5 +127,45 @@ public class UserService {
                 user.getEnterpriseType(),
                 user.getIsPremium()
         );
+    }
+
+    public List<UserFullInfoResponse> getAllUsersFullInfo() {
+        List<User> users = userRepository.findAll();
+
+        if (users.isEmpty()) {
+            throw new UserNotFoundException("No users found");
+        }
+
+        List<UserFullInfoResponse> userFullInfoResponses = new ArrayList<>();
+
+        for (User user : users) {
+            Optional<Address> addressOptional = addressRepository.findByUserId(user.getUserId());
+
+            if (addressOptional.isEmpty()) {
+                // talvez não precise implicitar o userId que não foi encontrado
+                throw new AddressNotFoundException("Address not found for user with ID: " + user.getUserId());
+            }
+
+            Address address = addressOptional.get();
+
+            UserFullInfoResponse userFullInfo = new UserFullInfoResponse(
+                    user.getUserId(),
+                    user.getType(),
+                    user.getName(),
+                    user.getEnterpriseType(),
+                    user.getEmail(),
+                    user.getPassword(),
+                    address.getCep(),
+                    address.getAddressNumber(),
+                    address.getStreet(),
+                    address.getCity(),
+                    address.getState(),
+                    user.getIsPremium()
+            );
+
+            userFullInfoResponses.add(userFullInfo);
+        }
+
+        return userFullInfoResponses;
     }
 }
