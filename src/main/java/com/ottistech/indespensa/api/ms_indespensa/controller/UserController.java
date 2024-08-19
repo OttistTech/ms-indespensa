@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
@@ -55,7 +57,24 @@ public class UserController {
         }
 
         UserCredentialsResponse userHalfInfo = userService.getHalfInfoUser(userId);
-        return ResponseEntity.ok(userHalfInfo);
 
+        return ResponseEntity.ok(userHalfInfo);
     }
+
+    @GetMapping("/admin")
+    public ResponseEntity<List<UserFullInfoResponse>> getAllUsersFullInfo() {
+
+        List<UserFullInfoResponse> userFullInfoList = userService.getAllUsersFullInfo();
+
+        return ResponseEntity.ok(userFullInfoList);
+    }
+
+    @GetMapping("/admin/{id}")
+    public ResponseEntity<UserFullInfoResponse> getOneUserFullInfo(@PathVariable("id") Long userId) {
+
+        UserFullInfoResponse userFullInfo = userService.getFullInfoUser(userId);
+
+        return ResponseEntity.ok(userFullInfo);
+    }
+
 }
