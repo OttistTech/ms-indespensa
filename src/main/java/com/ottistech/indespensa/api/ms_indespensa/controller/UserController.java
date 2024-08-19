@@ -3,6 +3,7 @@ package com.ottistech.indespensa.api.ms_indespensa.controller;
 import com.ottistech.indespensa.api.ms_indespensa.dto.LoginUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.SignUpUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.UserCredentialsResponse;
+import com.ottistech.indespensa.api.ms_indespensa.dto.UserFullInfoResponse;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import com.ottistech.indespensa.api.ms_indespensa.service.UserService;
 import jakarta.validation.Valid;
@@ -42,5 +43,19 @@ public class UserController {
         userService.deactivateUserById(userId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getFullInfoUser(@PathVariable("id") Long userId,
+                                             @RequestParam("full-info") boolean fullInfo) {
+
+        if (fullInfo) {
+            UserFullInfoResponse userFullInfo = userService.getFullInfoUser(userId);
+            return ResponseEntity.ok(userFullInfo);
+        }
+
+        UserCredentialsResponse userHalfInfo = userService.getHalfInfoUser(userId);
+        return ResponseEntity.ok(userHalfInfo);
+
     }
 }
