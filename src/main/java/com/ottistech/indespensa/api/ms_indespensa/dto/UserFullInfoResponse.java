@@ -1,7 +1,7 @@
 package com.ottistech.indespensa.api.ms_indespensa.dto;
 
 public record UserFullInfoResponse(
-        String userId,
+        Long userId,
         String type,
         String name,
         String enterpriseType,
