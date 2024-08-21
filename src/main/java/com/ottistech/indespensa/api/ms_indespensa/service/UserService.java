@@ -6,8 +6,10 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.UserCredentialsResponse;
 import com.ottistech.indespensa.api.ms_indespensa.dto.UserFullInfoResponse;
 import com.ottistech.indespensa.api.ms_indespensa.exception.*;
 import com.ottistech.indespensa.api.ms_indespensa.model.Address;
+import com.ottistech.indespensa.api.ms_indespensa.model.Cep;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import com.ottistech.indespensa.api.ms_indespensa.repository.AddressRepository;
+import com.ottistech.indespensa.api.ms_indespensa.repository.CepRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -21,13 +23,15 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
+    private final CepRepository cepRepository;
 
-    public UserService(UserRepository userRepository, AddressRepository addressRepository) {
+    public UserService(UserRepository userRepository, AddressRepository addressRepository, CepRepository cepRepository) {
         this.userRepository = userRepository;
         this.addressRepository = addressRepository;
+        this.cepRepository = cepRepository;
     }
 
-    public User singUpUser(SignUpUserDTO signUpUserDTO) {
+    public UserCredentialsResponse singUpUser(SignUpUserDTO signUpUserDTO) {
         if (userRepository.findByEmail(signUpUserDTO.email()).isPresent()) {
             throw new EmailAlreadyInUseException("Email already in use");
         }
@@ -35,10 +39,20 @@ public class UserService {
         User user = signUpUserDTO.toUser();
         user = userRepository.save(user);
 
-        Address address = signUpUserDTO.toAddress(user);
+        Cep cep = signUpUserDTO.toCep();
+        cep = cepRepository.save(cep);
+
+        Address address = signUpUserDTO.toAddress(user, cep);
         addressRepository.save(address);
 
-        return user;
+        return new UserCredentialsResponse(
+                user.getUserId(),
+                user.getType(),
+                user.getName(),
+                user.getBirthDate(),
+                user.getEnterpriseType(),
+                user.getIsPremium()
+        );
     }
 
     public UserCredentialsResponse getUserCredentials(LoginUserDTO loginUserDTO) {
@@ -91,10 +105,18 @@ public class UserService {
         Optional<Address> addressOptional = addressRepository.findByUserId(user.getUserId());
 
         if (addressOptional.isEmpty()) {
-            throw new AddressNotFoundException("Address is not found for this user");
+            throw new AddressNotFoundException("Address not found for this user");
         }
 
         Address address = addressOptional.get();
+
+        Optional<Cep> cepOptional = cepRepository.findById(address.getCep().getCepId());
+
+        if (cepOptional.isEmpty()) {
+            throw new CepNotFoundException("Cep not found for this user");
+        }
+
+        Cep cep = cepOptional.get();
 
         return new UserFullInfoResponse(
                 user.getUserId(),
@@ -104,11 +126,11 @@ public class UserService {
                 user.getEnterpriseType(),
                 user.getEmail(),
                 user.getPassword(),
-                address.getCep(),
+                cep.getCepId(),
                 address.getAddressNumber(),
-                address.getStreet(),
-                address.getCity(),
-                address.getState(),
+                cep.getStreet(),
+                cep.getCity(),
+                cep.getState(),
                 user.getIsPremium()
         );
     }
@@ -151,6 +173,14 @@ public class UserService {
 
             Address address = addressOptional.get();
 
+            Optional<Cep> optionalCep = cepRepository.findById(address.getCep().getCepId());
+
+            if (optionalCep.isEmpty()) {
+                throw new CepNotFoundException("Cep not found for this user");
+            }
+
+            Cep cep = optionalCep.get();
+
             UserFullInfoResponse userFullInfo = new UserFullInfoResponse(
                     user.getUserId(),
                     user.getType(),
@@ -159,11 +189,11 @@ public class UserService {
                     user.getEnterpriseType(),
                     user.getEmail(),
                     user.getPassword(),
-                    address.getCep(),
+                    cep.getCepId(),
                     address.getAddressNumber(),
-                    address.getStreet(),
-                    address.getCity(),
-                    address.getState(),
+                    cep.getStreet(),
+                    cep.getCity(),
+                    cep.getState(),
                     user.getIsPremium()
             );
 
