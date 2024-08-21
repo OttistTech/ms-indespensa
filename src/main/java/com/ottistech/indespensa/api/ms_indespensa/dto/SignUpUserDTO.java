@@ -5,9 +5,12 @@ import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.Date;
+
 public record SignUpUserDTO(
         @NotNull(message = "Field type is required") String type,
         @NotNull(message = "Field name is required") String name,
+        @NotNull(message = "Field birthDate is required") Date birthDate,
         String enterpriseType,
         @Email(message = "Email isn't right") @NotNull(message = "Field email is required") String email,
         @NotNull(message = "Field password is required") String password,
@@ -23,6 +26,7 @@ public record SignUpUserDTO(
         return new User(
                 this.type,
                 this.name,
+                this.birthDate,
                 this.enterpriseType,
                 this.email,
                 this.password
