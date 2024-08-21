@@ -1,6 +1,7 @@
 package com.ottistech.indespensa.api.ms_indespensa.dto;
 
 import com.ottistech.indespensa.api.ms_indespensa.model.Address;
+import com.ottistech.indespensa.api.ms_indespensa.model.Cep;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -17,6 +18,7 @@ public record SignUpUserDTO(
 
         @NotNull(message = "Field cep is required") String cep,
         Integer addressNumber,
+
         @NotNull(message = "Field street is required") String street,
         @NotNull(message = "Field city is required") String city,
         @NotNull(message = "Field state is required") String state
@@ -33,14 +35,21 @@ public record SignUpUserDTO(
         );
     }
 
-    public Address toAddress(User user) {
-        return new Address(
-                user,
+    public Cep toCep() {
+        return new Cep(
                 this.cep,
-                this.addressNumber,
                 this.street,
                 this.city,
                 this.state
         );
     }
+
+    public Address toAddress(User user, Cep cep) {
+        return new Address(
+                user,
+                cep,
+                this.addressNumber
+        );
+    }
+
 }

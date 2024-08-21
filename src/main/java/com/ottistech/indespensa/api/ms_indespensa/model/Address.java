@@ -1,7 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "addresses", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "cep", "street", "address_number"}))
+@Table(name = "addresses", uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "cep_id", "address_number"}))
 public class Address {
 
     @Id
@@ -24,31 +23,16 @@ public class Address {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private User user;
 
-    @Column(name = "cep", nullable = false, length = 20)
-    @NotNull(message = "Field cep is required")
-    private String cep;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "cep_id", referencedColumnName = "cep_id")
+    private Cep cep;
 
     @Column(name = "address_number")
     private Integer addressNumber;
 
-    @Column(name = "street", nullable = false, length = 255)
-    @NotNull(message = "Field street is required")
-    private String street;
-
-    @Column(name = "city", nullable = false, length = 255)
-    @NotNull(message = "Field city is required")
-    private String city;
-
-    @Column(name = "state", nullable = false, length = 100)
-    @NotNull(message = "Field state is required")
-    private String state;
-
-    public Address(User user, String cep, Integer addressNumber, String street, String city, String state) {
+    public Address(User user, Cep cep, Integer addressNumber) {
         this.user = user;
         this.cep = cep;
         this.addressNumber = addressNumber;
-        this.street = street;
-        this.city = city;
-        this.state = state;
     }
 }
