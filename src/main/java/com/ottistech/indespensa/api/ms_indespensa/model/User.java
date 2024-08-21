@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -31,6 +32,10 @@ public class User {
     @Column(name = "name", nullable = false, length = 255)
     private String name;
 
+    @NotNull(message = "Field birthdate is required")
+    @Column(name = "birthdate", nullable = false)
+    private Date birthDate;
+
     @Column(name = "enterprise_type", length = 100)
     private String enterpriseType = null;
 
@@ -52,9 +57,10 @@ public class User {
     @Column(name = "is_premium")
     private Boolean isPremium = Boolean.FALSE;
 
-    public User(String type, String name, String enterpriseType, String email, String password) {
+    public User(String type, String name, Date birthDate, String enterpriseType, String email, String password) {
         this.type = type;
         this.name = name;
+        this.birthDate = birthDate;
         this.enterpriseType = enterpriseType;
         this.email = email;
         this.password = password;
