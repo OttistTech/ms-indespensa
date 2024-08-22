@@ -49,7 +49,6 @@ public class UserService {
                 user.getUserId(),
                 user.getType(),
                 user.getName(),
-                user.getBirthDate(),
                 user.getEnterpriseType(),
                 user.getIsPremium()
         );
@@ -67,7 +66,6 @@ public class UserService {
                 user.getUserId(),
                 user.getType(),
                 user.getName(),
-                user.getBirthDate(),
                 user.getEnterpriseType(),
                 user.getIsPremium()
             );
@@ -148,7 +146,6 @@ public class UserService {
                 user.getUserId(),
                 user.getType(),
                 user.getName(),
-                user.getBirthDate(),
                 user.getEnterpriseType(),
                 user.getIsPremium()
         );

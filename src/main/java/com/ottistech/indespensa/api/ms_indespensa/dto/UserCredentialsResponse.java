@@ -6,7 +6,6 @@ public record UserCredentialsResponse(
     Long userId,
     String type,
     String name,
-    Date birthDate,
     String enterpriseType,
     Boolean isPremium
 ) {
