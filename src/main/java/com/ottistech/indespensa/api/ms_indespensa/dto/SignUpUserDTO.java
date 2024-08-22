@@ -11,7 +11,7 @@ import java.util.Date;
 public record SignUpUserDTO(
         @NotNull(message = "Field type is required") String type,
         @NotNull(message = "Field name is required") String name,
-        @NotNull(message = "Field birthDate is required") Date birthDate,
+        Date birthDate,
         String enterpriseType,
         @Email(message = "Email isn't right") @NotNull(message = "Field email is required") String email,
         @NotNull(message = "Field password is required") String password,

@@ -32,8 +32,7 @@ public class User {
     @Column(name = "name", nullable = false, length = 255)
     private String name;
 
-    @NotNull(message = "Field birthdate is required")
-    @Column(name = "birthdate", nullable = false)
+    @Column(name = "birthdate")
     private Date birthDate;
 
     @Column(name = "enterprise_type", length = 100)
