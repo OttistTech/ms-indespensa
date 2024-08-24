@@ -44,8 +44,9 @@ public class Product {
     @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "brand", length = 255)
-    private String brand;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "brand_id", referencedColumnName = "brand_id")
+    private Brand brandId;
 
     @Column(name = "amount", precision = 10, scale = 2)
     private BigDecimal amount;
