@@ -32,14 +32,14 @@ public class PantryItem {
 
     @NotNull(message = "Field amount is required")
     @Column(name = "amount", nullable = false)
-    private Integer amount;
+    private Integer amount = 1;
 
     @Column(name = "validity_date")
     private LocalDate validityDate;
 
     @Column(name = "purchase_date")
-    private LocalDate purchaseDate;
+    private LocalDate purchaseDate = LocalDate.now();
 
     @Column(name = "is_active")
-    private Boolean isActive;
+    private Boolean isActive = Boolean.TRUE;
 }
