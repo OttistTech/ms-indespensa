@@ -5,6 +5,7 @@ import java.util.Map;
 
 public record ProductResponseApiDTO(
         String title,
+        Boolean success,
         String alias,
         String description,
         String brand,
