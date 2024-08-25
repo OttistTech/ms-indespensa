@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,6 +72,15 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleUserAddressNotFound(AddressNotFoundException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         problemDetail.setTitle("Address not found with this user");
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(EanCodeNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ProblemDetail handleEanCodeNotFoundException(EanCodeNotFoundException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problemDetail.setTitle("EAN code not found");
 
         return problemDetail;
     }
