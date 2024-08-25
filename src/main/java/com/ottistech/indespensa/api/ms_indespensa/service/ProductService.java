@@ -27,7 +27,7 @@ public class ProductService {
     private BrandRepository brandRepository;
 
     public ProductResponseDTO getProductByBarcode(String barcode) {
-        Optional<Product> productOptional = productRepository.findByEanCode(barcode);
+        Optional<Product> productOptional = productRepository.findByEanCodeNotNull(barcode);
 
         if (productOptional.isPresent()) {
             Product product = productOptional.get();
