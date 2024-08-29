@@ -1,10 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.LoginUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.SignUpUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.UserCredentialsResponse;
-import com.ottistech.indespensa.api.ms_indespensa.dto.UserFullInfoResponse;
-import com.ottistech.indespensa.api.ms_indespensa.model.User;
+import com.ottistech.indespensa.api.ms_indespensa.dto.*;
 import com.ottistech.indespensa.api.ms_indespensa.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -75,6 +71,15 @@ public class UserController {
         UserFullInfoResponse userFullInfo = userService.getUserFullInfo(userId);
 
         return ResponseEntity.ok(userFullInfo);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable("id") Long userId,
+                                               @RequestBody @Valid UpdateUserDTO userDTO) {
+
+        UpdateUserResponseDTO updateUserDTO = userService.updateUser(userId, userDTO);
+
+        return ResponseEntity.status(HttpStatus.OK).body(updateUserDTO);
     }
 
 }
