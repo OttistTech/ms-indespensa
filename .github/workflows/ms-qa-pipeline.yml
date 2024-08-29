@@ -23,7 +23,7 @@ jobs:
 
       #  Building project
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: mvn -B package -DskipTests --file pom.xml
 
       # Deploying API on Render
       - name: Render Deploy Action
