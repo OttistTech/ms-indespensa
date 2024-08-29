@@ -1,9 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.LoginUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.SignUpUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.UserCredentialsResponse;
-import com.ottistech.indespensa.api.ms_indespensa.dto.UserFullInfoResponse;
+import com.ottistech.indespensa.api.ms_indespensa.dto.*;
 import com.ottistech.indespensa.api.ms_indespensa.exception.*;
 import com.ottistech.indespensa.api.ms_indespensa.model.Address;
 import com.ottistech.indespensa.api.ms_indespensa.model.Cep;
@@ -198,5 +195,51 @@ public class UserService {
         }
 
         return userFullInfoResponses;
+    }
+
+    public UpdateUserResponseDTO updateUser(Long userId, UpdateUserDTO userDTO) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        userRepository.findByEmail(userDTO.email())
+                .filter(existingUser -> !existingUser.getUserId().equals(userId))
+                .ifPresent(existingUser -> {
+                    throw new EmailAlreadyInUseException("Email is already in use by another user");
+                });
+
+        user.setName(userDTO.name());
+        user.setEmail(userDTO.email());
+        user.setPassword(userDTO.password());
+
+        Address address = addressRepository.findByUserId(user.getUserId())
+                .orElseThrow(() -> new AddressNotFoundException("Address not found for this user"));
+
+        address.setAddressNumber(userDTO.addressNumber());
+
+        Cep cep = cepRepository.findById(userDTO.cep())
+                .orElseGet(() -> {
+                    Cep newCep = new Cep();
+
+                    newCep.setCepId(userDTO.cep());
+                    newCep.setStreet(userDTO.street());
+                    newCep.setCity(userDTO.city());
+                    newCep.setState(userDTO.state());
+                    return newCep;
+                });
+
+        address.setCep(cep);
+        userRepository.save(user);
+        addressRepository.save(address);
+        cepRepository.save(cep);
+
+        return new UpdateUserResponseDTO(
+                user.getName(),
+                user.getEmail(),
+                address.getCep().getCepId(),
+                address.getAddressNumber(),
+                cep.getStreet(),
+                cep.getCity(),
+                cep.getState()
+        );
     }
 }
