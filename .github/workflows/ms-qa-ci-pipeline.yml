@@ -1,8 +1,6 @@
-name: MsIndespensa Workflow - QA
+name: MsIndespensa Continuos Integration - QA
 
 on:
-  push:
-    branches: [ "QA" ]
   pull_request:
     branches: [ "QA" ]
 
@@ -25,9 +23,3 @@ jobs:
       - name: Build with Maven
         run: mvn -B package -DskipTests --file pom.xml
 
-      # Deploying API on Render
-      - name: Render Deploy Action
-        uses: johnbeynon/render-deploy-action@v0.0.8
-        with:
-          service-id: ${{ secrets.RENDER_SERVICE_ID }}
-          api-key: ${{ secrets.RENDER_API_KEY }}
