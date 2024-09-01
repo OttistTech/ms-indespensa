@@ -36,8 +36,11 @@ public class UserService {
         User user = signUpUserDTO.toUser();
         user = userRepository.save(user);
 
-        Cep cep = signUpUserDTO.toCep();
-        cep = cepRepository.save(cep);
+        Cep cep = cepRepository.findById(signUpUserDTO.cep())
+                .orElseGet(() -> {
+                    Cep newCep = signUpUserDTO.toCep();
+                    return cepRepository.save(newCep);
+                });
 
         Address address = signUpUserDTO.toAddress(user, cep);
         addressRepository.save(address);
