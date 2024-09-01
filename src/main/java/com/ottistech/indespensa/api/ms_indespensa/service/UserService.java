@@ -219,18 +219,18 @@ public class UserService {
         Cep cep = cepRepository.findById(userDTO.cep())
                 .orElseGet(() -> {
                     Cep newCep = new Cep();
-
                     newCep.setCepId(userDTO.cep());
                     newCep.setStreet(userDTO.street());
                     newCep.setCity(userDTO.city());
                     newCep.setState(userDTO.state());
+                    cepRepository.save(newCep);
+
                     return newCep;
                 });
 
         address.setCep(cep);
         userRepository.save(user);
         addressRepository.save(address);
-        cepRepository.save(cep);
 
         return new UpdateUserResponseDTO(
                 user.getName(),
