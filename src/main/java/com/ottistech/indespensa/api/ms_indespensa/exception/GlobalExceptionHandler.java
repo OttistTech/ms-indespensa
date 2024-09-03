@@ -84,4 +84,13 @@ public class GlobalExceptionHandler {
 
         return problemDetail;
     }
+
+    @ExceptionHandler(JsonParcealizationException.class)
+    @ResponseStatus(HttpStatus.BAD_GATEWAY)
+    public ProblemDetail handleJsonParcealizationException(JsonParcealizationException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, ex.getMessage());
+        problemDetail.setTitle("Json Parcealization Exception");
+
+        return problemDetail;
+    }
 }
