@@ -1,5 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
+import com.ottistech.indespensa.api.ms_indespensa.client.ProductClientService;
 import com.ottistech.indespensa.api.ms_indespensa.client.ProductRequestClient;
 import com.ottistech.indespensa.api.ms_indespensa.dto.ProductResponseApiDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.ProductResponseDTO;
@@ -25,6 +26,7 @@ public class ProductService {
     private FoodRepository foodRepository;
     private CategoryRepository categoryRepository;
     private BrandRepository brandRepository;
+    private final ProductClientService productClientService;
 
     public ProductResponseDTO getProductByBarcode(String barcode) {
         Optional<Product> productOptional = productRepository.findByEanCodeNotNull(barcode);
@@ -46,19 +48,14 @@ public class ProductService {
             );
         }
 
-        Optional<ProductResponseApiDTO> productOptionalApi = productRequestClient.getProductByBarcode(barcode);
+        ProductResponseApiDTO productResponseApiDTO = productClientService.fetchProductByBarcode(barcode);
 
-        if (productOptionalApi.isPresent()) {
-            ProductResponseApiDTO productResponseApiDTO = productOptionalApi.get();
-
-            if (productResponseApiDTO.success()) {
+        if (productResponseApiDTO.success()) {
                 return convertApiResponseToProductDTO(productResponseApiDTO);
-            } else {
-                throw new EanCodeNotFoundException("Não foi possível encontrar nenhum produto com esse código de barras");
-            }
+        } else {
+                throw new EanCodeNotFoundException("We were unable to find any products with this barcode");
         }
 
-        throw new EanCodeNotFoundException("Não foi possível encontrar nenhum produto com esse código de barras");
     }
 
     public ProductResponseDTO convertApiResponseToProductDTO(ProductResponseApiDTO apiResponse) {
