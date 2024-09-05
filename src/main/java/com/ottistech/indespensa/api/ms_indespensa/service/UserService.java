@@ -61,7 +61,10 @@ public class UserService {
         }
 
         User user = userOptional.get();
-        if(loginUserDTO.password().equals(user.getPassword())) {
+
+        if (user.getDeactivatedAt() != null) {
+            throw new UserAlreadyDeactivatedException("User already deactivated");
+        } else if(loginUserDTO.password().equals(user.getPassword())) {
             return new UserCredentialsResponse(
                 user.getUserId(),
                 user.getType(),
