@@ -214,7 +214,6 @@ public class UserService {
                 });
 
         user.setName(userDTO.name());
-        user.setEnterpriseType(userDTO.enterpriseType());
         user.setEmail(userDTO.email());
         user.setPassword(userDTO.password());
 
@@ -241,7 +240,6 @@ public class UserService {
 
         return new UpdateUserResponseDTO(
                 user.getName(),
-                user.getEnterpriseType(),
                 user.getEmail(),
                 address.getCep().getCepId(),
                 address.getAddressNumber(),
