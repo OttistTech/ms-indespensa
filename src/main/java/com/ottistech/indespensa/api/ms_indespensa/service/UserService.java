@@ -28,7 +28,7 @@ public class UserService {
         this.cepRepository = cepRepository;
     }
 
-    public UserCredentialsResponse singUpUser(SignUpUserDTO signUpUserDTO) {
+    public UserCredentialsResponseDTO singUpUser(SignUpUserDTO signUpUserDTO) {
         if (userRepository.findByEmail(signUpUserDTO.email()).isPresent()) {
             throw new EmailAlreadyInUseException("Email already in use");
         }
@@ -45,16 +45,18 @@ public class UserService {
         Address address = signUpUserDTO.toAddress(user, cep);
         addressRepository.save(address);
 
-        return new UserCredentialsResponse(
+        return new UserCredentialsResponseDTO(
                 user.getUserId(),
                 user.getType(),
+                user.getEmail(),
+                user.getPassword(),
                 user.getName(),
                 user.getEnterpriseType(),
                 user.getIsPremium()
         );
     }
 
-    public UserCredentialsResponse getUserCredentials(LoginUserDTO loginUserDTO) {
+    public UserCredentialsResponseDTO getUserCredentials(LoginUserDTO loginUserDTO) {
         Optional<User> userOptional = userRepository.findByEmail(loginUserDTO.email());
         if(userOptional.isEmpty()) {
             throw new UserNotFoundException("User does not exist");
@@ -65,12 +67,14 @@ public class UserService {
         if (user.getDeactivatedAt() != null) {
             throw new UserAlreadyDeactivatedException("User already deactivated");
         } else if(loginUserDTO.password().equals(user.getPassword())) {
-            return new UserCredentialsResponse(
-                user.getUserId(),
-                user.getType(),
-                user.getName(),
-                user.getEnterpriseType(),
-                user.getIsPremium()
+            return new UserCredentialsResponseDTO(
+                    user.getUserId(),
+                    user.getType(),
+                    user.getEmail(),
+                    user.getPassword(),
+                    user.getName(),
+                    user.getEnterpriseType(),
+                    user.getIsPremium()
             );
         } else {
             throw new IncorrectPasswordException("Password does not match");
@@ -94,7 +98,7 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public UserFullInfoResponse getUserFullInfo(Long userId) {
+    public UserFullInfoResponseDTO getUserFullInfo(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if(userOptional.isEmpty()) {
@@ -119,7 +123,7 @@ public class UserService {
 
         Cep cep = cepOptional.get();
 
-        return new UserFullInfoResponse(
+        return new UserFullInfoResponseDTO(
                 user.getUserId(),
                 user.getType(),
                 user.getName(),
@@ -136,7 +140,7 @@ public class UserService {
         );
     }
 
-    public UserCredentialsResponse getUserHalfInfo(Long userId) {
+    public UserCredentialsResponseDTO getUserHalfInfo(Long userId) {
         Optional<User> userOptional = userRepository.findById(userId);
 
         if(userOptional.isEmpty()) {
@@ -145,23 +149,25 @@ public class UserService {
 
         User user = userOptional.get();
 
-        return new UserCredentialsResponse(
+        return new UserCredentialsResponseDTO(
                 user.getUserId(),
                 user.getType(),
+                user.getEmail(),
+                user.getPassword(),
                 user.getName(),
                 user.getEnterpriseType(),
                 user.getIsPremium()
         );
     }
 
-    public List<UserFullInfoResponse> getAllUsersFullInfo() {
+    public List<UserFullInfoResponseDTO> getAllUsersFullInfo() {
         List<User> users = userRepository.findAll();
 
         if (users.isEmpty()) {
             throw new UserNotFoundException("No users found");
         }
 
-        List<UserFullInfoResponse> userFullInfoResponses = new ArrayList<>();
+        List<UserFullInfoResponseDTO> userFullInfoResponses = new ArrayList<>();
 
         for (User user : users) {
             Optional<Address> addressOptional = addressRepository.findByUserId(user.getUserId());
@@ -181,7 +187,7 @@ public class UserService {
 
             Cep cep = optionalCep.get();
 
-            UserFullInfoResponse userFullInfo = new UserFullInfoResponse(
+            UserFullInfoResponseDTO userFullInfo = new UserFullInfoResponseDTO(
                     user.getUserId(),
                     user.getType(),
                     user.getName(),
