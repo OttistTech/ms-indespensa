@@ -209,7 +209,7 @@ public class UserService {
         return userFullInfoResponses;
     }
 
-    public UpdateUserResponseDTO updateUser(Long userId, UpdateUserDTO userDTO) {
+    public UserCredentialsResponseDTO updateUser(Long userId, UpdateUserDTO userDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -244,14 +244,14 @@ public class UserService {
         userRepository.save(user);
         addressRepository.save(address);
 
-        return new UpdateUserResponseDTO(
+        return new UserCredentialsResponseDTO(
+                user.getUserId(),
+                user.getType(),
                 user.getName(),
                 user.getEmail(),
-                address.getCep().getCepId(),
-                address.getAddressNumber(),
-                cep.getStreet(),
-                cep.getCity(),
-                cep.getState()
+                user.getPassword(),
+                user.getEnterpriseType(),
+                user.getIsPremium()
         );
     }
 }
