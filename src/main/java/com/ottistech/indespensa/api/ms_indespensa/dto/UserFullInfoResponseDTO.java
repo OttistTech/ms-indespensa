@@ -2,7 +2,7 @@ package com.ottistech.indespensa.api.ms_indespensa.dto;
 
 import java.util.Date;
 
-public record UserFullInfoResponse(
+public record UserFullInfoResponseDTO(
         Long userId,
         String type,
         String name,

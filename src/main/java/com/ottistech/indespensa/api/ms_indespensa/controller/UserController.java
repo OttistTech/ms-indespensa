@@ -22,7 +22,7 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody @Valid SignUpUserDTO signUpUserDTO) {
 
-        UserCredentialsResponse userCredentialsResponse = userService.singUpUser(signUpUserDTO);
+        UserCredentialsResponseDTO userCredentialsResponse = userService.singUpUser(signUpUserDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userCredentialsResponse);
     }
@@ -30,7 +30,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody @Valid LoginUserDTO loginUserDTO) {
 
-        UserCredentialsResponse userCredentials = userService.getUserCredentials(loginUserDTO);
+        UserCredentialsResponseDTO userCredentials = userService.getUserCredentials(loginUserDTO);
 
         return ResponseEntity.status(HttpStatus.OK).body(userCredentials);
     }
@@ -48,27 +48,27 @@ public class UserController {
                                              @RequestParam("full-info") boolean fullInfo) {
 
         if (fullInfo) {
-            UserFullInfoResponse userFullInfo = userService.getUserFullInfo(userId);
+            UserFullInfoResponseDTO userFullInfo = userService.getUserFullInfo(userId);
             return ResponseEntity.ok(userFullInfo);
         }
 
-        UserCredentialsResponse userHalfInfo = userService.getUserHalfInfo(userId);
+        UserCredentialsResponseDTO userHalfInfo = userService.getUserHalfInfo(userId);
 
         return ResponseEntity.ok(userHalfInfo);
     }
 
     @GetMapping("/admin")
-    public ResponseEntity<List<UserFullInfoResponse>> getAllUsersFullInfo() {
+    public ResponseEntity<List<UserFullInfoResponseDTO>> getAllUsersFullInfo() {
 
-        List<UserFullInfoResponse> userFullInfoList = userService.getAllUsersFullInfo();
+        List<UserFullInfoResponseDTO> userFullInfoList = userService.getAllUsersFullInfo();
 
         return ResponseEntity.ok(userFullInfoList);
     }
 
     @GetMapping("/admin/{id}")
-    public ResponseEntity<UserFullInfoResponse> getOneUserFullInfo(@PathVariable("id") Long userId) {
+    public ResponseEntity<UserFullInfoResponseDTO> getOneUserFullInfo(@PathVariable("id") Long userId) {
 
-        UserFullInfoResponse userFullInfo = userService.getUserFullInfo(userId);
+        UserFullInfoResponseDTO userFullInfo = userService.getUserFullInfo(userId);
 
         return ResponseEntity.ok(userFullInfo);
     }
