@@ -48,9 +48,9 @@ public class UserService {
         return new UserCredentialsResponseDTO(
                 user.getUserId(),
                 user.getType(),
+                user.getName(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getName(),
                 user.getEnterpriseType(),
                 user.getIsPremium()
         );
@@ -70,9 +70,9 @@ public class UserService {
             return new UserCredentialsResponseDTO(
                     user.getUserId(),
                     user.getType(),
+                    user.getName(),
                     user.getEmail(),
                     user.getPassword(),
-                    user.getName(),
                     user.getEnterpriseType(),
                     user.getIsPremium()
             );
