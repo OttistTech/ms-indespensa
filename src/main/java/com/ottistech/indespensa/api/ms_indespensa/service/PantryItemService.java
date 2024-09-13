@@ -2,12 +2,15 @@ package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.CreatePantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.PantryItemSimplifiedResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.PartialPantryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.exception.PantryItemNotFoundException;
 import com.ottistech.indespensa.api.ms_indespensa.exception.UserNotFoundException;
 import com.ottistech.indespensa.api.ms_indespensa.model.*;
 import com.ottistech.indespensa.api.ms_indespensa.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -23,6 +26,7 @@ public class PantryItemService {
 
     public PantryItemSimplifiedResponseDTO createPantryItem(Long userId, CreatePantryItemDTO pantryItemDTO) {
         Product product = getOrCreateProduct(pantryItemDTO);
+        System.out.println(product.toString());
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found and can't add an item to his pantry"));
@@ -114,5 +118,25 @@ public class PantryItemService {
                     newCategory.setCategoryName(categoryName);
                     return categoryRepository.save(newCategory);
                 });
+    }
+
+    public List<PartialPantryItemDTO> listPantryItems(Long userId) {
+        List<PantryItem> userActivePantryItems = pantryItemRepository.findAllActiveItemsByUserId(userId);
+        if(userActivePantryItems.isEmpty()) {
+            throw new PantryItemNotFoundException("No pantry items found for the giver userId");
+        }
+
+        return userActivePantryItems.stream()
+                .map( item -> new PartialPantryItemDTO(
+                        item.getUser().getUserId(),
+                        item.getPantryItemId(),
+                        item.getProduct().getName(),
+                        item.getProduct().getImageUrl(),
+                        item.getProduct().getAmount(),
+                        item.getProduct().getUnit(),
+                        item.getAmount(),
+                        item.getValidityDate()
+                ))
+                .toList();
     }
 }
