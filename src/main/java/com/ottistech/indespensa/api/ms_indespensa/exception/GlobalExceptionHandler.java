@@ -109,6 +109,9 @@ public class GlobalExceptionHandler {
     public ProblemDetail handlePantryItemNotFoundException(PantryItemNotFoundException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
         problemDetail.setTitle("Pantry item not found");
+
+        return problemDetail;
+    }
       
     @ExceptionHandler(ResponseStatusException.class)
     public ProblemDetail handleResponseStatusException(ResponseStatusException ex) {
