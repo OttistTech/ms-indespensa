@@ -26,7 +26,6 @@ public class PantryItemService {
 
     public PantryItemSimplifiedResponseDTO createPantryItem(Long userId, CreatePantryItemDTO pantryItemDTO) {
         Product product = getOrCreateProduct(pantryItemDTO);
-        System.out.println(product.toString());
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found and can't add an item to his pantry"));
@@ -121,13 +120,14 @@ public class PantryItemService {
     }
 
     public List<PartialPantryItemDTO> listPantryItems(Long userId) {
-        List<PantryItem> userActivePantryItems = pantryItemRepository.findAllActiveItemsByUserId(userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User does not exist"));
+
+        List<PartialPantryItemDTO> userActivePantryItems = pantryItemRepository.findAllActiveItemsByUser(user);
         if(userActivePantryItems.isEmpty()) {
             throw new PantryItemNotFoundException("No pantry items found for the giver userId");
         }
 
-        return userActivePantryItems.stream()
-            .map(PartialPantryItemDTO::fromPantryItem)
-            .toList();
+        return userActivePantryItems;
     }
 }

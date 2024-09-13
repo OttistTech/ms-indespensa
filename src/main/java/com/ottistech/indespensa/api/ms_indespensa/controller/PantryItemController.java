@@ -28,10 +28,10 @@ public class PantryItemController {
     }
 
     @GetMapping("/{user_id}/list")
-    public ResponseEntity<?> listPantryItems(@PathVariable("user_id") Long userId) {
+    public ResponseEntity<List<PartialPantryItemDTO>> listPantryItems(@PathVariable("user_id") Long userId) {
 
         List<PartialPantryItemDTO> userActivePantryItems = pantryItemService.listPantryItems(userId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(userActivePantryItems);
+        return ResponseEntity.ok(userActivePantryItems);
     }
 }
