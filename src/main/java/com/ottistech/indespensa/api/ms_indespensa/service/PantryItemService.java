@@ -121,7 +121,7 @@ public class PantryItemService {
 
     public List<PartialPantryItemDTO> listPantryItems(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User does not exist"));
+                .orElseThrow(() -> new UserNotFoundException("User does not exist")); 
 
         List<PartialPantryItemDTO> userActivePantryItems = pantryItemRepository.findAllActiveItemsByUser(user);
         if(userActivePantryItems.isEmpty()) {
