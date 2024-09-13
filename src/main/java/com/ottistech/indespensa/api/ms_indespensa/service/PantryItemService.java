@@ -127,16 +127,7 @@ public class PantryItemService {
         }
 
         return userActivePantryItems.stream()
-                .map( item -> new PartialPantryItemDTO(
-                        item.getUser().getUserId(),
-                        item.getPantryItemId(),
-                        item.getProduct().getName(),
-                        item.getProduct().getImageUrl(),
-                        item.getProduct().getAmount(),
-                        item.getProduct().getUnit(),
-                        item.getAmount(),
-                        item.getValidityDate()
-                ))
-                .toList();
+            .map(PartialPantryItemDTO::fromPantryItem)
+            .toList();
     }
 }
