@@ -23,7 +23,8 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
        FROM ShopItem li
        JOIN li.product p
        JOIN p.foodId f
-       WHERE li.user = :user
+       WHERE li.user = :user \s
+       AND li.purchaseDate IS NOT NULL
       \s""")
     List<ListShopItemResponseDTO> findAllByUser(User user);
 }
