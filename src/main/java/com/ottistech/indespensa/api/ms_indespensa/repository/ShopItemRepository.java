@@ -6,7 +6,6 @@ import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,19 +14,19 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
 
     @Query("""
        SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO(
-            li.listItemId,\s
-            li.user.userId,\s
+            si.listItemId,\s
+            si.user.userId,\s
             f.foodName,\s
             p.imageUrl,\s
-            li.amount,\s
+            si.amount,\s
             p.amount,\s
             p.unit
        )
-       FROM ShopItem li
-       JOIN li.product p
+       FROM ShopItem si
+       JOIN si.product p
        JOIN p.foodId f
-       WHERE li.user = :user \s
-       AND li.purchaseDate IS NULL
+       WHERE si.user = :user \s
+       AND si.purchaseDate IS NULL
       \s""")
     List<ShopItemResponseDTO> findAllByUser(User user);
 
