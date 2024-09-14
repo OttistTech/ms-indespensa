@@ -1,13 +1,13 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ListShopItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.ShopItemService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,10 +19,20 @@ public class ShopItemController {
     private final ShopItemService shopItemService;
 
     @GetMapping("/{user_id}/list")
-    public ResponseEntity<List<ListShopItemResponseDTO>> getShopItemListInfo(@PathVariable("user_id") Long userId) {
+    public ResponseEntity<List<ShopItemResponseDTO>> getShopItemListInfo(@PathVariable("user_id") Long userId) {
 
-        List<ListShopItemResponseDTO> listItemResponse = shopItemService.getListItem(userId);
+        List<ShopItemResponseDTO> listItemResponse = shopItemService.getListItem(userId);
 
         return ResponseEntity.ok(listItemResponse);
+    }
+
+    @PostMapping("/{user_id}/add")
+    public ResponseEntity<ShopItemResponseDTO> addShopItem(@PathVariable("user_id") Long userId,
+                                                              @Valid @RequestBody AddShopItemDTO shopItemDTO) {
+
+        ShopItemResponseDTO itemResponseDTO = shopItemService.addShopItem(userId, shopItemDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(itemResponseDTO);
+
     }
 }

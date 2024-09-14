@@ -1,30 +1,41 @@
 package com.ottistech.indespensa.api.ms_indespensa.repository;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ListShopItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
-import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
 
     @Query("""
-       SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.ListShopItemResponseDTO(
-            li.listItemId,\s
-            li.user.userId,\s
-            f.foodName,\s
-            p.imageUrl,\s
-            li.amount,\s
-            p.amount,\s
+       SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO(
+            si.listItemId,
+            si.user.userId,
+            f.foodName,
+            p.imageUrl,
+            si.amount,
+            p.amount,
             p.unit
        )
-       FROM ShopItem li
-       JOIN li.product p
+       FROM ShopItem si
+       JOIN si.product p
        JOIN p.foodId f
-       WHERE li.user = :user \s
-       AND li.purchaseDate IS NOT NULL
+       WHERE si.user.userId = :userId
+       AND si.purchaseDate IS NULL
       \s""")
-    List<ListShopItemResponseDTO> findAllByUser(User user);
+    List<ShopItemResponseDTO> findAllByUser(Long userId);
+
+    @Query("""
+      SELECT
+        si
+      FROM ShopItem si
+      WHERE si.user.userId = :userId
+      AND si.product.productId = :productId
+      AND si.purchaseDate IS NULL
+      """)
+    Optional<ShopItem> findByUserAndProductWithNullPurchaseDate(Long userId, Long productId);
+
 }

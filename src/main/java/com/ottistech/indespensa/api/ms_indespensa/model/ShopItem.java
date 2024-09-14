@@ -36,4 +36,10 @@ public class ShopItem {
 
     @Column(name = "purchase_date")
     private LocalDate purchaseDate;
+
+    public ShopItem(User user, Product product, Integer amount) {
+        this.user = user;
+        this.product = product;
+        this.amount = amount;
+    }
 }
