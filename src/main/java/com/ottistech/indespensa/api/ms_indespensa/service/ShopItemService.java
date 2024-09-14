@@ -25,13 +25,9 @@ public class ShopItemService {
     private final ProductRepository productRepository;
 
     public List<ShopItemResponseDTO> getListItem(Long userId) {
+        List<ShopItemResponseDTO> listItemResponses = shopItemRepository.findAllByUser(userId);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User does not exist"));
-
-        List<ShopItemResponseDTO> listItemResponses = shopItemRepository.findAllByUser(user);
-
-        if (listItemResponses.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No items found for the user");
+        if (listItemResponses.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No items found or user doesnt exists");
 
         return listItemResponses;
     }
@@ -43,7 +39,7 @@ public class ShopItemService {
         Product product = productRepository.findById(shopItemDTO.productId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No product found for this id"));
 
-        ShopItem shopItem = shopItemRepository.findByUserAndProductWithNullPurchaseDate(user, product)
+        ShopItem shopItem = shopItemRepository.findByUserAndProductWithNullPurchaseDate(userId, shopItemDTO.productId())
                 .orElse(null);
 
         if (shopItem != null) {
@@ -56,4 +52,5 @@ public class ShopItemService {
 
         return shopItemDTO.toShopItemResponseDto(shopItem);
     }
+
 }
