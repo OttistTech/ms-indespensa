@@ -1,9 +1,7 @@
 package com.ottistech.indespensa.api.ms_indespensa.repository;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
-import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,29 +12,29 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
 
     @Query("""
        SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO(
-            si.listItemId,\s
-            si.user.userId,\s
-            f.foodName,\s
-            p.imageUrl,\s
-            si.amount,\s
-            p.amount,\s
+            si.listItemId,
+            si.user.userId,
+            f.foodName,
+            p.imageUrl,
+            si.amount,
+            p.amount,
             p.unit
        )
        FROM ShopItem si
        JOIN si.product p
        JOIN p.foodId f
-       WHERE si.user = :user \s
+       WHERE si.user.userId = :userId
        AND si.purchaseDate IS NULL
       \s""")
-    List<ShopItemResponseDTO> findAllByUser(User user);
+    List<ShopItemResponseDTO> findAllByUser(Long userId);
 
     @Query("""
       SELECT
-        si \s
-      FROM ShopItem si \s
-      WHERE si.user = :user \s
-      AND si.product = :product \s
+        si
+      FROM ShopItem si
+      WHERE si.user.userId = :userId
+      AND si.product.productId = :productId
       AND si.purchaseDate IS NULL
       \s""")
-    Optional<ShopItem> findByUserAndProductWithNullPurchaseDate(User user, Product product);
+    Optional<ShopItem> findByUserAndProductWithNullPurchaseDate(Long userId, Long productId);
 }
