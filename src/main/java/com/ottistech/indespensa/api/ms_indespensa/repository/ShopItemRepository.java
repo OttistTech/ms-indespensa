@@ -35,6 +35,7 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
       WHERE si.user.userId = :userId
       AND si.product.productId = :productId
       AND si.purchaseDate IS NULL
-      \s""")
+      """)
     Optional<ShopItem> findByUserAndProductWithNullPurchaseDate(Long userId, Long productId);
+
 }

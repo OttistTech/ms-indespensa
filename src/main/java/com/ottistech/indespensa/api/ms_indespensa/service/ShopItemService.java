@@ -9,6 +9,7 @@ import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import com.ottistech.indespensa.api.ms_indespensa.repository.ProductRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.ShopItemRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -32,19 +33,20 @@ public class ShopItemService {
         return listItemResponses;
     }
 
+    @Transactional
     public ShopItemResponseDTO addShopItem(Long userId, AddShopItemDTO shopItemDTO) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User does not exist"));
-
-        Product product = productRepository.findById(shopItemDTO.productId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No product found for this id"));
-
         ShopItem shopItem = shopItemRepository.findByUserAndProductWithNullPurchaseDate(userId, shopItemDTO.productId())
                 .orElse(null);
 
         if (shopItem != null) {
             shopItem.setAmount(shopItem.getAmount() + shopItemDTO.amount());
         } else {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException("User doesn't exists"));
+
+            Product product = productRepository.findById(shopItemDTO.productId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No products found with this id"));
+
             shopItem = shopItemDTO.toShopItem(user, product, shopItemDTO);
         }
 
