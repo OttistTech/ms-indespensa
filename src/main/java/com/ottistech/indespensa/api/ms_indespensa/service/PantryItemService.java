@@ -3,6 +3,7 @@ package com.ottistech.indespensa.api.ms_indespensa.service;
 import com.ottistech.indespensa.api.ms_indespensa.dto.CreatePantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.PantryItemSimplifiedResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.PartialPantryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.UpdatePantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.exception.PantryItemNotFoundException;
 import com.ottistech.indespensa.api.ms_indespensa.exception.UserNotFoundException;
 import com.ottistech.indespensa.api.ms_indespensa.model.*;
@@ -10,6 +11,7 @@ import com.ottistech.indespensa.api.ms_indespensa.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -129,5 +131,21 @@ public class PantryItemService {
         }
 
         return userActivePantryItems;
+    }
+
+    public List<PantryItem> updatePantryItemsAmount(List<UpdatePantryItemDTO> pantryItems) {
+        List<PantryItem> updatedItems = new ArrayList<>();
+        for(UpdatePantryItemDTO itemUpdate : pantryItems) {
+            PantryItem item = pantryItemRepository.findById(itemUpdate.pantryItemId()).orElse(null);
+            if(item != null) {
+                item.setAmount(itemUpdate.pantryAmount());
+                if(item.getAmount() == 0) {
+                    item.setIsActive(false);
+                }
+                updatedItems.add(item);
+            }
+        }
+        pantryItemRepository.saveAll(updatedItems);
+        return updatedItems;
     }
 }
