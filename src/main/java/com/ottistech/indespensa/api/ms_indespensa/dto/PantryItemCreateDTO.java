@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public record CreatePantryItemDTO(
+public record PantryItemCreateDTO(
         String productEanCode,
         @NotNull(message = "Field productName is required") String productName,
         @NotNull(message = "Field productDescription is required") String productDescription,

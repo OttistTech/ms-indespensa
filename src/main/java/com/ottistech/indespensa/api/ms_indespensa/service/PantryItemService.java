@@ -1,9 +1,10 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.CreatePantryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.PantryItemCreateDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.PantryItemSimplifiedResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.PartialPantryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.PantryItemPartialDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.UpdatePantryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.exception.PantryItemNotFoundException;
 import com.ottistech.indespensa.api.ms_indespensa.exception.UserNotFoundException;
 import com.ottistech.indespensa.api.ms_indespensa.model.*;
@@ -26,7 +27,7 @@ public class PantryItemService {
     private final CategoryRepository categoryRepository;
     private final FoodRepository foodRepository;
 
-    public PantryItemSimplifiedResponseDTO createPantryItem(Long userId, CreatePantryItemDTO pantryItemDTO) {
+    public PantryItemSimplifiedResponseDTO createPantryItem(Long userId, PantryItemCreateDTO pantryItemDTO) {
         Product product = getOrCreateProduct(pantryItemDTO);
 
         User user = userRepository.findById(userId)
@@ -59,7 +60,7 @@ public class PantryItemService {
         );
     }
 
-    private Product getOrCreateProduct(CreatePantryItemDTO pantryItemDTO) {
+    private Product getOrCreateProduct(PantryItemCreateDTO pantryItemDTO) {
         Optional<Product> existingProductByEanCode = productRepository.findByEanCodeNotNull(pantryItemDTO.productEanCode());
 
         if (existingProductByEanCode.isPresent()) {
@@ -75,7 +76,7 @@ public class PantryItemService {
         return createNewProduct(pantryItemDTO);
     }
 
-    private Product createNewProduct(CreatePantryItemDTO pantryItemDTO) {
+    private Product createNewProduct(PantryItemCreateDTO pantryItemDTO) {
         Product product = new Product();
 
         product.setEanCode(pantryItemDTO.productEanCode());
@@ -121,13 +122,13 @@ public class PantryItemService {
                 });
     }
 
-    public List<PartialPantryItemDTO> listPantryItems(Long userId) {
+    public List<PantryItemPartialDTO> listPantryItems(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User does not exist")); 
 
-        List<PartialPantryItemDTO> userActivePantryItems = pantryItemRepository.findAllActiveItemsByUser(user);
+        List<PantryItemPartialDTO> userActivePantryItems = pantryItemRepository.findAllActiveItemsByUser(user);
         if(userActivePantryItems.isEmpty()) {
-            throw new PantryItemNotFoundException("No pantry items found for the giver userId");
+            throw new PantryItemNotFoundException("No pantry items found for the given userId");
         }
 
         return userActivePantryItems;
@@ -147,5 +148,10 @@ public class PantryItemService {
         }
         pantryItemRepository.saveAll(updatedItems);
         return updatedItems;
+    }
+
+    public PantryItemDetailsDTO getPantryItemDetails(Long pantryItemId) {
+        return pantryItemRepository.findPantryItemDetailsById(pantryItemId)
+                .orElseThrow(() -> new PantryItemNotFoundException("No pantry item matching the given id"));
     }
 }

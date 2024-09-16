@@ -1,9 +1,10 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.CreatePantryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.PantryItemCreateDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.PantryItemSimplifiedResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.PartialPantryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.PantryItemPartialDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.UpdatePantryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
 import com.ottistech.indespensa.api.ms_indespensa.service.PantryItemService;
 import jakarta.validation.Valid;
@@ -22,7 +23,7 @@ public class PantryItemController {
     private final PantryItemService pantryItemService;
 
     @PostMapping("/{user_id}/create")
-    public ResponseEntity<?> createPantryItem(@PathVariable("user_id") Long userId, @RequestBody @Valid CreatePantryItemDTO pantryItem) {
+    public ResponseEntity<?> createPantryItem(@PathVariable("user_id") Long userId, @RequestBody @Valid PantryItemCreateDTO pantryItem) {
 
         PantryItemSimplifiedResponseDTO pantryItemSimplifiedResponseDTO = pantryItemService.createPantryItem(userId, pantryItem);
 
@@ -30,9 +31,9 @@ public class PantryItemController {
     }
 
     @GetMapping("/{user_id}/list")
-    public ResponseEntity<List<PartialPantryItemDTO>> listPantryItems(@PathVariable("user_id") Long userId) {
+    public ResponseEntity<List<PantryItemPartialDTO>> listPantryItems(@PathVariable("user_id") Long userId) {
 
-        List<PartialPantryItemDTO> userActivePantryItems = pantryItemService.listPantryItems(userId);
+        List<PantryItemPartialDTO> userActivePantryItems = pantryItemService.listPantryItems(userId);
 
         return ResponseEntity.ok(userActivePantryItems);
     }
@@ -43,5 +44,13 @@ public class PantryItemController {
         List<PantryItem> updatedItems = pantryItemService.updatePantryItemsAmount(pantryItems);
 
         return ResponseEntity.ok(updatedItems);
+    }
+
+    @GetMapping("/{pantry_item_id}/details")
+    public ResponseEntity<PantryItemDetailsDTO> getPantryItem(@PathVariable("pantry_item_id") Long pantryItemId) {
+
+        PantryItemDetailsDTO pantryItem = pantryItemService.getPantryItemDetails(pantryItemId);
+
+        return ResponseEntity.ok(pantryItem);
     }
 }
