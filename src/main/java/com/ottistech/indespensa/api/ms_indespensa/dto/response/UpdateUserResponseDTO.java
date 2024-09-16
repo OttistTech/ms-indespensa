@@ -1,4 +1,4 @@
-package com.ottistech.indespensa.api.ms_indespensa.dto;
+package com.ottistech.indespensa.api.ms_indespensa.dto.response;
 
 public record UpdateUserResponseDTO (
         String name,

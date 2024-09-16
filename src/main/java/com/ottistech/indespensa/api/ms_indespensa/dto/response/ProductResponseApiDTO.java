@@ -1,4 +1,4 @@
-package com.ottistech.indespensa.api.ms_indespensa.dto;
+package com.ottistech.indespensa.api.ms_indespensa.dto.response;
 
 import java.util.List;
 import java.util.Map;

@@ -3,7 +3,7 @@ package com.ottistech.indespensa.api.ms_indespensa.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ottistech.indespensa.api.ms_indespensa.dto.ProductResponseApiDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductResponseApiDTO;
 import com.ottistech.indespensa.api.ms_indespensa.exception.JsonParcealizationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class ProductClientService {
         String responseBody = responseEntity.getBody();
 
         if (responseBody == null || responseBody.isEmpty()) {
-            throw new RuntimeException("A resposta da API externa está vazia ou é nula");
+            throw new RuntimeException("The response from external API is empty");
         }
 
         String json = extractJson(responseBody);

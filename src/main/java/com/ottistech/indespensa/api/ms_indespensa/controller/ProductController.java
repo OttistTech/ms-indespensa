@@ -1,7 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.ProductResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.model.Product;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

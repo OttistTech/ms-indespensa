@@ -1,10 +1,9 @@
-package com.ottistech.indespensa.api.ms_indespensa.dto;
+package com.ottistech.indespensa.api.ms_indespensa.dto.request;
 
 import com.ottistech.indespensa.api.ms_indespensa.model.Address;
 import com.ottistech.indespensa.api.ms_indespensa.model.Cep;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 import java.util.Date;
 
@@ -14,11 +13,9 @@ public record SignUpUserDTO(
         Date birthDate,
         String enterpriseType,
         @Email(message = "Email isn't right") @NotNull(message = "Field email is required") String email,
-        @NotNull(message = "Field password is required") String password,
-
-        @NotNull(message = "Field cep is required") String cep,
-        Integer addressNumber,
-
+        @NotNull(message = "Field password is required") @Size(min = 8, message = "Field password shoud have at least 8 characters") String password,
+        @NotNull(message = "Field cep is required") @Size(min = 8, max = 8, message = "Field cep should have exactly 8 characters") String cep,
+        @Min(value = 1, message = "Field addressNumber should be at least 1 (>= 1)") @Max(value = 4, message = "Field addressNumber should be less than 5 (< 4)") Integer addressNumber,
         @NotNull(message = "Field street is required") String street,
         @NotNull(message = "Field city is required") String city,
         @NotNull(message = "Field state is required") String state

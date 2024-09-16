@@ -2,8 +2,8 @@ package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.client.ProductClientService;
 import com.ottistech.indespensa.api.ms_indespensa.client.ProductRequestClient;
-import com.ottistech.indespensa.api.ms_indespensa.dto.ProductResponseApiDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.ProductResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductResponseApiDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.exception.EanCodeNotFoundException;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.repository.BrandRepository;

@@ -1,9 +1,9 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.PantryItemCreateDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.PantryItemSimplifiedResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.PantryItemPartialDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.UpdatePantryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.PantryItemCreateDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemSimplifiedResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartialDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdatePantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.exception.PantryItemNotFoundException;
 import com.ottistech.indespensa.api.ms_indespensa.exception.UserNotFoundException;

@@ -1,6 +1,10 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.*;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.LoginUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.SignUpUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserCredentialsResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserFullInfoResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.exception.*;
 import com.ottistech.indespensa.api.ms_indespensa.model.Address;
 import com.ottistech.indespensa.api.ms_indespensa.model.Cep;
