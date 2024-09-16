@@ -3,7 +3,7 @@ package com.ottistech.indespensa.api.ms_indespensa.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public record PartialPantryItemDTO(
+public record PantryItemPartialDTO(
         Long userId,
         Long pantryItemId,
         String name,
