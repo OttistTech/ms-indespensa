@@ -6,6 +6,7 @@ import java.time.LocalDate;
 public record PantryItemDetailsDTO(
     Long pantryItemId,
     Long userId,
+    Long productId,
     String productImageUrl,
     String productFood,
     String productName,
