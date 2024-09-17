@@ -12,6 +12,7 @@ import com.ottistech.indespensa.api.ms_indespensa.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,13 +32,22 @@ public class PantryItemService {
         Product product = getOrCreateProduct(pantryItemDTO);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found and can't add an item to his pantry"));
+            .orElseThrow(() -> new UserNotFoundException("User not found and can't add an item to his pantry"));
 
-        PantryItem pantryItem = new PantryItem();
-        pantryItem.setUser(user);
-        pantryItem.setProduct(product);
-        pantryItem.setAmount(pantryItemDTO.pantryAmount());
-        pantryItem.setValidityDate(pantryItemDTO.validityDate());
+        Optional<PantryItem> pantryItemOptional = pantryItemRepository.findExistentPantryItem(user, product, pantryItemDTO.validityDate());
+        PantryItem pantryItem;
+
+        if(pantryItemOptional.isEmpty()) {
+            pantryItem = new PantryItem();
+            pantryItem.setUser(user);
+            pantryItem.setProduct(product);
+            pantryItem.setAmount(pantryItemDTO.pantryAmount());
+            pantryItem.setValidityDate(pantryItemDTO.validityDate());
+        } else {
+            pantryItem = pantryItemOptional.get();
+            pantryItem.setAmount(pantryItem.getAmount() + pantryItemDTO.pantryAmount());
+            pantryItem.setPurchaseDate(LocalDate.now());
+        }
 
         pantryItemRepository.save(pantryItem);
 
@@ -69,11 +79,7 @@ public class PantryItemService {
 
         Optional<Product> existingProductByName = productRepository.findByNameNotNull(pantryItemDTO.productName());
 
-        if (existingProductByName.isPresent()) {
-            return existingProductByName.get();
-        }
-
-        return createNewProduct(pantryItemDTO);
+        return existingProductByName.orElseGet(() -> createNewProduct(pantryItemDTO));
     }
 
     private Product createNewProduct(PantryItemCreateDTO pantryItemDTO) {
