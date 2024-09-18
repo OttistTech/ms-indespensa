@@ -15,7 +15,7 @@ public record SignUpUserDTO(
         @Email(message = "Email isn't right") @NotNull(message = "Field email is required") String email,
         @NotNull(message = "Field password is required") @Size(min = 8, message = "Field password shoud have at least 8 characters") String password,
         @NotNull(message = "Field cep is required") @Size(min = 8, max = 8, message = "Field cep should have exactly 8 characters") String cep,
-        @Min(value = 1, message = "Field addressNumber should be at least 1 (>= 1)") @Max(value = 4, message = "Field addressNumber should be less than 5 (< 4)") Integer addressNumber,
+        @Min(value = 1, message = "Field addressNumber should have one char") @Max(value = 9999, message = "Field addressNumber should have max 4 chars") Integer addressNumber,
         @NotNull(message = "Field street is required") String street,
         @NotNull(message = "Field city is required") String city,
         @NotNull(message = "Field state is required") String state

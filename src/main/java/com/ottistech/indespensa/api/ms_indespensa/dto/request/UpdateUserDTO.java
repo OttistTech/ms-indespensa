@@ -1,5 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.dto.request;
 
+import com.ottistech.indespensa.api.ms_indespensa.model.Cep;
 import jakarta.validation.constraints.*;
 
 public record UpdateUserDTO(
@@ -12,4 +13,13 @@ public record UpdateUserDTO(
         @NotNull(message = "Field city is required") String city,
         @NotNull(message = "Field state is required") String state
 ) {
+
+    public Cep toCep() {
+        return new Cep(
+                this.cep,
+                this.street,
+                this.city,
+                this.state
+        );
+    }
 }
