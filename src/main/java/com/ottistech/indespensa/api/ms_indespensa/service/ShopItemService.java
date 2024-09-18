@@ -2,7 +2,6 @@ package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.exception.UserNotFoundException;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
@@ -42,7 +41,7 @@ public class ShopItemService {
             shopItem.setAmount(shopItem.getAmount() + shopItemDTO.amount());
         } else {
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException("User doesn't exists"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exists"));
 
             Product product = productRepository.findById(shopItemDTO.productId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No products found with this id"));
