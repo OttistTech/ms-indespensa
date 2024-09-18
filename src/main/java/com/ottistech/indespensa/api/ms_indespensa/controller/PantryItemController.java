@@ -1,6 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.PantryItemCreateDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreatePantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemSimplifiedResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartialDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdatePantryItemDTO;
@@ -23,7 +23,7 @@ public class PantryItemController {
     private final PantryItemService pantryItemService;
 
     @PostMapping("/{user_id}/create")
-    public ResponseEntity<?> createPantryItem(@PathVariable("user_id") Long userId, @RequestBody @Valid PantryItemCreateDTO pantryItem) {
+    public ResponseEntity<?> createPantryItem(@PathVariable("user_id") Long userId, @RequestBody @Valid CreatePantryItemDTO pantryItem) {
 
         PantryItemSimplifiedResponseDTO pantryItemSimplifiedResponseDTO = pantryItemService.createPantryItem(userId, pantryItem);
 
