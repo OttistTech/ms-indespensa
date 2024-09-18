@@ -33,4 +33,14 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
+    public Category getOrCreateCategory(String categoryName) {
+        return categoryRepository.findByCategoryName(categoryName)
+                .orElseGet(() -> {
+                    Category newCategory = new Category();
+                    newCategory.setCategoryName(categoryName);
+                    return categoryRepository.save(newCategory);
+                });
+    }
+
+
 }
