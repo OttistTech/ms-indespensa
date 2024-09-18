@@ -36,6 +36,7 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
             SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO(
                 pi.pantryItemId,
                 pi.user.userId,
+                pi.product.productId,
                 pi.product.imageUrl,
                 pi.product.foodId.foodName,
                 pi.product.name,
