@@ -13,7 +13,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/v1/shopping-item")
+@RequestMapping("/api/v1/shop")
 public class ShopItemController {
 
     private final ShopItemService shopItemService;

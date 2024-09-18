@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record PantryItemDetailsDTO(
-    Long pantryItemId,
+    Long itemId,
     Long userId,
     Long productId,
     String productImageUrl,
@@ -14,7 +14,7 @@ public record PantryItemDetailsDTO(
     String productDescription,
     BigDecimal productAmount,
     String productUnit,
-    Integer pantryAmount,
+    Integer amount,
     LocalDate validityDate
 ) {
 }

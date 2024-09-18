@@ -1,6 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.repository;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.PantryItemPartialDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartialDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
     @Query("""
-            SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.PantryItemPartialDTO(
+            SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartialDTO(
                 pi.user.userId,
                 pi.pantryItemId,
                 pi.product.name,

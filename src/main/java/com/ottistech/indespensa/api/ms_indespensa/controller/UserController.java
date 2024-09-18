@@ -1,23 +1,25 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.*;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.LoginUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.SignUpUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserCredentialsResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserFullInfoResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.UserService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
 
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody @Valid SignUpUserDTO signUpUserDTO) {
