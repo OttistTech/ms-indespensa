@@ -46,7 +46,7 @@ public class ShopItemService {
             shopItem.setAmount(shopItem.getAmount() + shopItemDTO.amount());
         } else {
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new UserNotFoundException("User doesn't exists"));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exists"));
 
             Product product = productRepository.findById(shopItemDTO.productId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No products found with this id"));

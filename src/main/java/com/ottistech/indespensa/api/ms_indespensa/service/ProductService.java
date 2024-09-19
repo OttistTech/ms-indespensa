@@ -1,20 +1,16 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.client.ProductClientService;
-import com.ottistech.indespensa.api.ms_indespensa.client.ProductRequestClient;
-import com.ottistech.indespensa.api.ms_indespensa.dto.ProductResponseApiDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.ProductResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.exception.EanCodeNotFoundException;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreateProductDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductResponseApiDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
-import com.ottistech.indespensa.api.ms_indespensa.repository.BrandRepository;
-import com.ottistech.indespensa.api.ms_indespensa.repository.CategoryRepository;
-import com.ottistech.indespensa.api.ms_indespensa.repository.FoodRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.ProductRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigDecimal;
-import java.util.Map;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -22,96 +18,56 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final ProductRequestClient productRequestClient;
-    private FoodRepository foodRepository;
-    private CategoryRepository categoryRepository;
-    private BrandRepository brandRepository;
     private final ProductClientService productClientService;
+    private final FoodService foodService;
+    private final BrandService brandService;
+    private final CategoryService categoryService;
 
     public ProductResponseDTO getProductByBarcode(String barcode) {
-        Optional<Product> productOptional = productRepository.findByEanCodeNotNull(barcode);
+        return productRepository.findByEanCodeNotNull(barcode)
+                .map(ProductResponseDTO::fromProduct)
+                .orElseGet(() -> getProductFromApi(barcode));
+    }
 
-        if (productOptional.isPresent()) {
-            Product product = productOptional.get();
-
-            return new ProductResponseDTO(
-                    product.getEanCode(),
-                    product.getName(),
-                    product.getImageUrl(),
-                    product.getFoodId().getFoodName(),
-                    product.getCategoryId().getCategoryName(),
-                    product.getDescription(),
-                    product.getBrandId().getBrandName(),
-                    product.getAmount(),
-                    product.getUnit(),
-                    product.getType()
-            );
-        }
-
+    private ProductResponseDTO getProductFromApi(String barcode) {
         ProductResponseApiDTO productResponseApiDTO = productClientService.fetchProductByBarcode(barcode);
 
         if (productResponseApiDTO.success()) {
-                return convertApiResponseToProductDTO(productResponseApiDTO);
+            return ProductResponseDTO.convertApiResponseToProductDTO(productResponseApiDTO);
         } else {
-                throw new EanCodeNotFoundException("We were unable to find any products with this barcode");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "We were unable to find any products with this barcode");
+        }
+    }
+
+    public Product getOrCreateProduct(CreateProductDTO createProductDTO) {
+        Optional<Product> existingProductByEanCode = productRepository.findByEanCodeNotNull(createProductDTO.productEanCode());
+
+        if (existingProductByEanCode.isPresent()) {
+            return existingProductByEanCode.get();
         }
 
+        Optional<Product> existingProductByName = productRepository.findByNameNotNull(createProductDTO.productName());
+
+        return existingProductByName.orElseGet(() -> createNewProduct(createProductDTO));
     }
 
-    public ProductResponseDTO convertApiResponseToProductDTO(ProductResponseApiDTO apiResponse) {
-        BigDecimal amount = apiResponse.metadata() != null ? parseAmount(apiResponse.metadata()) : null;
-        String unit = apiResponse.metadata() != null ? parseUnit(apiResponse.metadata()) : null;
+    private Product createNewProduct(CreateProductDTO createProductDTO) {
+        Product product = new Product();
 
-        return new ProductResponseDTO(
-                apiResponse.barcode() == null || apiResponse.barcode().isEmpty() ? null : apiResponse.barcode(),
-                apiResponse.title() == null || apiResponse.title().isEmpty() ? null : apiResponse.title(),
-                null,
-                apiResponse.alias() == null || apiResponse.alias().isEmpty() ? null : apiResponse.alias(),
-                apiResponse.category() == null || apiResponse.category().isEmpty() ? null : apiResponse.category(),
-                apiResponse.description() == null || apiResponse.description().isEmpty() ? null : apiResponse.description(),
-                apiResponse.brand() == null || apiResponse.barcode().isEmpty() ? null : apiResponse.brand(),
-                amount,
-                unit,
-                null
-        );
+        product.setEanCode(createProductDTO.productEanCode());
+        product.setName(createProductDTO.productName());
+        product.setImageUrl(createProductDTO.productImageUrl());
+        product.setDescription(createProductDTO.productDescription());
+        product.setAmount(createProductDTO.productAmount());
+        product.setUnit(createProductDTO.productUnit());
+        product.setType(createProductDTO.type());
+
+        product.setFoodId(foodService.getOrCreateFood(createProductDTO.foodName()));
+        product.setBrandId(brandService.getOrCreateBrand(createProductDTO.brandName()));
+        product.setCategoryId(categoryService.getOrCreateCategory(createProductDTO.categoryName()));
+
+        productRepository.save(product);
+
+        return product;
     }
-
-    private BigDecimal parseAmount(Map<String, String> metadata) {
-        String quantity = metadata.get("quantity");
-
-        if (quantity != null && !quantity.isEmpty()) {
-            String[] quantityParts = quantity.split(", ");
-
-            if (quantityParts.length > 0) {
-                String[] amountAndUnit = quantityParts[0].split(" ");
-                if (amountAndUnit.length >= 1) {
-                    try {
-                        return new BigDecimal(amountAndUnit[0]);
-                    } catch (NumberFormatException e) {
-                        System.out.println("Erro ao converter quantidade: " + e.getMessage());
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private String parseUnit(Map<String, String> metadata) {
-        String quantity = metadata.get("quantity");
-
-        if (quantity != null && !quantity.isEmpty()) {
-            String[] quantityParts = quantity.split(", ");
-
-            if (quantityParts.length > 0) {
-                String[] amountAndUnit = quantityParts[0].split(" ");
-                if (amountAndUnit.length == 2) {
-                    return amountAndUnit[1];
-                }
-            }
-        }
-
-        return null;
-    }
-
 }
