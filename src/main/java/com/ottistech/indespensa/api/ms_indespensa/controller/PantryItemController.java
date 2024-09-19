@@ -3,7 +3,7 @@ package com.ottistech.indespensa.api.ms_indespensa.controller;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreatePantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemSimplifiedResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartialDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdatePantryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
 import com.ottistech.indespensa.api.ms_indespensa.service.PantryItemService;
@@ -39,7 +39,7 @@ public class PantryItemController {
     }
 
     @PatchMapping("/update-items-amount")
-    public ResponseEntity<List<PantryItem>> updatePantryItemsAmount(@RequestBody @Valid List<UpdatePantryItemDTO> pantryItems) {
+    public ResponseEntity<List<PantryItem>> updatePantryItemsAmount(@RequestBody @Valid List<UpdateProductItemAmountDTO> pantryItems) {
 
         List<PantryItem> updatedItems = pantryItemService.updatePantryItemsAmount(pantryItems);
 
