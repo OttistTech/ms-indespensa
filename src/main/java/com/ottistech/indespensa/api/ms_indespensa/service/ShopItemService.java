@@ -1,11 +1,8 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.exception.ShopItemNotFoundException;
-import com.ottistech.indespensa.api.ms_indespensa.exception.UserNotFoundException;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
@@ -15,6 +12,7 @@ import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -60,7 +58,7 @@ public class ShopItemService {
 
     public ShopItemDetailsDTO getShopItemDetails(Long shopItemId) {
         return shopItemRepository.findShopItemDetailsById(shopItemId)
-                .orElseThrow(() -> new ShopItemNotFoundException("No shop item matching the given id"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No shop item matching the given id"));
     }
 
 }

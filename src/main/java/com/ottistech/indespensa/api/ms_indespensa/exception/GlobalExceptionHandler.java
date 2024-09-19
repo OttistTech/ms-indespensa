@@ -77,13 +77,4 @@ public class GlobalExceptionHandler {
 
         return problemDetail;
     }
-
-    @ExceptionHandler(ShopItemNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ProblemDetail handleShopItemNotFoundException(ShopItemNotFoundException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
-        problemDetail.setTitle("Shop item not found");
-
-        return problemDetail;
-    }
 }

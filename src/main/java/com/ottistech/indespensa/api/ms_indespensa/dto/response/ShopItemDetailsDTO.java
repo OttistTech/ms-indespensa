@@ -1,7 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.dto.response;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 public record ShopItemDetailsDTO(
         Long itemId,
