@@ -1,6 +1,8 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.ShopItemService;
 import jakarta.validation.Valid;
@@ -13,7 +15,7 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/v1/shopping-item")
+@RequestMapping("/api/v1/shop-list")
 public class ShopItemController {
 
     private final ShopItemService shopItemService;
@@ -33,6 +35,13 @@ public class ShopItemController {
         ShopItemResponseDTO itemResponseDTO = shopItemService.addShopItem(userId, shopItemDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(itemResponseDTO);
+    }
 
+    @GetMapping("/{shop_item_id}/details")
+    public ResponseEntity<ShopItemDetailsDTO> getShopItem(@PathVariable("shop_item_id") Long shopItemId) {
+
+        ShopItemDetailsDTO shopItem = shopItemService.getShopItemDetails(shopItemId);
+
+        return ResponseEntity.ok(shopItem);
     }
 }

@@ -1,5 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.repository;
 
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -37,5 +38,28 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
       AND si.purchaseDate IS NULL
       """)
     Optional<ShopItem> findByUserAndProductWithNullPurchaseDate(Long userId, Long productId);
+
+    @Query("""
+            SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO(
+                si.listItemId,
+                si.user.userId,
+                si.product.productId,
+                si.product.imageUrl,
+                si.product.foodId.foodName,
+                si.product.name,
+                si.product.brandId.brandName,
+                si.product.description,
+                si.product.amount,
+                si.product.unit,
+                si.amount
+            ) FROM ShopItem si
+            JOIN si.product p
+            JOIN si.user u
+            JOIN p.foodId f
+            JOIN p.brandId b
+            WHERE si.listItemId = :shopItemId
+            AND si.purchaseDate IS NULL
+            """)
+    Optional<ShopItemDetailsDTO> findShopItemDetailsById(Long shopItemId);
 
 }

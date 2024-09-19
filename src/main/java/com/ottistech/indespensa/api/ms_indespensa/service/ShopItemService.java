@@ -1,7 +1,11 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.exception.PantryItemNotFoundException;
+import com.ottistech.indespensa.api.ms_indespensa.exception.ShopItemNotFoundException;
 import com.ottistech.indespensa.api.ms_indespensa.exception.UserNotFoundException;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
@@ -53,6 +57,11 @@ public class ShopItemService {
         shopItemRepository.save(shopItem);
 
         return shopItemDTO.toShopItemResponseDto(shopItem);
+    }
+
+    public ShopItemDetailsDTO getShopItemDetails(Long shopItemId) {
+        return shopItemRepository.findShopItemDetailsById(shopItemId)
+                .orElseThrow(() -> new ShopItemNotFoundException("No shop item matching the given id"));
     }
 
 }
