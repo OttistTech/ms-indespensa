@@ -1,9 +1,12 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
+import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import com.ottistech.indespensa.api.ms_indespensa.service.ShopItemService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -43,5 +46,13 @@ public class ShopItemController {
         ShopItemDetailsDTO shopItem = shopItemService.getShopItemDetails(shopItemId);
 
         return ResponseEntity.ok(shopItem);
+    }
+
+    @PatchMapping("/update-items-amount")
+    public ResponseEntity<List<ShopItem>> updateShopItemsAmount(@RequestBody @Valid List<UpdateProductItemAmountDTO> shopItems) {
+
+        List<ShopItem> updatedItems = shopItemService.updateShopItemsAmount(shopItems);
+
+        return ResponseEntity.ok(updatedItems);
     }
 }

@@ -1,7 +1,7 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreatePantryItemDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdatePantryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartialDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemSimplifiedResponseDTO;
@@ -67,14 +67,14 @@ public class PantryItemService {
         return userActivePantryItems;
     }
 
-    public List<PantryItem> updatePantryItemsAmount(List<UpdatePantryItemDTO> pantryItems) {
+    public List<PantryItem> updatePantryItemsAmount(List<UpdateProductItemAmountDTO> pantryItems) {
         List<PantryItem> updatedItems = new ArrayList<>();
 
-        for(UpdatePantryItemDTO itemUpdate : pantryItems) {
-            PantryItem item = pantryItemRepository.findById(itemUpdate.pantryItemId()).orElse(null);
+        for(UpdateProductItemAmountDTO itemUpdate : pantryItems) {
+            PantryItem item = pantryItemRepository.findById(itemUpdate.itemId()).orElse(null);
 
             if(item != null) {
-                item.setAmount(itemUpdate.pantryAmount());
+                item.setAmount(itemUpdate.amount());
 
                 if(item.getAmount() == 0) {
                     item.setIsActive(false);
