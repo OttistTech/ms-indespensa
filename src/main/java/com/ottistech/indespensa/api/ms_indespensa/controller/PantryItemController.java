@@ -53,4 +53,12 @@ public class PantryItemController {
 
         return ResponseEntity.ok(pantryItem);
     }
+
+    @PostMapping("/{user_id}/add-all")
+    public ResponseEntity<Void> addAllShopItemsToPantry(@PathVariable("user_id") Long userId) {
+
+        pantryItemService.addAllFromShopList(userId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

@@ -28,7 +28,7 @@ public class ShopItemService {
     private final ProductRepository productRepository;
 
     public List<ShopItemResponseDTO> getListItem(Long userId) {
-        List<ShopItemResponseDTO> listItemResponses = shopItemRepository.findAllByUser(userId);
+        List<ShopItemResponseDTO> listItemResponses = shopItemRepository.findAllShopItemResponseDTOByUser(userId);
 
         if (listItemResponses.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No items found or user doesnt exists");
 

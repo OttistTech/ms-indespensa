@@ -11,6 +11,8 @@ import java.util.Optional;
 
 public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
 
+    List<ShopItem> findAllByUserUserId(Long userId);
+
     @Query("""
        SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO(
             si.listItemId,
@@ -27,7 +29,7 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
        WHERE si.user.userId = :userId
        AND si.purchaseDate IS NULL
       \s""")
-    List<ShopItemResponseDTO> findAllByUser(Long userId);
+    List<ShopItemResponseDTO> findAllShopItemResponseDTOByUser(Long userId);
 
     @Query("""
       SELECT
@@ -61,5 +63,4 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
             AND si.purchaseDate IS NULL
             """)
     Optional<ShopItemDetailsDTO> findShopItemDetailsById(Long shopItemId);
-
 }

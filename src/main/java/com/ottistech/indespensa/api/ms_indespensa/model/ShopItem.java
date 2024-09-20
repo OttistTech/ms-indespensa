@@ -42,4 +42,11 @@ public class ShopItem {
         this.product = product;
         this.amount = amount;
     }
+
+    public PantryItem toPantryItem() {
+        return new PantryItem(
+            this.getUser(),
+            this.getProduct()
+        );
+    }
 }

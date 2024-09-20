@@ -42,4 +42,10 @@ public class PantryItem {
 
     @Column(name = "is_active")
     private Boolean isActive = Boolean.TRUE;
+
+
+    public PantryItem(User user, Product product) {
+        this.user = user;
+        this.product = product;
+    }
 }

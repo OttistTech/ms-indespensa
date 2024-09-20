@@ -7,8 +7,10 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartial
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemSimplifiedResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
+import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import com.ottistech.indespensa.api.ms_indespensa.repository.PantryItemRepository;
+import com.ottistech.indespensa.api.ms_indespensa.repository.ShopItemRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ import java.util.Optional;
 public class PantryItemService {
 
     private final PantryItemRepository pantryItemRepository;
+    private final ShopItemRepository shopItemRepository;
     private final UserRepository userRepository;
     private final ProductService productService;
 
@@ -92,5 +95,17 @@ public class PantryItemService {
     public PantryItemDetailsDTO getPantryItemDetails(Long pantryItemId) {
         return pantryItemRepository.findPantryItemDetailsById(pantryItemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No pantry item matching the given id"));
+    }
+
+    public void addAllFromShopList(Long userId) {
+        List<ShopItem> userShopItems = shopItemRepository.findAllByUserUserId(userId);
+        List<PantryItem> pantryItems = userShopItems.stream()
+                        .map(ShopItem::toPantryItem)
+                        .toList();
+        pantryItemRepository.saveAll(pantryItems);
+        for(ShopItem item : userShopItems) {
+            item.setPurchaseDate(LocalDate.now());
+        }
+        shopItemRepository.saveAll(userShopItems);
     }
 }
