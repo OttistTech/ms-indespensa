@@ -10,4 +10,5 @@ public record ShopItemResponseDTO(
         Integer amount,
         BigDecimal productAmount,
         String productUnit
-) {}
+) {
+}
