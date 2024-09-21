@@ -56,24 +56,4 @@ public class PantryItem {
         this.amount = amount;
         this.validityDate = validityDate;
     }
-
-    public PantryItemResponseDTO toPantryItemResponseDto() {
-        return new PantryItemResponseDTO(
-            this.product.getEanCode(),
-            this.product.getName(),
-            this.product.getImageUrl(),
-            this.product.getFoodId().getFoodName(),
-            this.product.getCategoryId().getCategoryName(),
-            this.product.getDescription(),
-            this.product.getBrandId().getBrandName(),
-            this.product.getAmount(),
-            this.product.getUnit(),
-            this.product.getType(),
-            this.user.getUserId(),
-            this.amount,
-            this.validityDate,
-            this.purchaseDate,
-            this.isActive
-        );
-    }
 }

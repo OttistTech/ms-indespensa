@@ -108,9 +108,9 @@ public class PantryItemService {
                         .map(ShopItem::toPantryItem)
                         .toList();
         pantryItemRepository.saveAll(pantryItems);
-        for(ShopItem item : userShopItems) {
-            item.setPurchaseDate(LocalDate.now());
-        }
+        userShopItems.stream()
+                .forEach(item -> item.setPurchaseDate(LocalDate.now()));
+
         shopItemRepository.saveAll(userShopItems);
     }
 
@@ -146,6 +146,6 @@ public class PantryItemService {
         pantryItemRepository.save(pantryItem);
         shopItemRepository.save(shopItem);
 
-        return pantryItem.toPantryItemResponseDto();
+        return PantryItemResponseDTO.fromPantryItem(pantryItem);
     }
 }
