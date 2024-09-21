@@ -1,5 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.model;
 
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemResponseDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -42,4 +43,17 @@ public class PantryItem {
 
     @Column(name = "is_active")
     private Boolean isActive = Boolean.TRUE;
+
+
+    public PantryItem(User user, Product product) {
+        this.user = user;
+        this.product = product;
+    }
+
+    public PantryItem(User user, Product product, Integer amount, LocalDate validityDate) {
+        this.user = user;
+        this.product = product;
+        this.amount = amount;
+        this.validityDate = validityDate;
+    }
 }

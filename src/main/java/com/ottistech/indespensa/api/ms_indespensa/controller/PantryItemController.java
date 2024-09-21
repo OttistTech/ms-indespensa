@@ -1,7 +1,8 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddPantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreatePantryItemDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemSimplifiedResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartialDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
@@ -25,7 +26,7 @@ public class PantryItemController {
     @PostMapping("/{user_id}/create")
     public ResponseEntity<?> createPantryItem(@PathVariable("user_id") Long userId, @RequestBody @Valid CreatePantryItemDTO pantryItem) {
 
-        PantryItemSimplifiedResponseDTO pantryItemSimplifiedResponseDTO = pantryItemService.createPantryItem(userId, pantryItem);
+        PantryItemResponseDTO pantryItemSimplifiedResponseDTO = pantryItemService.createPantryItem(userId, pantryItem);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(pantryItemSimplifiedResponseDTO);
     }
@@ -52,5 +53,22 @@ public class PantryItemController {
         PantryItemDetailsDTO pantryItem = pantryItemService.getPantryItemDetails(pantryItemId);
 
         return ResponseEntity.ok(pantryItem);
+    }
+
+    @PostMapping("/{user_id}/add-all")
+    public ResponseEntity<Void> addAllShopItemsToPantry(@PathVariable("user_id") Long userId) {
+
+        pantryItemService.addAllFromShopList(userId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/{user_id}/add")
+    public ResponseEntity<PantryItemResponseDTO> addPantryItem(@PathVariable("user_id") Long userId,
+                                                               @Valid @RequestBody AddPantryItemDTO pantryItemDTO) {
+
+        PantryItemResponseDTO itemResponseDTO = pantryItemService.addPantryItem(userId, pantryItemDTO);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(itemResponseDTO);
     }
 }

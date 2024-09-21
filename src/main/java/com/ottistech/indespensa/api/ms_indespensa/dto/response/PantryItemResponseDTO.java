@@ -5,7 +5,7 @@ import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public record PantryItemSimplifiedResponseDTO(
+public record PantryItemResponseDTO(
         String productEanCode,
         String productName,
         String productImageUrl,
@@ -23,8 +23,8 @@ public record PantryItemSimplifiedResponseDTO(
         Boolean pantryItemIsActive
 ) {
 
-    public static PantryItemSimplifiedResponseDTO fromPantryItem(PantryItem pantryItem) {
-        return new PantryItemSimplifiedResponseDTO(
+    public static PantryItemResponseDTO fromPantryItem(PantryItem pantryItem) {
+        return new PantryItemResponseDTO(
                 pantryItem.getProduct().getEanCode(),
                 pantryItem.getProduct().getName(),
                 pantryItem.getProduct().getImageUrl(),
