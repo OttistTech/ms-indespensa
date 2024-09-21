@@ -1,5 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.model;
 
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemResponseDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -47,5 +48,32 @@ public class PantryItem {
     public PantryItem(User user, Product product) {
         this.user = user;
         this.product = product;
+    }
+
+    public PantryItem(User user, Product product, Integer amount, LocalDate validityDate) {
+        this.user = user;
+        this.product = product;
+        this.amount = amount;
+        this.validityDate = validityDate;
+    }
+
+    public PantryItemResponseDTO toPantryItemResponseDto() {
+        return new PantryItemResponseDTO(
+            this.product.getEanCode(),
+            this.product.getName(),
+            this.product.getImageUrl(),
+            this.product.getFoodId().getFoodName(),
+            this.product.getCategoryId().getCategoryName(),
+            this.product.getDescription(),
+            this.product.getBrandId().getBrandName(),
+            this.product.getAmount(),
+            this.product.getUnit(),
+            this.product.getType(),
+            this.user.getUserId(),
+            this.amount,
+            this.validityDate,
+            this.purchaseDate,
+            this.isActive
+        );
     }
 }

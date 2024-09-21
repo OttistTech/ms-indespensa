@@ -66,4 +66,13 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
         """)
     Optional<PantryItem> findExistentPantryItem(User user, Product product, LocalDate validityDate);
 
+    @Query("""
+        SELECT pi
+        FROM PantryItem pi
+        WHERE pi.user.userId = :userId
+        AND pi.product.productId = :productId
+        AND pi.validityDate = :validityDate
+        AND pi.isActive = true
+        """)
+    Optional<PantryItem> findByUserIdAndProductIdAndValidityDateWhereIsActive(Long userId, Long productId, LocalDate validityDate);
 }

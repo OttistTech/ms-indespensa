@@ -1,25 +1,29 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddPantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreatePantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartialDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemSimplifiedResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import com.ottistech.indespensa.api.ms_indespensa.repository.PantryItemRepository;
+import com.ottistech.indespensa.api.ms_indespensa.repository.ProductRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.ShopItemRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -28,10 +32,11 @@ public class PantryItemService {
 
     private final PantryItemRepository pantryItemRepository;
     private final ShopItemRepository shopItemRepository;
+    private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final ProductService productService;
 
-    public PantryItemSimplifiedResponseDTO createPantryItem(Long userId, CreatePantryItemDTO pantryItemDTO) {
+    public PantryItemResponseDTO createPantryItem(Long userId, CreatePantryItemDTO pantryItemDTO) {
         Product product = productService.getOrCreateProduct(pantryItemDTO.toProductDto());
 
         User user = userRepository.findById(userId)
@@ -55,7 +60,7 @@ public class PantryItemService {
 
         pantryItemRepository.save(pantryItem);
 
-        return PantryItemSimplifiedResponseDTO.fromPantryItem(pantryItem);
+        return PantryItemResponseDTO.fromPantryItem(pantryItem);
     }
 
     public List<PantryItemPartialDTO> listPantryItems(Long userId) {
@@ -107,5 +112,40 @@ public class PantryItemService {
             item.setPurchaseDate(LocalDate.now());
         }
         shopItemRepository.saveAll(userShopItems);
+    }
+
+    @Transactional
+    public PantryItemResponseDTO addPantryItem(Long userId, AddPantryItemDTO pantryItemDTO) {
+        ShopItem shopItem = shopItemRepository.findById(pantryItemDTO.shopItemId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Shop list item not found"));
+
+        if(!Objects.equals(shopItem.getUser().getUserId(), userId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Provided user id does not match shop list item user id");
+        }
+
+        PantryItem pantryItem = pantryItemRepository
+            .findByUserIdAndProductIdAndValidityDateWhereIsActive(
+                shopItem.getUser().getUserId(),
+                shopItem.getProduct().getProductId(),
+                pantryItemDTO.validityDate()
+            )
+            .orElse(null);
+
+        if (pantryItem != null) {
+            pantryItem.setAmount(pantryItem.getAmount() + shopItem.getAmount());
+        } else {
+            pantryItem = pantryItemDTO.toPantryItem(
+                    shopItem.getUser(),
+                    shopItem.getProduct(),
+                    shopItem.getAmount(),
+                    pantryItemDTO.validityDate()
+            );
+            shopItem.setPurchaseDate(LocalDate.now());
+        }
+
+        pantryItemRepository.save(pantryItem);
+        shopItemRepository.save(shopItem);
+
+        return pantryItem.toPantryItemResponseDto();
     }
 }
