@@ -4,6 +4,7 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopPurchaseHistoryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
@@ -79,4 +80,14 @@ public class ShopItemService {
         return updatedItems;
     }
 
+    public List<ShopPurchaseHistoryItemDTO> getPurchaseHistoryItems(Long userId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exists"));
+
+        List<ShopPurchaseHistoryItemDTO> shopPurchaseHistoryItems = shopItemRepository.findAllPurchaseHistoryItemsByUserId(userId);
+
+        if (shopPurchaseHistoryItems.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No purchase history items found");
+
+        return shopPurchaseHistoryItems;
+    }
 }

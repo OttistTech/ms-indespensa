@@ -2,10 +2,9 @@ package com.ottistech.indespensa.api.ms_indespensa.controller;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopPurchaseHistoryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import com.ottistech.indespensa.api.ms_indespensa.service.ShopItemService;
 import jakarta.validation.Valid;
@@ -54,5 +53,20 @@ public class ShopItemController {
         List<ShopItem> updatedItems = shopItemService.updateShopItemsAmount(shopItems);
 
         return ResponseEntity.ok(updatedItems);
+    }
+
+    @GetMapping("/{user_id}/list-history")
+    public ResponseEntity<List<ShopPurchaseHistoryItemDTO>> getPurchaseHistoryInfo(
+            @PathVariable("user_id") Long userId,
+            @RequestParam("history") boolean history
+    ) {
+
+        if (history) {
+            List<ShopPurchaseHistoryItemDTO> historyItems = shopItemService.getPurchaseHistoryItems(userId);
+            return ResponseEntity.ok(historyItems);
+        }
+
+        // TODO: what return when ?history=false (??)
+        return ResponseEntity.ok(null);
     }
 }
