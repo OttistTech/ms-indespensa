@@ -1,11 +1,11 @@
 package com.ottistech.indespensa.api.ms_indespensa.dto.response;
 
 import java.time.LocalDate;
+import java.util.List;
 
-public record ShopPurchaseHistoryItemDTO(
+public record
+ShopPurchaseHistoryItemDTO(
         LocalDate purchaseDate,
-        String imageUrl,
-        String productName,
-        Integer amount
+        List<ShopPurchaseHistoryDataDTO> historyDataItems
 ) {
 }
