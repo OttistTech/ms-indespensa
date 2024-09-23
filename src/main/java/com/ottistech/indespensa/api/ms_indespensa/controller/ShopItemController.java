@@ -55,18 +55,12 @@ public class ShopItemController {
         return ResponseEntity.ok(updatedItems);
     }
 
-    @GetMapping("/{user_id}/list-history")
+    @GetMapping("/{user_id}/list/history")
     public ResponseEntity<List<ShopPurchaseHistoryItemDTO>> getPurchaseHistoryInfo(
-            @PathVariable("user_id") Long userId,
-            @RequestParam("history") boolean history
+            @PathVariable("user_id") Long userId
     ) {
 
-        if (history) {
-            List<ShopPurchaseHistoryItemDTO> historyItems = shopItemService.getPurchaseHistoryItems(userId);
-            return ResponseEntity.ok(historyItems);
-        }
-
-        // TODO: what return when ?history=false (??)
-        return ResponseEntity.ok(null);
+        List<ShopPurchaseHistoryItemDTO> historyItems = shopItemService.getPurchaseHistoryItems(userId);
+        return ResponseEntity.ok(historyItems);
     }
 }
