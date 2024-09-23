@@ -1,5 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.repository;
 
+import com.ottistech.indespensa.api.ms_indespensa.dto.query.ShopPurchaseHistoryDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
@@ -64,4 +65,20 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
             AND si.purchaseDate IS NULL
             """)
     Optional<ShopItemDetailsDTO> findShopItemDetailsById(Long shopItemId);
+
+    @Query("""
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.query.ShopPurchaseHistoryDTO(
+        si.purchaseDate,
+        p.productId,
+        p.name,
+        p.imageUrl,
+        SUM(si.amount)
+    ) FROM ShopItem si
+    JOIN si.product p
+    WHERE si.user.userId = :userId
+    AND si.purchaseDate IS NOT NULL
+    GROUP BY 1, 2, 3, 4
+    """)
+    List<ShopPurchaseHistoryDTO> findAllPurchaseHistoryItemsByUserId(Long userId);
+
 }

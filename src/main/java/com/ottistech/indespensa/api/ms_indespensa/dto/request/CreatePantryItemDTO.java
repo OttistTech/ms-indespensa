@@ -36,5 +36,10 @@ public record CreatePantryItemDTO(
         );
     }
 
-
+    public AddShopItemDTO toAddShopItemDTO(Long productId) {
+        return new AddShopItemDTO(
+                productId,
+                this.pantryAmount
+        );
+    }
 }

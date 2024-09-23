@@ -1,6 +1,7 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddPantryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreatePantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
@@ -58,6 +59,9 @@ public class PantryItemService {
             pantryItem.setPurchaseDate(LocalDate.now());
         }
 
+        AddShopItemDTO addShopItemDTO = pantryItemDTO.toAddShopItemDTO(pantryItem.getProduct().getProductId());
+        shopItemRepository.save(addShopItemDTO.toShopItem(user, product, addShopItemDTO, LocalDate.now()));
+
         pantryItemRepository.save(pantryItem);
 
         return PantryItemResponseDTO.fromPantryItem(pantryItem);
@@ -108,8 +112,7 @@ public class PantryItemService {
                         .map(ShopItem::toPantryItem)
                         .toList();
         pantryItemRepository.saveAll(pantryItems);
-        userShopItems.stream()
-                .forEach(item -> item.setPurchaseDate(LocalDate.now()));
+        userShopItems.forEach(item -> item.setPurchaseDate(LocalDate.now()));
 
         shopItemRepository.saveAll(userShopItems);
     }
