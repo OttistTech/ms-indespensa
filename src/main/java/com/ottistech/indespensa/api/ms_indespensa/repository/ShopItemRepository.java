@@ -68,6 +68,7 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
     @Query("""
     SELECT
         si.purchaseDate,
+        p.productId,
         p.name,
         p.imageUrl,
         SUM(si.amount) AS amount
@@ -75,7 +76,7 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
     JOIN si.product p
     WHERE si.user.userId = :userId
     AND si.purchaseDate IS NOT NULL
-    GROUP BY 1, 2, 3
+    GROUP BY 1, 2, 3, 4
     """)
     List<Object[]> findAllPurchaseHistoryItemsByUserId(Long userId);
 

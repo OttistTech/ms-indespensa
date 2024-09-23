@@ -95,14 +95,19 @@ public class ShopItemService {
                         .collect(Collectors.groupingBy(
                                 result -> (LocalDate) result[0],
                                 Collectors.mapping(result -> new ShopPurchaseHistoryDataDTO(
-                                        (String) result[1],
+                                        (Long) result[1],
                                         (String) result[2],
-                                        (Long) result[3]
+                                        (String) result[3],
+                                        (Long) result[4]
                                 ), Collectors.toList())
                         ));
 
         return historyMap.entrySet().stream()
-                .map(entry -> new ShopPurchaseHistoryItemDTO(entry.getKey(), entry.getValue()))
+                .map(entry -> new ShopPurchaseHistoryItemDTO(
+                        entry.getKey(),
+                        entry.getValue().size(),
+                        entry.getValue())
+                )
                 .collect(Collectors.toList());
     }
 }

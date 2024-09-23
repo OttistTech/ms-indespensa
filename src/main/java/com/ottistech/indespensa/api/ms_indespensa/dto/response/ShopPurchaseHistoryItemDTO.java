@@ -6,6 +6,7 @@ import java.util.List;
 public record
 ShopPurchaseHistoryItemDTO(
         LocalDate purchaseDate,
+        Integer dailyAmount,
         List<ShopPurchaseHistoryDataDTO> historyDataItems
 ) {
 }

@@ -43,6 +43,13 @@ public class ShopItem {
         this.amount = amount;
     }
 
+    public ShopItem(User user, Product product, Integer amount, LocalDate purchaseDate) {
+        this.user = user;
+        this.product = product;
+        this.amount = amount;
+        this.purchaseDate = purchaseDate;
+    }
+
     public PantryItem toPantryItem() {
         return new PantryItem(
             this.getUser(),
