@@ -4,6 +4,7 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopPurchaseHistoryDataDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopPurchaseHistoryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
@@ -17,8 +18,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -84,10 +86,23 @@ public class ShopItemService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exists"));
 
-        List<ShopPurchaseHistoryItemDTO> shopPurchaseHistoryItems = shopItemRepository.findAllPurchaseHistoryItemsByUserId(userId);
+        List<Object[]> results = shopItemRepository.findAllPurchaseHistoryItemsByUserId(userId);
 
-        if (shopPurchaseHistoryItems.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No purchase history items found");
+        if (results.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No purchase history items found");
 
-        return shopPurchaseHistoryItems;
+        Map<LocalDate, List<ShopPurchaseHistoryDataDTO>> historyMap =
+                results.stream()
+                        .collect(Collectors.groupingBy(
+                                result -> (LocalDate) result[0],
+                                Collectors.mapping(result -> new ShopPurchaseHistoryDataDTO(
+                                        (String) result[1],
+                                        (String) result[2],
+                                        (Long) result[3]
+                                ), Collectors.toList())
+                        ));
+
+        return historyMap.entrySet().stream()
+                .map(entry -> new ShopPurchaseHistoryItemDTO(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
     }
 }
