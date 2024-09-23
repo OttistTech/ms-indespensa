@@ -1,5 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
+import com.ottistech.indespensa.api.ms_indespensa.dto.query.ShopPurchaseHistoryDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
@@ -86,19 +87,19 @@ public class ShopItemService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exists"));
 
-        List<Object[]> results = shopItemRepository.findAllPurchaseHistoryItemsByUserId(userId);
+        List<ShopPurchaseHistoryDTO> allPurchaseHistoryItems = shopItemRepository.findAllPurchaseHistoryItemsByUserId(userId);
 
-        if (results.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No purchase history items found");
+        if (allPurchaseHistoryItems.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No purchase history items found");
 
         Map<LocalDate, List<ShopPurchaseHistoryDataDTO>> historyMap =
-                results.stream()
+                allPurchaseHistoryItems.stream()
                         .collect(Collectors.groupingBy(
-                                result -> (LocalDate) result[0],
+                                ShopPurchaseHistoryDTO::purchaseDate,
                                 Collectors.mapping(result -> new ShopPurchaseHistoryDataDTO(
-                                        (Long) result[1],
-                                        (String) result[2],
-                                        (String) result[3],
-                                        (Long) result[4]
+                                        result.productId(),
+                                        result.name(),
+                                        result.imageUrl(),
+                                        result.amount()
                                 ), Collectors.toList())
                         ));
 
