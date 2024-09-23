@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -69,5 +70,17 @@ public class ProductService {
         productRepository.save(product);
 
         return product;
+    }
+
+    public List<ProductResponseDTO> findProductsByNamePattern(String pattern) {
+        List<Product> productsFound = productRepository.findAllByNameStartingWithIgnoreCase(pattern);
+
+        if(productsFound.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No products matching name pattern");
+        }
+
+        return productsFound.stream()
+                .map(ProductResponseDTO::fromProduct)
+                .toList();
     }
 }

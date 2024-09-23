@@ -5,10 +5,9 @@ import com.ottistech.indespensa.api.ms_indespensa.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -22,5 +21,12 @@ public class ProductController {
         ProductResponseDTO productResponseDTO = productService.getProductByBarcode(barcode);
 
         return ResponseEntity.status(HttpStatus.OK).body(productResponseDTO);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductResponseDTO>> searchProductByName(@RequestParam("pattern") String pattern) {
+        List<ProductResponseDTO> productsFound = productService.findProductsByNamePattern(pattern);
+
+        return ResponseEntity.status(HttpStatus.OK).body(productsFound);
     }
 }
