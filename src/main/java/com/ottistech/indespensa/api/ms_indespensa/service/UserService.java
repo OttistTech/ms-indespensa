@@ -150,4 +150,17 @@ public class UserService {
 
         return UserCredentialsResponseDTO.fromUser(user);
     }
+
+    public void updateUserBecomePremium(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist")
+        );
+
+        if (user.getIsPremium()) {
+            throw new UserAlreadyIsPremiumException("User already deactivated");
+        }
+
+        user.setIsPremium(true);
+        userRepository.save(user);
+    }
 }

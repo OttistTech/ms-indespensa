@@ -77,11 +77,19 @@ public class UserController {
 
     @PutMapping("/update/{id}")
     public ResponseEntity<?> updateUser(@PathVariable("id") Long userId,
-                                               @RequestBody @Valid UpdateUserDTO userDTO) {
+                                        @RequestBody @Valid UpdateUserDTO userDTO) {
 
         UserCredentialsResponseDTO userCredentials = userService.updateUser(userId, userDTO);
 
         return ResponseEntity.status(HttpStatus.OK).body(userCredentials);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> updateUserBecomePremium(@PathVariable("id") Long userId) {
+
+        userService.updateUserBecomePremium(userId);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }
