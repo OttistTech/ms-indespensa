@@ -108,9 +108,11 @@ public class PantryItemService {
 
     public void addAllFromShopList(Long userId) {
         List<ShopItem> userShopItems = shopItemRepository.findAllByUserUserId(userId);
+        // VERIFICAR SE EXISTE, E SE EXISTE, ATUALIZAR
         List<PantryItem> pantryItems = userShopItems.stream()
                         .map(ShopItem::toPantryItem)
                         .toList();
+
         pantryItemRepository.saveAll(pantryItems);
         userShopItems.forEach(item -> item.setPurchaseDate(LocalDate.now()));
 
@@ -143,8 +145,9 @@ public class PantryItemService {
                     shopItem.getAmount(),
                     pantryItemDTO.validityDate()
             );
-            shopItem.setPurchaseDate(LocalDate.now());
         }
+
+        shopItem.setPurchaseDate(LocalDate.now());
 
         pantryItemRepository.save(pantryItem);
         shopItemRepository.save(shopItem);
