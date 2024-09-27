@@ -157,7 +157,7 @@ public class UserService {
         );
 
         if (user.getIsPremium()) {
-            throw new UserAlreadyIsPremiumException("User already deactivated");
+            throw new UserAlreadyIsPremiumException("User already is premium");
         }
 
         user.setIsPremium(true);
