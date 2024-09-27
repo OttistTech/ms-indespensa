@@ -107,8 +107,14 @@ public class PantryItemService {
     }
 
     public void addAllFromShopList(Long userId) {
+        // Pego todos os ShopItems
         List<ShopItem> userShopItems = shopItemRepository.findAllByUserUserId(userId);
-        // VERIFICAR SE EXISTE, E SE EXISTE, ATUALIZAR
+
+        // Pego todos os PantryItems
+
+        // Faço uma lógica para agrupar por
+        // VERIFICAR SE EXISTE, E SE EXISTIR, ATUALIZAR
+
         List<PantryItem> pantryItems = userShopItems.stream()
                         .map(ShopItem::toPantryItem)
                         .toList();
