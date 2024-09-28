@@ -58,9 +58,6 @@ public class PantryItemService {
             pantryItem.setPurchaseDate(LocalDate.now());
         }
 
-        // quando o item é adicionado a despensa, precisamos guardar a data de compra dele, sendo assim, adicionamo-o
-        // a lista de compras com o purchaseDate como data atual
-        // aqui há um problema: nao verificamos se esse item está na lista de compras, devemos fazer isso
         AddShopItemDTO addShopItemDTO = pantryItemDTO.toAddShopItemDTO(pantryItem.getProduct().getProductId());
         shopItemRepository.save(addShopItemDTO.toShopItem(user, product, addShopItemDTO, LocalDate.now()));
 
