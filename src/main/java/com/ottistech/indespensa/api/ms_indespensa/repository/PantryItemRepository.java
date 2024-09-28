@@ -28,6 +28,7 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
             JOIN p.foodId f
             WHERE pi.user = :user
             AND pi.isActive = true
+            AND pi.amount > 0
             ORDER BY pi.validityDate
             """)
     List<PantryItemPartialDTO> findAllActiveItemsByUser(User user);
@@ -75,4 +76,6 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
         AND pi.isActive = true
         """)
     Optional<PantryItem> findByUserIdAndProductIdAndValidityDateWhereIsActive(Long userId, Long productId, LocalDate validityDate);
+
+    Optional<PantryItem> findByUserUserIdAndProductProductIdAndIsActiveAndValidityDateIsNull(Long userId, Long productId, boolean isActive);
 }

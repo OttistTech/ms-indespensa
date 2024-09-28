@@ -33,7 +33,6 @@ public class PantryItemService {
 
     private final PantryItemRepository pantryItemRepository;
     private final ShopItemRepository shopItemRepository;
-    private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final ProductService productService;
 
@@ -59,6 +58,9 @@ public class PantryItemService {
             pantryItem.setPurchaseDate(LocalDate.now());
         }
 
+        // quando o item é adicionado a despensa, precisamos guardar a data de compra dele, sendo assim, adicionamo-o
+        // a lista de compras com o purchaseDate como data atual
+        // aqui há um problema: nao verificamos se esse item está na lista de compras, devemos fazer isso
         AddShopItemDTO addShopItemDTO = pantryItemDTO.toAddShopItemDTO(pantryItem.getProduct().getProductId());
         shopItemRepository.save(addShopItemDTO.toShopItem(user, product, addShopItemDTO, LocalDate.now()));
 
@@ -107,20 +109,35 @@ public class PantryItemService {
     }
 
     public void addAllFromShopList(Long userId) {
-        // Pego todos os ShopItems
-        List<ShopItem> userShopItems = shopItemRepository.findAllByUserUserId(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists"));
 
-        // Pego todos os PantryItems
+        List<ShopItem> userShopItems = shopItemRepository.findAllByUserUserIdAndPurchaseDateIsNullAndAmountGreaterThan(userId, 0);
 
-        // Faço uma lógica para agrupar por
-        // VERIFICAR SE EXISTE, E SE EXISTIR, ATUALIZAR
+        if (userShopItems.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not have any shop items in his shopping list");
 
-        List<PantryItem> pantryItems = userShopItems.stream()
-                        .map(ShopItem::toPantryItem)
-                        .toList();
+        for (ShopItem shopItem : userShopItems) {
+            Optional<PantryItem> existingPantryItemOpt = pantryItemRepository.findByUserUserIdAndProductProductIdAndIsActiveAndValidityDateIsNull(
+                    userId, shopItem.getProduct().getProductId(), true
+            );
 
-        pantryItemRepository.saveAll(pantryItems);
-        userShopItems.forEach(item -> item.setPurchaseDate(LocalDate.now()));
+            if (existingPantryItemOpt.isPresent()) {
+                PantryItem existingPantryItem = existingPantryItemOpt.get();
+                existingPantryItem.setAmount(existingPantryItem.getAmount() + shopItem.getAmount());
+                pantryItemRepository.save(existingPantryItem);
+            } else {
+                PantryItem newPantryItem = new PantryItem();
+
+                newPantryItem.setUser(user);
+                newPantryItem.setProduct(shopItem.getProduct());
+                newPantryItem.setAmount(shopItem.getAmount());
+                newPantryItem.setIsActive(true);
+                pantryItemRepository.save(newPantryItem);
+            }
+
+            shopItem.setAmount(0);
+            shopItem.setPurchaseDate(LocalDate.now());
+
+        }
 
         shopItemRepository.saveAll(userShopItems);
     }
