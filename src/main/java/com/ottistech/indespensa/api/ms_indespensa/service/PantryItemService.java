@@ -52,6 +52,7 @@ public class PantryItemService {
             pantryItem.setProduct(product);
             pantryItem.setAmount(pantryItemDTO.pantryAmount());
             pantryItem.setValidityDate(pantryItemDTO.validityDate());
+            pantryItem.setIsActive(true);
         } else {
             pantryItem = pantryItemOptional.get();
             pantryItem.setAmount(pantryItem.getAmount() + pantryItemDTO.pantryAmount());
