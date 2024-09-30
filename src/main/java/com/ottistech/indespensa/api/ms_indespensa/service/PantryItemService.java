@@ -33,7 +33,6 @@ public class PantryItemService {
 
     private final PantryItemRepository pantryItemRepository;
     private final ShopItemRepository shopItemRepository;
-    private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final ProductService productService;
 
@@ -107,14 +106,35 @@ public class PantryItemService {
     }
 
     public void addAllFromShopList(Long userId) {
-        List<ShopItem> userShopItems = shopItemRepository.findAllByUserUserId(userId);
-        // VERIFICAR SE EXISTE, E SE EXISTE, ATUALIZAR
-        List<PantryItem> pantryItems = userShopItems.stream()
-                        .map(ShopItem::toPantryItem)
-                        .toList();
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
-        pantryItemRepository.saveAll(pantryItems);
-        userShopItems.forEach(item -> item.setPurchaseDate(LocalDate.now()));
+        List<ShopItem> userShopItems = shopItemRepository.findAllByUserUserIdAndPurchaseDateIsNullAndAmountGreaterThan(userId, 0);
+
+        if (userShopItems.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not have any shop items in his shopping list");
+
+        for (ShopItem shopItem : userShopItems) {
+            Optional<PantryItem> existingPantryItemOpt = pantryItemRepository.findByUserUserIdAndProductProductIdAndIsActiveAndValidityDateIsNull(
+                    userId, shopItem.getProduct().getProductId(), true
+            );
+
+            if (existingPantryItemOpt.isPresent()) {
+                PantryItem existingPantryItem = existingPantryItemOpt.get();
+                existingPantryItem.setAmount(existingPantryItem.getAmount() + shopItem.getAmount());
+                pantryItemRepository.save(existingPantryItem);
+            } else {
+                PantryItem newPantryItem = new PantryItem();
+
+                newPantryItem.setUser(user);
+                newPantryItem.setProduct(shopItem.getProduct());
+                newPantryItem.setAmount(shopItem.getAmount());
+                newPantryItem.setIsActive(true);
+                pantryItemRepository.save(newPantryItem);
+            }
+
+            shopItem.setAmount(0);
+            shopItem.setPurchaseDate(LocalDate.now());
+
+        }
 
         shopItemRepository.saveAll(userShopItems);
     }

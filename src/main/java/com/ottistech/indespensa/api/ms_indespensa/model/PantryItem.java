@@ -1,6 +1,5 @@
 package com.ottistech.indespensa.api.ms_indespensa.model;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemResponseDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -33,7 +32,7 @@ public class PantryItem {
 
     @NotNull(message = "Field amount is required")
     @Column(name = "amount", nullable = false)
-    private Integer amount = 1;
+    private Integer amount = 0;
 
     @Column(name = "validity_date")
     private LocalDate validityDate;
@@ -42,8 +41,7 @@ public class PantryItem {
     private LocalDate purchaseDate = LocalDate.now();
 
     @Column(name = "is_active")
-    private Boolean isActive = Boolean.TRUE;
-
+    private Boolean isActive = Boolean.FALSE;
 
     public PantryItem(User user, Product product) {
         this.user = user;
