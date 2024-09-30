@@ -1,0 +1,31 @@
+name: MsIndespensa Continuos Delivery - QA
+
+on:
+  push:
+    branches: [ "QA" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      #  Setting up JDK 17
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      #  Compiling project
+      - name: Build with Maven
+        run: mvn -B package -DskipTests --file pom.xml
+
+      # Deploying API on Render
+      - name: Render Deploy Action
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
