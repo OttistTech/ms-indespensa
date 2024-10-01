@@ -5,6 +5,7 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeFullInfoRes
 import com.ottistech.indespensa.api.ms_indespensa.service.RecipeService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +24,6 @@ public class RecipeController {
 
         RecipeFullInfoResponseDTO recipe = recipeService.createRecipe(recipeDTO);
 
-        return ResponseEntity.ok(recipe);
+        return ResponseEntity.status(HttpStatus.CREATED).body(recipe);
     }
 }
