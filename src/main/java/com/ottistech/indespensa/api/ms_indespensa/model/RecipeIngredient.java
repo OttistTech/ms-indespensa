@@ -37,4 +37,12 @@ public class RecipeIngredient {
 
     @Column(name = "is_essential")
     private Boolean isEssential;
+
+    public RecipeIngredient(Recipe recipe, Food ingredientFood, BigDecimal amount, String unit, Boolean isEssential) {
+        this.recipe = recipe;
+        this.ingredientFood = ingredientFood;
+        this.amount = amount;
+        this.unit = unit;
+        this.isEssential = isEssential;
+    }
 }
