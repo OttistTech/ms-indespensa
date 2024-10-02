@@ -2,6 +2,7 @@ package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreateRecipeDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeFullInfoResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.Food;
 import com.ottistech.indespensa.api.ms_indespensa.model.Recipe;
 import com.ottistech.indespensa.api.ms_indespensa.model.RecipeIngredient;
@@ -12,6 +13,8 @@ import com.ottistech.indespensa.api.ms_indespensa.repository.RecipeRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,15 +36,18 @@ public class RecipeService {
         User user = userRepository.findById(recipeDTO.createdBy())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
-        Recipe recipe = recipeRepository.save(new Recipe(
+        Recipe recipe = new Recipe(
                 user,
                 recipeDTO.title(),
                 recipeDTO.description(),
                 recipeDTO.level(),
                 recipeDTO.preparationTime(),
                 recipeDTO.preparationMethod(),
-                recipeDTO.isShared()
-        ));
+                recipeDTO.isShared(),
+                recipeDTO.imageUrl()
+        );
+
+        recipeRepository.save(recipe);
 
         List<RecipeIngredient> ingredients = recipeDTO.createRecipeIngredientList().stream()
                 .map(dto -> {
@@ -59,8 +65,16 @@ public class RecipeService {
                 .collect(Collectors.toList());
 
         ingredientRepository.saveAll(ingredients);
-        recipeRepository.save(recipe);
 
         return RecipeFullInfoResponseDTO.fromRecipeAndIngredients(user, recipe, ingredients);
+    }
+
+
+    public Page<RecipePartialResponseDTO> getPaginatedRecipes(Long userId, Pageable pageable) {
+        User user =
+        userRepository.findById(userId)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
+
+        return recipeRepository.findRecipesWithIngredientsInPantryAndRating(user, pageable);
     }
 }
