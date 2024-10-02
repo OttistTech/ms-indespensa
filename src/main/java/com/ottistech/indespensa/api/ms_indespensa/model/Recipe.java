@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -47,7 +50,13 @@ public class Recipe {
     @Column(name = "is_shared")
     private Boolean isShared;
 
-    public Recipe(User createdBy, String title, String description, String level, Integer preparationTime, String preparationMethod, Boolean isShared) {
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RecipeIngredient> ingredients = new ArrayList<>();
+
+    public Recipe(User createdBy, String title, String description, String level, Integer preparationTime, String preparationMethod, Boolean isShared, String imageUrl) {
         this.createdBy = createdBy;
         this.title = title;
         this.description = description;
@@ -55,6 +64,7 @@ public class Recipe {
         this.preparationTime = preparationTime;
         this.preparationMethod = preparationMethod;
         this.isShared = isShared;
+        this.imageUrl = imageUrl;
     }
 
 }
