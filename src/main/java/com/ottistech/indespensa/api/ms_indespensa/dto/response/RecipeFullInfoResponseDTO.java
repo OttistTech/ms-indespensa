@@ -16,6 +16,7 @@ public record RecipeFullInfoResponseDTO(
         Integer preparationTime,
         String preparationMethod,
         Boolean isShared,
+        String imageUrl,
         List<RecipeIngredientDetailsDTO> ingredients
 ) {
 
@@ -38,6 +39,7 @@ public record RecipeFullInfoResponseDTO(
                 recipe.getPreparationTime(),
                 recipe.getPreparationMethod(),
                 recipe.getIsShared(),
+                recipe.getImageUrl(),
                 ingredientDTOs
         );
     }

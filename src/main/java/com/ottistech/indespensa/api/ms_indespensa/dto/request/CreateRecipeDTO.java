@@ -13,6 +13,7 @@ public record CreateRecipeDTO(
         @NotNull(message = "Field preparationTime is required") Integer preparationTime,
         @NotNull(message = "Field preparationMethod is required") String preparationMethod,
         @NotNull(message = "Field isShared is required") Boolean isShared,
+        String imageUrl,
         @NotNull(message = "The recipe must have at least one ingredient") List<CreateRecipeIngredientDTO> createRecipeIngredientList
 
 ) {
