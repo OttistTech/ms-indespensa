@@ -1,6 +1,7 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreateRecipeDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeFullInfoResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.RecipeService;
@@ -39,5 +40,15 @@ public class RecipeController {
         Page<RecipePartialResponseDTO> recipePage = recipeService.getPaginatedRecipes(userId, pageable);
 
         return ResponseEntity.ok(recipePage);
+    }
+
+    @GetMapping("/{recipe_id}/details")
+    public ResponseEntity<RecipeDetailsDTO> getRecipe(
+            @PathVariable("recipe_id") Long recipeId,
+            @RequestParam Long userId) {
+
+        RecipeDetailsDTO recipeDetail = recipeService.getRecipeDetails(userId, recipeId);
+
+        return ResponseEntity.ok(recipeDetail);
     }
 }

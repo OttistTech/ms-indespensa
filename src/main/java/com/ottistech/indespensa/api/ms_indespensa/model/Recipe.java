@@ -56,6 +56,9 @@ public class Recipe {
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RecipeIngredient> ingredients = new ArrayList<>();
 
+    @OneToMany(mappedBy = "recipe")
+    private List<CompletedRecipe> completedRecipes;
+
     public Recipe(User createdBy, String title, String description, String level, Integer preparationTime, String preparationMethod, Boolean isShared, String imageUrl) {
         this.createdBy = createdBy;
         this.title = title;
