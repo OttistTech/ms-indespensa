@@ -1,18 +1,13 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreateRecipeDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.RateRecipeRequestDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeFullInfoResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeIngredientDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.model.Food;
-import com.ottistech.indespensa.api.ms_indespensa.model.Recipe;
-import com.ottistech.indespensa.api.ms_indespensa.model.RecipeIngredient;
-import com.ottistech.indespensa.api.ms_indespensa.model.User;
-import com.ottistech.indespensa.api.ms_indespensa.repository.FoodRepository;
-import com.ottistech.indespensa.api.ms_indespensa.repository.RecipeIngredientRepository;
-import com.ottistech.indespensa.api.ms_indespensa.repository.RecipeRepository;
-import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
+import com.ottistech.indespensa.api.ms_indespensa.model.*;
+import com.ottistech.indespensa.api.ms_indespensa.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +28,7 @@ public class RecipeService {
     private final RecipeRepository recipeRepository;
     private final FoodRepository foodRepository;
     private final RecipeIngredientRepository ingredientRepository;
+    private final CompletedRecipeRepository completedRecipeRepository;
 
     @Transactional
     public RecipeFullInfoResponseDTO createRecipe(CreateRecipeDTO recipeDTO) {
@@ -89,5 +86,29 @@ public class RecipeService {
         List<RecipeIngredientDetailsDTO> ingredientDetails = ingredientRepository.findIngredientsByRecipeId(recipeId, user);
 
         return recipe.toRecipeDetailsDTO(ingredientDetails);
+    }
+
+    @Transactional
+    public void rateRecipe(Long recipeId, RateRecipeRequestDTO rateRecipeRequestDTO) {
+        User user = userRepository.findById(rateRecipeRequestDTO.userId()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist")
+        );
+
+        Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe not found")
+        );
+
+        Optional<CompletedRecipe> existingRatingOpt = completedRecipeRepository.findByUserAndRecipe(user, recipe);
+
+        if (existingRatingOpt.isPresent()) {
+            CompletedRecipe existingRating = existingRatingOpt.get();
+
+            existingRating.setNumStars(rateRecipeRequestDTO.numStars());
+            completedRecipeRepository.save(existingRating);
+        } else {
+            CompletedRecipe newRating = new CompletedRecipe(user, recipe, rateRecipeRequestDTO.numStars());
+
+            completedRecipeRepository.save(newRating);
+        }
     }
 }
