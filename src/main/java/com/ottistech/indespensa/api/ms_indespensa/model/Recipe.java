@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -23,7 +22,7 @@ public class Recipe {
     @Column(name = "recipe_id")
     private Long recipeId;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "created_by", referencedColumnName = "user_id")
     private User createdBy;
 
@@ -50,24 +49,9 @@ public class Recipe {
     @Column(name = "is_shared")
     private Boolean isShared;
 
-    @Column(name = "image_url")
-    private String imageUrl;
-
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RecipeIngredient> ingredients = new ArrayList<>();
-
-    @OneToMany(mappedBy = "recipe")
-    private List<CompletedRecipe> completedRecipes;
-
-    public Recipe(User createdBy, String title, String description, String level, Integer preparationTime, String preparationMethod, Boolean isShared, String imageUrl) {
-        this.createdBy = createdBy;
-        this.title = title;
-        this.description = description;
-        this.level = level;
-        this.preparationTime = preparationTime;
-        this.preparationMethod = preparationMethod;
-        this.isShared = isShared;
-        this.imageUrl = imageUrl;
-    }
-
+//    @OneToMany(mappedBy = "recipeId")
+//    private List<RecipeIngredient> ingredients;
+//
+//    @OneToMany(mappedBy = "recipeId")
+//    private List<DoneRecipe> doneRecipes;
 }
