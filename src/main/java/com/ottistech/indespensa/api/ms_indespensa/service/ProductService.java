@@ -4,6 +4,7 @@ import com.ottistech.indespensa.api.ms_indespensa.client.ProductClientService;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreateProductDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductResponseApiDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductSearchResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.repository.ProductRepository;
 import lombok.AllArgsConstructor;
@@ -72,15 +73,13 @@ public class ProductService {
         return product;
     }
 
-    public List<ProductResponseDTO> findProductsByNamePattern(String pattern) {
-        List<Product> productsFound = productRepository.findAllByNameStartingWithIgnoreCase(pattern);
+    public List<ProductSearchResponseDTO> findProductsByNamePattern(String pattern) {
+        List<ProductSearchResponseDTO> productsFound = productRepository.findAllByNameStartingWithIgnoreCase(pattern);
 
         if(productsFound.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No products matching name pattern");
         }
 
-        return productsFound.stream()
-                .map(ProductResponseDTO::fromProduct)
-                .toList();
+        return productsFound;
     }
 }
