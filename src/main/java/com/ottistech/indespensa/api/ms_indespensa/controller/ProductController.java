@@ -1,6 +1,7 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductSearchResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,8 +25,8 @@ public class ProductController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<ProductResponseDTO>> searchProductByName(@RequestParam("pattern") String pattern) {
-        List<ProductResponseDTO> productsFound = productService.findProductsByNamePattern(pattern);
+    public ResponseEntity<List<ProductSearchResponseDTO>> searchProductByName(@RequestParam("pattern") String pattern) {
+        List<ProductSearchResponseDTO> productsFound = productService.findProductsByNamePattern(pattern);
 
         return ResponseEntity.status(HttpStatus.OK).body(productsFound);
     }
