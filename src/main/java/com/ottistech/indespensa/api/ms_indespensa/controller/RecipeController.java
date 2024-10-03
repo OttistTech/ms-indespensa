@@ -1,6 +1,7 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreateRecipeDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.request.RateRecipeRequestDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeFullInfoResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO;
@@ -50,5 +51,15 @@ public class RecipeController {
         RecipeDetailsDTO recipeDetail = recipeService.getRecipeDetails(userId, recipeId);
 
         return ResponseEntity.ok(recipeDetail);
+    }
+
+    @PostMapping("/{recipe_id}/rating")
+    public ResponseEntity<Void> rateRecipe(
+            @PathVariable("recipe_id") Long recipeId,
+            @Valid @RequestBody RateRecipeRequestDTO rateRecipeRequestDTO) {
+
+        recipeService.rateRecipe(recipeId, rateRecipeRequestDTO);
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
