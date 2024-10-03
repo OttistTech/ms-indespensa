@@ -1,7 +1,9 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreateRecipeDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeFullInfoResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeIngredientDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.Food;
 import com.ottistech.indespensa.api.ms_indespensa.model.Recipe;
@@ -69,12 +71,23 @@ public class RecipeService {
         return RecipeFullInfoResponseDTO.fromRecipeAndIngredients(user, recipe, ingredients);
     }
 
-
     public Page<RecipePartialResponseDTO> getPaginatedRecipes(Long userId, Pageable pageable) {
-        User user =
-        userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
         return recipeRepository.findRecipesWithIngredientsInPantryAndRating(user, pageable);
+    }
+
+    public RecipeDetailsDTO getRecipeDetails(Long userId, Long recipeId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist")
+        );
+
+        RecipePartialResponseDTO recipe = recipeRepository.findRecipeWithDetailsById(user, recipeId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recipe not found"));
+
+        List<RecipeIngredientDetailsDTO> ingredientDetails = ingredientRepository.findIngredientsByRecipeId(recipeId, user);
+
+        return recipe.toRecipeDetailsDTO(ingredientDetails);
     }
 }
