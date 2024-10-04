@@ -34,11 +34,15 @@ public class RecipeController {
     public ResponseEntity<Page<RecipePartialResponseDTO>> listRecipes(
             @RequestParam Long userId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "") String difficulty,
+            @RequestParam(required = false, defaultValue = "") String availability,
+            @RequestParam(required = false) Integer startPreparationTime,
+            @RequestParam(required = false) Integer endPreparationTime
     ) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<RecipePartialResponseDTO> recipePage = recipeService.getPaginatedRecipes(userId, pageable);
+        Page<RecipePartialResponseDTO> recipePage = recipeService.getPaginatedRecipes(userId, pageable, difficulty, availability, startPreparationTime, endPreparationTime);
 
         return ResponseEntity.ok(recipePage);
     }
@@ -62,4 +66,5 @@ public class RecipeController {
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
 }

@@ -35,6 +35,8 @@ public class RecipeService {
         User user = userRepository.findById(recipeDTO.createdBy())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
+
+        // TODO: put a max of preparationTime
         Recipe recipe = new Recipe(
                 user,
                 recipeDTO.title(),
@@ -68,11 +70,32 @@ public class RecipeService {
         return RecipeFullInfoResponseDTO.fromRecipeAndIngredients(user, recipe, ingredients);
     }
 
-    public Page<RecipePartialResponseDTO> getPaginatedRecipes(Long userId, Pageable pageable) {
+    public Page<RecipePartialResponseDTO> getPaginatedRecipes(
+            Long userId,
+            Pageable pageable,
+            String difficulty,
+            String availability,
+            Integer startPreparationTime,
+            Integer endPreparationTime
+    ) {
         User user = userRepository.findById(userId)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
-        return recipeRepository.findRecipesWithIngredientsInPantryAndRating(user, pageable);
+        difficulty = (difficulty == null) ? "" : difficulty;
+        startPreparationTime = (startPreparationTime == null) ? 0 : startPreparationTime;
+        endPreparationTime = (endPreparationTime == null) ? 1440 : endPreparationTime;
+
+        Page<RecipePartialResponseDTO> responseDTOPage;
+
+        if (availability == null) {
+            responseDTOPage = recipeRepository.findRecipesWithIngredientsInOrNotInPantryAndRating(user, pageable, difficulty, startPreparationTime, endPreparationTime);
+        } else {
+            responseDTOPage = recipeRepository.findRecipesWithIngredientsInPantryAndRating(user, pageable, difficulty, startPreparationTime, endPreparationTime);
+        }
+
+        if (responseDTOPage.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No recipes found with this filters");
+
+        return responseDTOPage;
     }
 
     public RecipeDetailsDTO getRecipeDetails(Long userId, Long recipeId) {
