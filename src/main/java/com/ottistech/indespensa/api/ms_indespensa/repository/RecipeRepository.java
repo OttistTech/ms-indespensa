@@ -40,6 +40,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
         r.level LIKE CONCAT('%', :difficulty, '%') AND
         r.preparationTime BETWEEN :startPreparationTime AND :endPreparationTime
     GROUP BY r.recipeId, r.imageUrl, r.title, r.description, r.level, r.preparationTime, cr.numStars
+    ORDER BY 6 DESC
     """)
     Page<RecipePartialResponseDTO> findRecipesWithIngredientsInOrNotInPantryAndRating(
             @Param("user") User user,
@@ -77,6 +78,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
         r.preparationTime BETWEEN :startPreparationTime AND :endPreparationTime
     GROUP BY r.recipeId, r.imageUrl, r.title, r.description, r.level, r.preparationTime, cr.numStars
     HAVING CAST(COUNT(DISTINCT ri.ingredientFood.foodId) as int) = CAST(COUNT(DISTINCT pi.product.productId) as int)
+    ORDER BY 6 DESC
     """)
     Page<RecipePartialResponseDTO> findRecipesWithIngredientsInPantryAndRating(
             @Param("user") User user,
