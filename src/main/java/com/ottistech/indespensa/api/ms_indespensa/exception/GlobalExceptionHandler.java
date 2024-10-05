@@ -9,10 +9,13 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -97,5 +100,20 @@ public class GlobalExceptionHandler {
         problemDetail.setDetail(String.format("Required request parameter '%s' is missing", ex.getParameterName()));
 
         return new ResponseEntity<>(problemDetail, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ProblemDetail handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String parameterName = ex.getName();
+        String parameterValue = ex.getValue() != null ? ex.getValue().toString() : "null";
+        String message = String.format("The value '%s' for param '%s' is invalid. Permission values: %s.",
+                parameterValue, parameterName, Arrays.toString(Objects.requireNonNull(ex.getRequiredType()).getEnumConstants()));
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message);
+        problemDetail.setTitle("Invalid Argument");
+        problemDetail.setProperty("parameter", parameterName);
+        problemDetail.setProperty("invalidValue", parameterValue);
+
+        return problemDetail;
     }
 }
