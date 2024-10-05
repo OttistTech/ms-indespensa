@@ -13,6 +13,7 @@ public interface RecipeIngredientRepository extends JpaRepository<RecipeIngredie
 
     @Query("""
     SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeIngredientDetailsDTO(
+        ri.ingredientFood.foodId,
         ri.ingredientFood.foodName,
         ri.amount,
         ri.unit,

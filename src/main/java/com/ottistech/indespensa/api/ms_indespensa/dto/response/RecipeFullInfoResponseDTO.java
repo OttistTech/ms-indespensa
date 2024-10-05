@@ -23,6 +23,7 @@ public record RecipeFullInfoResponseDTO(
     public static RecipeFullInfoResponseDTO fromRecipeAndIngredients(User user, Recipe recipe, List<RecipeIngredient> ingredients) {
         List<RecipeIngredientDetailsDTO> ingredientDTOs = ingredients.stream()
                 .map(ingredient -> new RecipeIngredientDetailsDTO(
+                        ingredient.getIngredientFood().getFoodId(),
                         ingredient.getIngredientFood().getFoodName(),
                         ingredient.getAmount(),
                         ingredient.getUnit(),
