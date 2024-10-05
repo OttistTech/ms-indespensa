@@ -6,6 +6,8 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeFullInfoResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.RecipeService;
+import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Availability;
+import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Difficulty;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,8 +37,8 @@ public class RecipeController {
             @RequestParam Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false, defaultValue = "") String difficulty,
-            @RequestParam(required = false, defaultValue = "") String availability,
+            @RequestParam(required = false, defaultValue = "") Difficulty difficulty,
+            @RequestParam(required = false, defaultValue = "OUT_OF_PANTRY") Availability availability,
             @RequestParam(required = false) Integer startPreparationTime,
             @RequestParam(required = false) Integer endPreparationTime
     ) {
