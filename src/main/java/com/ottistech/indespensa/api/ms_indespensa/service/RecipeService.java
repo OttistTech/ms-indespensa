@@ -8,6 +8,8 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeIngredientD
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.*;
 import com.ottistech.indespensa.api.ms_indespensa.repository.*;
+import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Availability;
+import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Difficulty;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -68,11 +70,32 @@ public class RecipeService {
         return RecipeFullInfoResponseDTO.fromRecipeAndIngredients(user, recipe, ingredients);
     }
 
-    public Page<RecipePartialResponseDTO> getPaginatedRecipes(Long userId, Pageable pageable) {
+    public Page<RecipePartialResponseDTO> getPaginatedRecipes(
+            Long userId,
+            Pageable pageable,
+            Difficulty difficulty,
+            Availability availability,
+            Integer startPreparationTime,
+            Integer endPreparationTime
+    ) {
         User user = userRepository.findById(userId)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
-        return recipeRepository.findRecipesWithIngredientsInPantryAndRating(user, pageable);
+        String difficultyInPortuguese = (difficulty == null) ? "" : difficulty.getPortuguese();
+        startPreparationTime = (startPreparationTime == null) ? 0 : startPreparationTime;
+        endPreparationTime = (endPreparationTime == null) ? 1440 : endPreparationTime;
+
+        Page<RecipePartialResponseDTO> responseDTOPage;
+
+        if (availability.equals(Availability.IN_PANTRY)) {
+            responseDTOPage = recipeRepository.findRecipesWithIngredientsInPantryAndRating(user, pageable, difficultyInPortuguese, startPreparationTime, endPreparationTime);
+        } else {
+            responseDTOPage = recipeRepository.findRecipesWithIngredientsInOrNotInPantryAndRating(user, pageable, difficultyInPortuguese, startPreparationTime, endPreparationTime);
+        }
+
+        if (responseDTOPage.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No recipes found with this filters");
+
+        return responseDTOPage;
     }
 
     public RecipeDetailsDTO getRecipeDetails(Long userId, Long recipeId) {

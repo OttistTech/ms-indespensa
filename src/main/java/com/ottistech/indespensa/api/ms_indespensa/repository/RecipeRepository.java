@@ -35,12 +35,57 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
         AND pi.isActive = TRUE
     LEFT JOIN CompletedRecipe cr ON cr.recipe.recipeId = r.recipeId
         AND cr.user = :user
-    WHERE r.isShared = TRUE
+    WHERE
+        r.isShared = TRUE AND
+        r.level LIKE CONCAT('%', :difficulty, '%') AND
+        r.preparationTime BETWEEN :startPreparationTime AND :endPreparationTime
     GROUP BY r.recipeId, r.imageUrl, r.title, r.description, r.level, r.preparationTime, cr.numStars
+    ORDER BY 6 DESC
+    """)
+    Page<RecipePartialResponseDTO> findRecipesWithIngredientsInOrNotInPantryAndRating(
+            @Param("user") User user,
+            Pageable pageable,
+            String difficulty,
+            Integer startPreparationTime,
+            Integer endPreparationTime
+    );
+
+    @Query("""
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO(
+        r.recipeId,
+        r.imageUrl,
+        r.title,
+        r.description,
+        CAST(COUNT(DISTINCT ri.ingredientFood.foodId) as int),
+        CAST(COUNT(DISTINCT pi.product.productId) as int),
+        r.level,
+        r.preparationTime,
+        r.preparationMethod,
+        COALESCE(cr.numStars, 0)
+    )
+    FROM Recipe r
+    LEFT JOIN r.ingredients ri
+    LEFT JOIN Product p ON p.foodId = ri.ingredientFood
+    LEFT JOIN PantryItem pi ON pi.product.productId = p.productId
+        AND pi.user = :user
+        AND pi.amount > 0
+        AND pi.isActive = TRUE
+    LEFT JOIN CompletedRecipe cr ON cr.recipe.recipeId = r.recipeId
+        AND cr.user = :user
+    WHERE
+        r.isShared = TRUE AND
+        r.level LIKE CONCAT('%', :difficulty, '%') AND
+        r.preparationTime BETWEEN :startPreparationTime AND :endPreparationTime
+    GROUP BY r.recipeId, r.imageUrl, r.title, r.description, r.level, r.preparationTime, cr.numStars
+    HAVING CAST(COUNT(DISTINCT ri.ingredientFood.foodId) as int) = CAST(COUNT(DISTINCT pi.product.productId) as int)
+    ORDER BY 6 DESC
     """)
     Page<RecipePartialResponseDTO> findRecipesWithIngredientsInPantryAndRating(
             @Param("user") User user,
-            Pageable pageable
+            Pageable pageable,
+            String difficulty,
+            Integer startPreparationTime,
+            Integer endPreparationTime
     );
 
     @Query("""

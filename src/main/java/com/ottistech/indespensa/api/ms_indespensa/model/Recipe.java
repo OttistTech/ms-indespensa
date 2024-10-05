@@ -1,6 +1,8 @@
 package com.ottistech.indespensa.api.ms_indespensa.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,6 +43,8 @@ public class Recipe {
 
     @NotNull(message = "Field preparationTime is required")
     @Column(name = "preparation_time", nullable = false)
+    @Min(value = 1, message = "Preparation time must be at least 1 minute")
+    @Max(value = 1440, message = "Preparation time cannot exceed 1440 minutes")
     private Integer preparationTime;
 
     @NotNull(message = "Field preparationMethod is required")

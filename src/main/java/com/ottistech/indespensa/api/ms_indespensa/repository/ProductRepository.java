@@ -17,5 +17,17 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE LOWER(p.name) = LOWER(:name)")
     Optional<Product> findByNameNotNull(@Param("name") String name);
 
+    @Query("""
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductSearchResponseDTO(
+        p.productId,
+        f.foodId,
+        p.name,
+        f.foodName,
+        p.imageUrl
+    )
+    FROM Product p
+    JOIN p.foodId f
+    WHERE LOWER(p.name) LIKE LOWER(CONCAT(:pattern, '%'))
+    """)
     List<ProductSearchResponseDTO> findAllByNameStartingWithIgnoreCase(String pattern);
 }
