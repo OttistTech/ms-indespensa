@@ -7,8 +7,8 @@ import lombok.Getter;
 @Getter
 public enum Difficulty {
     EASY("Fácil"),
-    MEDIUM("Médio"),
-    HARD("Difícil");
+    INTER("Inter"),
+    ADVANCED("Avançado");
 
     private final String portuguese;
 
