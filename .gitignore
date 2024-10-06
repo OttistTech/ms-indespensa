@@ -39,3 +39,6 @@ build/
 /.github
 /LICENSE
 /README.md
+
+app.key
+app.pub
