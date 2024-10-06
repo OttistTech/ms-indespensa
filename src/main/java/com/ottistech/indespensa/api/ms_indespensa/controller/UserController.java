@@ -4,12 +4,14 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.request.LoginUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.SignUpUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserCredentialsResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserCredentialsTokenResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserFullInfoResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,7 +26,7 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody @Valid SignUpUserDTO signUpUserDTO) {
 
-        UserCredentialsResponseDTO userCredentialsResponse = userService.singUpUser(signUpUserDTO);
+        UserCredentialsTokenResponseDTO userCredentialsResponse = userService.singUpUser(signUpUserDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userCredentialsResponse);
     }
@@ -32,7 +34,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody @Valid LoginUserDTO loginUserDTO) {
 
-        UserCredentialsResponseDTO userCredentials = userService.getUserCredentials(loginUserDTO);
+        UserCredentialsTokenResponseDTO userCredentials = userService.getUserCredentials(loginUserDTO);
 
         return ResponseEntity.status(HttpStatus.OK).body(userCredentials);
     }
@@ -60,6 +62,7 @@ public class UserController {
     }
 
     @GetMapping("/admin")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<List<UserFullInfoResponseDTO>> getAllUsersFullInfo() {
 
         List<UserFullInfoResponseDTO> userFullInfoList = userService.getAllUsersFullInfo();
@@ -68,6 +71,7 @@ public class UserController {
     }
 
     @GetMapping("/admin/{id}")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<UserFullInfoResponseDTO> getOneUserFullInfo(@PathVariable("id") Long userId) {
 
         UserFullInfoResponseDTO userFullInfo = userService.getUserFullInfo(userId);
