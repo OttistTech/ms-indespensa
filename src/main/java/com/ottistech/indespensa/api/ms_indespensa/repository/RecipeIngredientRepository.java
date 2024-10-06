@@ -31,7 +31,7 @@ public interface RecipeIngredientRepository extends JpaRepository<RecipeIngredie
         AND pi.amount > 0
         AND pi.isActive = TRUE
     WHERE r.recipeId = :recipeId
-    GROUP BY ri.ingredientFood.foodName, ri.amount, ri.unit, ri.isEssential
+    GROUP BY ri.ingredientFood.foodId, ri.ingredientFood.foodName, ri.amount, ri.unit, ri.isEssential
     """)
     List<RecipeIngredientDetailsDTO> findIngredientsByRecipeId(@Param("recipeId") Long recipeId, @Param("user") User user);
 
