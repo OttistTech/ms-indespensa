@@ -4,6 +4,7 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.request.LoginUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.SignUpUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserCredentialsResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserCredentialsTokenResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserFullInfoResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.exception.*;
 import com.ottistech.indespensa.api.ms_indespensa.model.Address;
@@ -29,8 +30,9 @@ public class UserService {
     private final AddressRepository addressRepository;
     private final CepRepository cepRepository;
     private final CepService cepService;
+    private final JwtTokenService jwtTokenService;
 
-    public UserCredentialsResponseDTO singUpUser(SignUpUserDTO signUpUserDTO) {
+    public UserCredentialsTokenResponseDTO singUpUser(SignUpUserDTO signUpUserDTO) {
         if (userRepository.findByEmail(signUpUserDTO.email()).isPresent()) {
             throw new EmailAlreadyInUseException("Email already in use");
         }
@@ -43,17 +45,28 @@ public class UserService {
         Address address = signUpUserDTO.toAddress(user, cep);
         addressRepository.save(address);
 
-        return UserCredentialsResponseDTO.fromUser(user);
+        String token = null;
+        if (user.getType().equals("ADMIN"))  {
+            token = jwtTokenService.generateToken(user);
+        }
+
+        return UserCredentialsTokenResponseDTO.fromUser(user, token);
     }
 
-    public UserCredentialsResponseDTO getUserCredentials(LoginUserDTO loginUserDTO) {
+    public UserCredentialsTokenResponseDTO getUserCredentials(LoginUserDTO loginUserDTO) {
         User user = userRepository.findByEmail(loginUserDTO.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
         if (user.getDeactivatedAt() != null) {
             throw new UserAlreadyDeactivatedException("User already deactivated");
         } else if(loginUserDTO.password().equals(user.getPassword())) {
-            return UserCredentialsResponseDTO.fromUser(user);
+            String token = null;
+
+            if (user.getType().equals("ADMIN")) {
+                token = jwtTokenService.generateToken(user);
+            }
+
+            return UserCredentialsTokenResponseDTO.fromUser(user, token);
         } else {
             throw new IncorrectPasswordException("Password does not match");
         }
