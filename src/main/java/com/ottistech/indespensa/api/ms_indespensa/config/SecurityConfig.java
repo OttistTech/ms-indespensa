@@ -33,10 +33,10 @@ import java.util.stream.Collectors;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Value("file:./etc/secrets/app.pub")
+    @Value("${jwt.public.key}")
     private RSAPublicKey publicKey;
 
-    @Value("file:./etc/secrets/app.key")
+    @Value("${jwt.private.key}")
     private RSAPrivateKey privateKey;
 
     @Bean
