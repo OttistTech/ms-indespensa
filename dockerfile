@@ -2,14 +2,8 @@ FROM maven:3.8.3-openjdk-17 as build
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y openssl
-
 COPY pom.xml .
 COPY src ./src
-
-RUN cd src/main/resources && \
-    openssl genrsa > app.key && \
-    openssl rsa -in app.key -pubout -out app.pub
 
 RUN mvn clean package -DskipTests
 
