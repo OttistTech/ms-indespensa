@@ -5,8 +5,11 @@ WORKDIR /app
 COPY pom.xml .
 COPY src ./src
 
-RUN mvn clean package -DskipTests
+RUN cd src/main/resources && \
+    openssl genrsa > app.key && \
+    openssl rsa -in app.key -pubout -out app.pub
 
+RUN mvn clean package -DskipTests
 
 FROM openjdk:17-jdk-slim
 
