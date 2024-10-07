@@ -40,13 +40,15 @@ public class UserService {
         User user = signUpUserDTO.toUser();
         user = userRepository.save(user);
 
-
         Cep cep = cepService.getOrCreateCep(signUpUserDTO.toCep());
 
         Address address = signUpUserDTO.toAddress(user, cep);
         addressRepository.save(address);
 
-        String token = jwtTokenService.generateToken(user);
+        String token = null;
+        if (user.getType().equals("ADMIN"))  {
+            token = jwtTokenService.generateToken(user);
+        }
 
         return UserCredentialsTokenResponseDTO.fromUser(user, token);
     }
@@ -58,7 +60,11 @@ public class UserService {
         if (user.getDeactivatedAt() != null) {
             throw new UserAlreadyDeactivatedException("User already deactivated");
         } else if(loginUserDTO.password().equals(user.getPassword())) {
-            String token = jwtTokenService.generateToken(user);
+            String token = null;
+
+            if (user.getType().equals("ADMIN")) {
+                token = jwtTokenService.generateToken(user);
+            }
 
             return UserCredentialsTokenResponseDTO.fromUser(user, token);
         } else {

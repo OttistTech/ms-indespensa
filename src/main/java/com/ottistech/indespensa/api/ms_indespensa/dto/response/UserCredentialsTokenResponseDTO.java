@@ -22,7 +22,7 @@ public record UserCredentialsTokenResponseDTO(
                 user.getPassword(),
                 user.getEnterpriseType(),
                 user.getIsPremium(),
-                "Bearer " + token
+                token == null ? null : "Bearer " + token
         );
     }
 }

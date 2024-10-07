@@ -44,13 +44,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/api/v1/users/signup").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/users/login").permitAll()
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/users/deactivation/").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/users/").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/users/update/").permitAll()
-                        .requestMatchers(HttpMethod.PATCH, "/api/v1/users/").permitAll()
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt.decoder(jwtDecoder()).jwtAuthenticationConverter(jwtAuthenticationConverter())))
@@ -86,6 +80,7 @@ public class SecurityConfig {
             if (scopes == null) {
                 return Collections.emptyList();
             }
+
             return scopes.stream()
                     .map(scope -> new SimpleGrantedAuthority("SCOPE_" + scope))
                     .collect(Collectors.toList());
