@@ -3,6 +3,7 @@ package com.ottistech.indespensa.api.ms_indespensa.dto.response;
 import com.ottistech.indespensa.api.ms_indespensa.model.Recipe;
 import com.ottistech.indespensa.api.ms_indespensa.model.RecipeIngredient;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
+import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Difficulty;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +13,7 @@ public record RecipeFullInfoResponseDTO(
         Long createdBy,
         String title,
         String description,
-        String level,
+        String difficulty,
         Integer preparationTime,
         String preparationMethod,
         Boolean isShared,
@@ -37,7 +38,7 @@ public record RecipeFullInfoResponseDTO(
                 user.getUserId(),
                 recipe.getTitle(),
                 recipe.getDescription(),
-                recipe.getLevel(),
+                recipe.getDifficulty(),
                 recipe.getPreparationTime(),
                 recipe.getPreparationMethod(),
                 recipe.getIsShared(),

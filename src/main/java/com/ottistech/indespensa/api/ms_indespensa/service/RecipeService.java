@@ -41,7 +41,7 @@ public class RecipeService {
                 user,
                 recipeDTO.title(),
                 recipeDTO.description(),
-                recipeDTO.level(),
+                recipeDTO.difficulty().getDifficultyLevel(),
                 recipeDTO.preparationTime(),
                 recipeDTO.preparationMethod(),
                 recipeDTO.isShared(),
@@ -53,7 +53,7 @@ public class RecipeService {
         List<RecipeIngredient> ingredients = recipeDTO.createRecipeIngredientList().stream()
                 .map(dto -> {
                     Food food = foodRepository.findById(dto.foodId())
-                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Food does not exist"));
+                            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Food "+ dto.foodId() + " does not exist"));
 
                     return new RecipeIngredient(
                             recipe,
@@ -81,16 +81,16 @@ public class RecipeService {
         User user = userRepository.findById(userId)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
-        String difficultyInPortuguese = (difficulty == null) ? "" : difficulty.getPortuguese();
+        String difficultyLevel = difficulty == null ? "" : difficulty.getDifficultyLevel();
         startPreparationTime = (startPreparationTime == null) ? 0 : startPreparationTime;
         endPreparationTime = (endPreparationTime == null) ? 1440 : endPreparationTime;
 
         Page<RecipePartialResponseDTO> responseDTOPage;
 
         if (availability.equals(Availability.IN_PANTRY)) {
-            responseDTOPage = recipeRepository.findRecipesWithIngredientsInPantryAndRating(user, pageable, difficultyInPortuguese, startPreparationTime, endPreparationTime);
+            responseDTOPage = recipeRepository.findRecipesWithIngredientsInPantryAndRating(user, pageable, difficultyLevel, startPreparationTime, endPreparationTime);
         } else {
-            responseDTOPage = recipeRepository.findRecipesWithIngredientsInOrNotInPantryAndRating(user, pageable, difficultyInPortuguese, startPreparationTime, endPreparationTime);
+            responseDTOPage = recipeRepository.findRecipesWithIngredientsInOrNotInPantryAndRating(user, pageable, difficultyLevel, startPreparationTime, endPreparationTime);
         }
 
         if (responseDTOPage.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No recipes found with this filters");

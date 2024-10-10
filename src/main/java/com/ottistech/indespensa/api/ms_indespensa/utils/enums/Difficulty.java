@@ -10,6 +10,5 @@ public enum Difficulty {
     INTER("Inter"),
     ADVANCED("Avançado");
 
-    private final String portuguese;
-
+    final String difficultyLevel;
 }

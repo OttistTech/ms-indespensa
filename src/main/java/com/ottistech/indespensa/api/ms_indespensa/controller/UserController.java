@@ -4,7 +4,6 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.request.LoginUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.SignUpUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserCredentialsResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserCredentialsTokenResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserFullInfoResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.UserService;
 import jakarta.validation.Valid;
@@ -26,7 +25,7 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody @Valid SignUpUserDTO signUpUserDTO) {
 
-        UserCredentialsTokenResponseDTO userCredentialsResponse = userService.singUpUser(signUpUserDTO);
+        UserCredentialsResponseDTO userCredentialsResponse = userService.signUpUser(signUpUserDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userCredentialsResponse);
     }
@@ -34,7 +33,7 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody @Valid LoginUserDTO loginUserDTO) {
 
-        UserCredentialsTokenResponseDTO userCredentials = userService.getUserCredentials(loginUserDTO);
+        UserCredentialsResponseDTO userCredentials = userService.getUserCredentials(loginUserDTO);
 
         return ResponseEntity.status(HttpStatus.OK).body(userCredentials);
     }

@@ -32,6 +32,7 @@ public class RecipeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(recipe);
     }
 
+    // TODO: add pattern
     @GetMapping("/list")
     public ResponseEntity<Page<RecipePartialResponseDTO>> listRecipes(
             @RequestParam Long userId,
