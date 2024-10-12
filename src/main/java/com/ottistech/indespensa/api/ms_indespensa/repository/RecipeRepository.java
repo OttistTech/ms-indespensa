@@ -37,13 +37,15 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     WHERE
         r.isShared = TRUE AND
         LOWER(r.difficulty) LIKE CONCAT('%', LOWER(:difficulty), '%') AND
-        r.preparationTime BETWEEN :startPreparationTime AND :endPreparationTime
+        r.preparationTime BETWEEN :startPreparationTime AND :endPreparationTime AND
+        LOWER(r.title) LIKE CONCAT(LOWER(:pattern), '%')
     GROUP BY r.recipeId, r.imageUrl, r.title, r.description, r.difficulty, r.preparationTime
     ORDER BY 6 DESC
     """)
     Page<RecipePartialResponseDTO> findRecipesWithIngredientsInOrNotInPantryAndRating(
             @Param("user") User user,
             Pageable pageable,
+            String pattern,
             String difficulty,
             Integer startPreparationTime,
             Integer endPreparationTime
@@ -73,7 +75,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     WHERE
         r.isShared = TRUE AND
         LOWER(r.difficulty) LIKE CONCAT('%', LOWER(:difficulty), '%') AND
-        r.preparationTime BETWEEN :startPreparationTime AND :endPreparationTime
+        r.preparationTime BETWEEN :startPreparationTime AND :endPreparationTime AND
+        LOWER(r.title) LIKE CONCAT(LOWER(:pattern), '%')
     GROUP BY r.recipeId, r.imageUrl, r.title, r.description, r.difficulty, r.preparationTime
     HAVING CAST(COUNT(DISTINCT ri.ingredientFood.foodId) as int) = CAST(COUNT(DISTINCT pi.product.productId) as int)
     ORDER BY 6 DESC
@@ -81,6 +84,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     Page<RecipePartialResponseDTO> findRecipesWithIngredientsInPantryAndRating(
             @Param("user") User user,
             Pageable pageable,
+            String pattern,
             String difficulty,
             Integer startPreparationTime,
             Integer endPreparationTime

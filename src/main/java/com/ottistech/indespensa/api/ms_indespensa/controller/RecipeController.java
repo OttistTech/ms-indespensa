@@ -10,6 +10,7 @@ import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Availability;
 import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Difficulty;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,22 +33,22 @@ public class RecipeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(recipe);
     }
 
-    // TODO: add pattern
     @GetMapping("/list")
-    public ResponseEntity<Page<RecipePartialResponseDTO>> listRecipes(
+    public Page<RecipePartialResponseDTO> listRecipes(
             @RequestParam Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false, defaultValue = "") String pattern,
             @RequestParam(required = false, defaultValue = "") Difficulty difficulty,
             @RequestParam(required = false, defaultValue = "OUT_OF_PANTRY") Availability availability,
-            @RequestParam(required = false) Integer startPreparationTime,
-            @RequestParam(required = false) Integer endPreparationTime
+            @RequestParam(required = false, defaultValue = "0") Integer startPreparationTime,
+            @RequestParam(required = false, defaultValue = "1440") Integer endPreparationTime
     ) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<RecipePartialResponseDTO> recipePage = recipeService.getPaginatedRecipes(userId, pageable, difficulty, availability, startPreparationTime, endPreparationTime);
 
-        return ResponseEntity.ok(recipePage);
+        return recipeService.getPaginatedRecipes(userId, pageable, pattern, difficulty, availability, startPreparationTime, endPreparationTime);
+
     }
 
     @GetMapping("/{recipe_id}/details")

@@ -12,6 +12,8 @@ import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Availability;
 import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Difficulty;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -70,9 +72,11 @@ public class RecipeService {
         return RecipeFullInfoResponseDTO.fromRecipeAndIngredients(user, recipe, ingredients);
     }
 
+    // TODO: verify how to store it correctly
     public Page<RecipePartialResponseDTO> getPaginatedRecipes(
             Long userId,
             Pageable pageable,
+            String pattern,
             Difficulty difficulty,
             Availability availability,
             Integer startPreparationTime,
@@ -82,15 +86,13 @@ public class RecipeService {
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
         String difficultyLevel = difficulty == null ? "" : difficulty.getDifficultyLevel();
-        startPreparationTime = (startPreparationTime == null) ? 0 : startPreparationTime;
-        endPreparationTime = (endPreparationTime == null) ? 1440 : endPreparationTime;
 
         Page<RecipePartialResponseDTO> responseDTOPage;
 
         if (availability.equals(Availability.IN_PANTRY)) {
-            responseDTOPage = recipeRepository.findRecipesWithIngredientsInPantryAndRating(user, pageable, difficultyLevel, startPreparationTime, endPreparationTime);
+            responseDTOPage = recipeRepository.findRecipesWithIngredientsInPantryAndRating(user, pageable, pattern, difficultyLevel, startPreparationTime, endPreparationTime);
         } else {
-            responseDTOPage = recipeRepository.findRecipesWithIngredientsInOrNotInPantryAndRating(user, pageable, difficultyLevel, startPreparationTime, endPreparationTime);
+            responseDTOPage = recipeRepository.findRecipesWithIngredientsInOrNotInPantryAndRating(user, pageable, pattern, difficultyLevel, startPreparationTime, endPreparationTime);
         }
 
         if (responseDTOPage.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No recipes found with this filters");
@@ -98,6 +100,8 @@ public class RecipeService {
         return responseDTOPage;
     }
 
+    // TODO: this cache must be evicted when user evaluate a recipe, cause the avg will change
+    @Cacheable(value = "recipe_details", key = "#userId + '_' + #recipeId")
     public RecipeDetailsDTO getRecipeDetails(Long userId, Long recipeId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist")
@@ -111,7 +115,9 @@ public class RecipeService {
         return recipe.toRecipeDetailsDTO(ingredientDetails);
     }
 
+    // TODO: remove/subtract the ingredients from pantry after user evaluate the recipe
     @Transactional
+    @CacheEvict(value = "recipe_details", key = "#rateRecipeRequestDTO.userId + '_' + #recipeId")
     public void rateRecipe(Long recipeId, RateRecipeRequestDTO rateRecipeRequestDTO) {
         User user = userRepository.findById(rateRecipeRequestDTO.userId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist")
@@ -134,4 +140,5 @@ public class RecipeService {
             completedRecipeRepository.save(newRating);
         }
     }
+
 }
