@@ -8,6 +8,7 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductSearchResp
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.repository.ProductRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,6 +26,7 @@ public class ProductService {
     private final BrandService brandService;
     private final CategoryService categoryService;
 
+    @Cacheable(value = "product_by_barcode", key = "#barcode")
     public ProductResponseDTO getProductByBarcode(String barcode) {
         return productRepository.findByEanCodeNotNull(barcode)
                 .map(ProductResponseDTO::fromProduct)
@@ -73,6 +75,7 @@ public class ProductService {
         return product;
     }
 
+    @Cacheable(value = "product_by_pattern", key = "#pattern")
     public List<ProductSearchResponseDTO> findProductsByNamePattern(String pattern) {
         List<ProductSearchResponseDTO> productsFound = productRepository.findAllByNameStartingWithIgnoreCase(pattern);
 

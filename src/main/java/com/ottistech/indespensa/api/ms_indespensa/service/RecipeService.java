@@ -101,7 +101,7 @@ public class RecipeService {
     }
 
     // TODO: this cache must be evicted when user evaluate a recipe, cause the avg will change
-    @Cacheable(value = "recipe_details", key = "#userId + '_' + #recipeId")
+//    @Cacheable(value = "recipe_details", key = "#userId + '_' + #recipeId")
     public RecipeDetailsDTO getRecipeDetails(Long userId, Long recipeId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist")
@@ -117,7 +117,7 @@ public class RecipeService {
 
     // TODO: remove/subtract the ingredients from pantry after user evaluate the recipe
     @Transactional
-    @CacheEvict(value = "recipe_details", key = "#rateRecipeRequestDTO.userId + '_' + #recipeId")
+//    @CacheEvict(value = "recipe_details", key = "#rateRecipeRequestDTO.userId + '_' + #recipeId")
     public void rateRecipe(Long recipeId, RateRecipeRequestDTO rateRecipeRequestDTO) {
         User user = userRepository.findById(rateRecipeRequestDTO.userId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist")
