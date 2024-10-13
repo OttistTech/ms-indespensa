@@ -9,11 +9,9 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResp
 import com.ottistech.indespensa.api.ms_indespensa.model.*;
 import com.ottistech.indespensa.api.ms_indespensa.repository.*;
 import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Availability;
-import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Difficulty;
+import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Level;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -43,7 +41,7 @@ public class RecipeService {
                 user,
                 recipeDTO.title(),
                 recipeDTO.description(),
-                recipeDTO.difficulty().getDifficultyLevel(),
+                recipeDTO.level().getStringLevel(),
                 recipeDTO.preparationTime(),
                 recipeDTO.preparationMethod(),
                 recipeDTO.isShared(),
@@ -77,7 +75,7 @@ public class RecipeService {
             Long userId,
             Pageable pageable,
             String pattern,
-            Difficulty difficulty,
+            Level level,
             Availability availability,
             Integer startPreparationTime,
             Integer endPreparationTime
@@ -85,14 +83,14 @@ public class RecipeService {
         User user = userRepository.findById(userId)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
-        String difficultyLevel = difficulty == null ? "" : difficulty.getDifficultyLevel();
+        String strLevel = level == null ? "" : level.getStringLevel();
 
         Page<RecipePartialResponseDTO> responseDTOPage;
 
         if (availability.equals(Availability.IN_PANTRY)) {
-            responseDTOPage = recipeRepository.findRecipesWithIngredientsInPantryAndRating(user, pageable, pattern, difficultyLevel, startPreparationTime, endPreparationTime);
+            responseDTOPage = recipeRepository.findRecipesWithIngredientsInPantryAndRating(user, pageable, pattern, strLevel, startPreparationTime, endPreparationTime);
         } else {
-            responseDTOPage = recipeRepository.findRecipesWithIngredientsInOrNotInPantryAndRating(user, pageable, pattern, difficultyLevel, startPreparationTime, endPreparationTime);
+            responseDTOPage = recipeRepository.findRecipesWithIngredientsInOrNotInPantryAndRating(user, pageable, pattern, strLevel, startPreparationTime, endPreparationTime);
         }
 
         if (responseDTOPage.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No recipes found with this filters");
@@ -112,7 +110,7 @@ public class RecipeService {
 
         List<RecipeIngredientDetailsDTO> ingredientDetails = ingredientRepository.findIngredientsByRecipeId(recipeId, user);
 
-        return recipe.toRecipeDetailsDTO(ingredientDetails);
+        return RecipeDetailsDTO.fromPartialResponseDTO(recipe, ingredientDetails);
     }
 
     // TODO: remove/subtract the ingredients from pantry after user evaluate the recipe

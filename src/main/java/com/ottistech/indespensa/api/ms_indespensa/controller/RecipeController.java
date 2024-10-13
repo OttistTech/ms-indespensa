@@ -7,10 +7,9 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeFullInfoRes
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.RecipeService;
 import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Availability;
-import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Difficulty;
+import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Level;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +38,7 @@ public class RecipeController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "") String pattern,
-            @RequestParam(required = false, defaultValue = "") Difficulty difficulty,
+            @RequestParam(required = false, defaultValue = "") Level level,
             @RequestParam(required = false, defaultValue = "OUT_OF_PANTRY") Availability availability,
             @RequestParam(required = false, defaultValue = "0") Integer startPreparationTime,
             @RequestParam(required = false, defaultValue = "1440") Integer endPreparationTime
@@ -47,7 +46,7 @@ public class RecipeController {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return recipeService.getPaginatedRecipes(userId, pageable, pattern, difficulty, availability, startPreparationTime, endPreparationTime);
+        return recipeService.getPaginatedRecipes(userId, pageable, pattern, level, availability, startPreparationTime, endPreparationTime);
 
     }
 

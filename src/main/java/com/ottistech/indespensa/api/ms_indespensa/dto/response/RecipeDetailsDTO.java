@@ -6,7 +6,7 @@ import java.util.List;
 public record RecipeDetailsDTO(
         Long recipeId,
         String imageUrl,
-        String difficulty,
+        String level,
         String title,
         BigDecimal numStars,
         String description,
@@ -16,4 +16,22 @@ public record RecipeDetailsDTO(
         String preparationMethod,
         List<RecipeIngredientDetailsDTO> ingredients
 ) {
+    public static RecipeDetailsDTO fromPartialResponseDTO(
+            RecipePartialResponseDTO recipePartialResponseDTO,
+            List<RecipeIngredientDetailsDTO> ingredientDetails) {
+
+        return new RecipeDetailsDTO(
+                recipePartialResponseDTO.recipeId(),
+                recipePartialResponseDTO.imageUrl(),
+                recipePartialResponseDTO.level(),
+                recipePartialResponseDTO.title(),
+                recipePartialResponseDTO.numStars(),
+                recipePartialResponseDTO.description(),
+                recipePartialResponseDTO.amountIngredients(),
+                recipePartialResponseDTO.amountInPantry(),
+                recipePartialResponseDTO.preparationTime(),
+                recipePartialResponseDTO.preparationMethod(),
+                ingredientDetails
+        );
+    }
 }

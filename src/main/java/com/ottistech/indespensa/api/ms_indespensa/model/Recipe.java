@@ -39,7 +39,7 @@ public class Recipe {
 
     @NotNull(message = "Field difficulty is required")
     @Column(name = "level", nullable = false)
-    private String difficulty;
+    private String level;
 
     @NotNull(message = "Field preparationTime is required")
     @Column(name = "preparation_time", nullable = false)
@@ -63,11 +63,11 @@ public class Recipe {
     @OneToMany(mappedBy = "recipe")
     private List<CompletedRecipe> completedRecipes;
 
-    public Recipe(User createdBy, String title, String description, String difficulty, Integer preparationTime, String preparationMethod, Boolean isShared, String imageUrl) {
+    public Recipe(User createdBy, String title, String description, String level, Integer preparationTime, String preparationMethod, Boolean isShared, String imageUrl) {
         this.createdBy = createdBy;
         this.title = title;
         this.description = description;
-        this.difficulty = difficulty;
+        this.level = level;
         this.preparationTime = preparationTime;
         this.preparationMethod = preparationMethod;
         this.isShared = isShared;
