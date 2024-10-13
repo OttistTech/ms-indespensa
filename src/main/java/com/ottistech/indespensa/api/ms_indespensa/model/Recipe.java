@@ -38,7 +38,7 @@ public class Recipe {
     private String description;
 
     @NotNull(message = "Field level is required")
-    @Column(name = "level", nullable = false, length = 20)
+    @Column(name = "level", nullable = false)
     private String level;
 
     @NotNull(message = "Field preparationTime is required")

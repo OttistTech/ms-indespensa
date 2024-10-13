@@ -9,10 +9,11 @@ public record UserCredentialsResponseDTO(
     String email,
     String password,
     String enterpriseType,
-    Boolean isPremium
+    Boolean isPremium,
+    String token
 ) {
 
-    public static UserCredentialsResponseDTO fromUser(User user) {
+    public static UserCredentialsResponseDTO fromUser(User user, String token) {
         return new UserCredentialsResponseDTO(
                 user.getUserId(),
                 user.getType(),
@@ -20,7 +21,8 @@ public record UserCredentialsResponseDTO(
                 user.getEmail(),
                 user.getPassword(),
                 user.getEnterpriseType(),
-                user.getIsPremium()
+                user.getIsPremium(),
+                token == null ? null : "Bearer " + token
         );
     }
 

@@ -1,6 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.dto.response;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 public record RecipePartialResponseDTO(
         Long recipeId,
@@ -12,23 +12,6 @@ public record RecipePartialResponseDTO(
         String level,
         Integer preparationTime,
         String preparationMethod,
-        Integer numStars
+        BigDecimal numStars
 ) {
-
-    public RecipeDetailsDTO toRecipeDetailsDTO(List<RecipeIngredientDetailsDTO> ingredientDetails) {
-        return new RecipeDetailsDTO(
-                recipeId,
-                imageUrl,
-                level,
-                title,
-                numStars,
-                description,
-                amountIngredients,
-                amountInPantry,
-                preparationTime,
-                preparationMethod,
-                ingredientDetails
-        );
-    }
 }
-

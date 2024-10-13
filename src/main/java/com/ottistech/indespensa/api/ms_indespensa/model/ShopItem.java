@@ -49,11 +49,4 @@ public class ShopItem {
         this.amount = amount;
         this.purchaseDate = purchaseDate;
     }
-
-    public PantryItem toPantryItem() {
-        return new PantryItem(
-            this.getUser(),
-            this.getProduct()
-        );
-    }
 }

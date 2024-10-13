@@ -5,11 +5,10 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public enum Difficulty {
+public enum Level {
     EASY("Fácil"),
     INTER("Inter"),
     ADVANCED("Avançado");
 
-    private final String portuguese;
-
+    final String stringLevel;
 }

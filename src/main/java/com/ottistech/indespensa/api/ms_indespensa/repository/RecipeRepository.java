@@ -24,7 +24,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
         r.level,
         r.preparationTime,
         r.preparationMethod,
-        COALESCE(cr.numStars, 0)
+        CAST(ROUND(COALESCE(AVG(cr.numStars), 0), 2) AS bigdecimal)
     )
     FROM Recipe r
     LEFT JOIN r.ingredients ri
@@ -34,18 +34,19 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
         AND pi.amount > 0
         AND pi.isActive = TRUE
     LEFT JOIN CompletedRecipe cr ON cr.recipe.recipeId = r.recipeId
-        AND cr.user = :user
     WHERE
         r.isShared = TRUE AND
-        r.level LIKE CONCAT('%', :difficulty, '%') AND
-        r.preparationTime BETWEEN :startPreparationTime AND :endPreparationTime
-    GROUP BY r.recipeId, r.imageUrl, r.title, r.description, r.level, r.preparationTime, cr.numStars
+        LOWER(r.level) LIKE CONCAT('%', LOWER(:level), '%') AND
+        r.preparationTime BETWEEN :startPreparationTime AND :endPreparationTime AND
+        LOWER(r.title) LIKE CONCAT(LOWER(:pattern), '%')
+    GROUP BY r.recipeId, r.imageUrl, r.title, r.description, r.level, r.preparationTime
     ORDER BY 6 DESC
     """)
     Page<RecipePartialResponseDTO> findRecipesWithIngredientsInOrNotInPantryAndRating(
             @Param("user") User user,
             Pageable pageable,
-            String difficulty,
+            String pattern,
+            String level,
             Integer startPreparationTime,
             Integer endPreparationTime
     );
@@ -61,7 +62,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
         r.level,
         r.preparationTime,
         r.preparationMethod,
-        COALESCE(cr.numStars, 0)
+        CAST(ROUND(COALESCE(AVG(cr.numStars), 0), 2) AS bigdecimal)
     )
     FROM Recipe r
     LEFT JOIN r.ingredients ri
@@ -71,19 +72,20 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
         AND pi.amount > 0
         AND pi.isActive = TRUE
     LEFT JOIN CompletedRecipe cr ON cr.recipe.recipeId = r.recipeId
-        AND cr.user = :user
     WHERE
         r.isShared = TRUE AND
-        r.level LIKE CONCAT('%', :difficulty, '%') AND
-        r.preparationTime BETWEEN :startPreparationTime AND :endPreparationTime
-    GROUP BY r.recipeId, r.imageUrl, r.title, r.description, r.level, r.preparationTime, cr.numStars
+        LOWER(r.level) LIKE CONCAT('%', LOWER(:level), '%') AND
+        r.preparationTime BETWEEN :startPreparationTime AND :endPreparationTime AND
+        LOWER(r.title) LIKE CONCAT(LOWER(:pattern), '%')
+    GROUP BY r.recipeId, r.imageUrl, r.title, r.description, r.level, r.preparationTime
     HAVING CAST(COUNT(DISTINCT ri.ingredientFood.foodId) as int) = CAST(COUNT(DISTINCT pi.product.productId) as int)
     ORDER BY 6 DESC
     """)
     Page<RecipePartialResponseDTO> findRecipesWithIngredientsInPantryAndRating(
             @Param("user") User user,
             Pageable pageable,
-            String difficulty,
+            String pattern,
+            String level,
             Integer startPreparationTime,
             Integer endPreparationTime
     );
@@ -99,7 +101,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
         r.level,
         r.preparationTime,
         r.preparationMethod,
-        COALESCE(cr.numStars, 0)
+        CAST(ROUND(COALESCE(AVG(cr.numStars), 0), 2) AS bigdecimal)
     )
     FROM Recipe r
     LEFT JOIN r.ingredients ri
@@ -109,11 +111,12 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
         AND pi.isActive = TRUE
         AND pi.user = :user
     LEFT JOIN CompletedRecipe cr ON cr.recipe.recipeId = r.recipeId
-        AND cr.user = :user
     WHERE r.isShared = TRUE AND r.recipeId = :recipeId
-    GROUP BY r.recipeId, r.imageUrl, r.title, r.description, r.level, r.preparationTime, cr.numStars
+    GROUP BY r.recipeId, r.imageUrl, r.title, r.description, r.level, r.preparationTime
     """)
-    Optional<RecipePartialResponseDTO> findRecipeWithDetailsById(@Param("user") User user, @Param("recipeId") Long recipeId);
-
+    Optional<RecipePartialResponseDTO> findRecipeWithDetailsById(
+            @Param("user") User user,
+            @Param("recipeId") Long recipeId
+    );
 
 }

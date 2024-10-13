@@ -12,10 +12,11 @@ import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import com.ottistech.indespensa.api.ms_indespensa.repository.PantryItemRepository;
-import com.ottistech.indespensa.api.ms_indespensa.repository.ProductRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.ShopItemRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,8 @@ public class PantryItemService {
     private final UserRepository userRepository;
     private final ProductService productService;
 
+    @Transactional
+    @CacheEvict(value = "pantry_items", key = "#userId")
     public PantryItemResponseDTO createPantryItem(Long userId, CreatePantryItemDTO pantryItemDTO) {
         Product product = productService.getOrCreateProduct(pantryItemDTO.toProductDto());
 
@@ -67,6 +70,8 @@ public class PantryItemService {
         return PantryItemResponseDTO.fromPantryItem(pantryItem);
     }
 
+    // TODO: verify how to store it
+//    @Cacheable(value = "pantry_items", key = "#userId")
     public List<PantryItemPartialDTO> listPantryItems(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
@@ -79,6 +84,8 @@ public class PantryItemService {
         return userActivePantryItems;
     }
 
+    @Transactional
+    @CacheEvict(value = {"pantry_items", "pantry_item_details"}, allEntries = true)
     public List<PantryItem> updatePantryItemsAmount(List<UpdateProductItemAmountDTO> pantryItems) {
         List<PantryItem> updatedItems = new ArrayList<>();
 
@@ -101,11 +108,14 @@ public class PantryItemService {
         return updatedItems;
     }
 
+    @Cacheable(value = "pantry_item_details", key = "#pantryItemId")
     public PantryItemDetailsDTO getPantryItemDetails(Long pantryItemId) {
         return pantryItemRepository.findPantryItemDetailsById(pantryItemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No pantry item matching the given id"));
     }
 
+    @Transactional
+    @CacheEvict(value = {"pantry_items", "pantry_item_details"}, allEntries = true)
     public void addAllFromShopList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
@@ -141,6 +151,7 @@ public class PantryItemService {
     }
 
     @Transactional
+    @CacheEvict(value = {"pantry_items", "pantry_item_details"}, allEntries = true)
     public PantryItemResponseDTO addPantryItem(Long userId, AddPantryItemDTO pantryItemDTO) {
         ShopItem shopItem = shopItemRepository.findById(pantryItemDTO.shopItemId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Shop list item not found"));

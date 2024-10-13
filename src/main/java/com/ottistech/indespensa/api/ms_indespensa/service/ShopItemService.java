@@ -15,6 +15,8 @@ import com.ottistech.indespensa.api.ms_indespensa.repository.ShopItemRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,6 +33,7 @@ public class ShopItemService {
     private final ShopItemRepository shopItemRepository;
     private final ProductRepository productRepository;
 
+    @Cacheable(value = "shop_items_list", key = "#userId")
     public List<ShopItemResponseDTO> getListItem(Long userId) {
         List<ShopItemResponseDTO> listItemResponses = shopItemRepository.findAllShopItemResponseDTOByUser(userId);
 
@@ -39,6 +42,7 @@ public class ShopItemService {
         return listItemResponses;
     }
 
+    @CacheEvict(value = "shop_items_list", key = "#userId")
     @Transactional
     public ShopItemResponseDTO addShopItem(Long userId, AddShopItemDTO shopItemDTO) {
         ShopItem shopItem = shopItemRepository.findByUserAndProductWithNullPurchaseDate(userId, shopItemDTO.productId())
@@ -61,11 +65,13 @@ public class ShopItemService {
         return shopItemDTO.toShopItemResponseDto(shopItem);
     }
 
+    @Cacheable(value = "shop_items_details", key = "#shopItemId")
     public ShopItemDetailsDTO getShopItemDetails(Long shopItemId) {
         return shopItemRepository.findShopItemDetailsById(shopItemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No shop item matching the given id"));
     }
 
+    @CacheEvict(value = {"shop_items_details", "shop_items_list", "shop_items_purchase_history"}, allEntries = true)
     public List<ShopItem> updateShopItemsAmount(List<UpdateProductItemAmountDTO> shopItems) {
         List<ShopItem> updatedItems = new ArrayList<>();
 
@@ -83,6 +89,8 @@ public class ShopItemService {
         return updatedItems;
     }
 
+    // TODO: verify how to deserialize it
+//    @Cacheable(value = "shop_items_purchase_history", key = "#userId")
     public List<ShopPurchaseHistoryItemDTO> getPurchaseHistoryItems(Long userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exists"));
