@@ -37,7 +37,7 @@ public class Recipe {
     @Column(name = "description", nullable = false, columnDefinition = "TEXT")
     private String description;
 
-    @NotNull(message = "Field difficulty is required")
+    @NotNull(message = "Field level is required")
     @Column(name = "level", nullable = false)
     private String level;
 
