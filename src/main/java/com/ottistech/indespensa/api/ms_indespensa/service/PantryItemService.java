@@ -14,7 +14,6 @@ import com.ottistech.indespensa.api.ms_indespensa.repository.ShopItemRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -185,21 +184,4 @@ public class PantryItemService {
         return PantryItemResponseDTO.fromPantryItem(pantryItem);
     }
 
-//    @Cacheable(value = "pantry_items_dash_info", key = "#userId")
-    public PantryItemDashInfoDTO getPantryItemDashInfo(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
-
-        Integer itemCount = pantryItemRepository.countAllActiveItemsByUser(user);
-        LocalDate lastPurchaseDate = pantryItemRepository.getLastPurchaseDate(user);
-        Integer itemsCloseToExpirationDateCount = pantryItemRepository.countAllItemsWithValidityWithinNextThreeDays(user, LocalDate.now(), LocalDate.now().plusDays(3));
-        Integer possibleRecipes = pantryItemRepository.countAllPossibleRecipes(user.getUserId());
-
-        return new PantryItemDashInfoDTO(
-                itemCount,
-                lastPurchaseDate,
-                itemsCloseToExpirationDateCount,
-                possibleRecipes
-        );
-
-    }
 }

@@ -70,11 +70,4 @@ public class PantryItemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(itemResponseDTO);
     }
 
-    @GetMapping("/{user_id}/dash-info")
-    public ResponseEntity<?> getDashInfo(@PathVariable("user_id") Long userId) {
-
-        PantryItemDashInfoDTO pantryItemDashInfoDTO = pantryItemService.getPantryItemDashInfo(userId);
-
-        return ResponseEntity.ok(pantryItemDashInfoDTO);
-    }
 }
