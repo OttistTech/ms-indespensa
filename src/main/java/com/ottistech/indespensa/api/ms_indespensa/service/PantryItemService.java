@@ -106,7 +106,7 @@ public class PantryItemService {
         return updatedItems;
     }
 
-    @Cacheable(value = "pantry_item_details", key = "#pantryItemId")
+//    @Cacheable(value = "pantry_item_details", key = "#pantryItemId")
     public PantryItemDetailsDTO getPantryItemDetails(Long pantryItemId) {
         return pantryItemRepository.findPantryItemDetailsById(pantryItemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No pantry item matching the given id"));
@@ -185,18 +185,21 @@ public class PantryItemService {
         return PantryItemResponseDTO.fromPantryItem(pantryItem);
     }
 
+//    @Cacheable(value = "pantry_items_dash_info", key = "#userId")
     public PantryItemDashInfoDTO getPantryItemDashInfo(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
-        PantryItemCountDTO itemCount = pantryItemRepository.countAllActiveItemsByUser(user);
-        PantryItemLastPurchaseDateDTO lastPurchaseDate = pantryItemRepository.getLastPurchaseDate(user);
-        LocalDate today = LocalDate.now();
-        LocalDate threeDaysFromNow = today.plusDays(3);
-        PantryItemCountCloseExpirationDateDTO itemsCloseToExpirationDateCount = pantryItemRepository.countAllItemsWithValidityWithinNextThreeDays(user, today, threeDaysFromNow);
-        PantryItemCountPossibleRecipesDTO possibleRecipes = pantryItemRepository.countAllPossibleRecipes(user);
+        Integer itemCount = pantryItemRepository.countAllActiveItemsByUser(user);
+        LocalDate lastPurchaseDate = pantryItemRepository.getLastPurchaseDate(user);
+        Integer itemsCloseToExpirationDateCount = pantryItemRepository.countAllItemsWithValidityWithinNextThreeDays(user, LocalDate.now(), LocalDate.now().plusDays(3));
+        Integer possibleRecipes = pantryItemRepository.countAllPossibleRecipes(user.getUserId());
 
-        System.out.println(possibleRecipes);
+        return new PantryItemDashInfoDTO(
+                itemCount,
+                lastPurchaseDate,
+                itemsCloseToExpirationDateCount,
+                possibleRecipes
+        );
 
-        return  null;
     }
 }
