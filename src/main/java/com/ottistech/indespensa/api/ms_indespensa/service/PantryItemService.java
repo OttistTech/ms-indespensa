@@ -4,9 +4,7 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddPantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreatePantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartialDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.*;
 import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
@@ -185,5 +183,20 @@ public class PantryItemService {
         shopItemRepository.save(shopItem);
 
         return PantryItemResponseDTO.fromPantryItem(pantryItem);
+    }
+
+    public PantryItemDashInfoDTO getPantryItemDashInfo(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
+
+        PantryItemCountDTO itemCount = pantryItemRepository.countAllActiveItemsByUser(user);
+        PantryItemLastPurchaseDateDTO lastPurchaseDate = pantryItemRepository.getLastPurchaseDate(user);
+        LocalDate today = LocalDate.now();
+        LocalDate threeDaysFromNow = today.plusDays(3);
+        PantryItemCountCloseExpirationDateDTO itemsCloseToExpirationDateCount = pantryItemRepository.countAllItemsWithValidityWithinNextThreeDays(user, today, threeDaysFromNow);
+        PantryItemCountPossibleRecipesDTO possibleRecipes = pantryItemRepository.countAllPossibleRecipes(user);
+
+        System.out.println(possibleRecipes);
+
+        return  null;
     }
 }

@@ -1,7 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.repository;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartialDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.*;
 import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
@@ -78,4 +77,67 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
     Optional<PantryItem> findByUserIdAndProductIdAndValidityDateWhereIsActive(Long userId, Long productId, LocalDate validityDate);
 
     Optional<PantryItem> findByUserUserIdAndProductProductIdAndIsActiveAndValidityDateIsNull(Long userId, Long productId, boolean isActive);
+
+    @Query("""
+        SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemCountDTO (
+        CAST(COUNT(pi) AS int)
+        )
+        FROM PantryItem pi
+        JOIN pi.product p
+        JOIN p.foodId f
+        WHERE pi.user = :user
+        AND pi.isActive = true
+        AND pi.amount > 0
+        """)
+    PantryItemCountDTO countAllActiveItemsByUser(User user);
+
+    @Query("""
+        SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemLastPurchaseDateDTO (
+        MAX(pi.purchaseDate)
+        )
+        FROM PantryItem pi
+        JOIN pi.product p
+        JOIN p.foodId f
+        WHERE pi.user = :user
+        AND pi.isActive = true
+        AND pi.amount > 0
+        """)
+    PantryItemLastPurchaseDateDTO getLastPurchaseDate(User user);
+
+    @Query("""
+        SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemCountCloseExpirationDateDTO(
+            CAST(COUNT(pi) AS int)
+        )
+        FROM PantryItem pi
+        JOIN pi.product p
+        JOIN p.foodId f
+        WHERE pi.user = :user
+        AND pi.isActive = true
+        AND pi.amount > 0
+        AND pi.validityDate BETWEEN :today AND :threeDaysFromNow
+        """)
+    PantryItemCountCloseExpirationDateDTO countAllItemsWithValidityWithinNextThreeDays(
+            User user,
+            LocalDate today,
+            LocalDate threeDaysFromNow
+    );
+
+    @Query("""
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemCountPossibleRecipesDTO(
+        CAST(COUNT(r) AS int)
+    )
+    FROM Recipe r
+    LEFT JOIN r.ingredients ri
+    LEFT JOIN Product p ON p.foodId = ri.ingredientFood
+    LEFT JOIN PantryItem pi ON pi.product.productId = p.productId
+        AND pi.user = :user
+        AND pi.amount > 0
+        AND pi.isActive = TRUE
+    WHERE
+        r.isShared = TRUE
+    GROUP BY r.recipeId
+    HAVING CAST(COUNT(DISTINCT ri.ingredientFood.foodId) as int) = CAST(COUNT(DISTINCT pi.product.productId) as int)
+    ORDER BY 6 DESC
+    """)
+    PantryItemCountPossibleRecipesDTO countAllPossibleRecipes(User user);
 }
