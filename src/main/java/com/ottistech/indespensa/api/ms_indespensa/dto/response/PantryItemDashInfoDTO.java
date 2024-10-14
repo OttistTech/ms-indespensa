@@ -1,9 +1,11 @@
 package com.ottistech.indespensa.api.ms_indespensa.dto.response;
 
+import java.time.LocalDate;
+
 public record PantryItemDashInfoDTO(
-        PantryItemCountDTO countItemsInPantry,
-        PantryItemLastPurchaseDateDTO pantryItemLastPurchaseDateDTO,
-        PantryItemCountCloseExpirationDateDTO pantryItemCountCloseExpirationDateDTO,
-        PantryItemCountPossibleRecipesDTO pantryItemCountPossibleRecipesDTO
+        Integer itemsInPantry,
+        LocalDate lastPurchaseDate,
+        Integer itemsCloseExpirationDate,
+        Integer possibleRecipesInPantry
 ) {
 }
