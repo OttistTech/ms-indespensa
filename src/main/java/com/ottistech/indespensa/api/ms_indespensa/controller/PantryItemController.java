@@ -75,6 +75,6 @@ public class PantryItemController {
 
         PantryItemDashInfoDTO pantryItemDashInfoDTO = pantryItemService.getPantryItemDashInfo(userId);
 
-        return null;
+        return ResponseEntity.ok(pantryItemDashInfoDTO);
     }
 }
