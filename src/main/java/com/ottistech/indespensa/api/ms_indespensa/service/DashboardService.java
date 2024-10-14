@@ -22,7 +22,8 @@ public class DashboardService {
 
         Integer itemCount = pantryItemRepository.countAllActiveItemsByUser(user);
         LocalDate lastPurchaseDate = pantryItemRepository.getLastPurchaseDate(user);
-        Integer itemsCloseToExpirationDateCount = pantryItemRepository.countAllItemsWithValidityWithinNextThreeDays(user, LocalDate.now(), LocalDate.now().plusDays(3));
+        int daysFromNow = 3;
+        Integer itemsCloseToExpirationDateCount = pantryItemRepository.countAllItemsWithValidityWithinNextProvidedDays(user, LocalDate.now(), LocalDate.now().plusDays(daysFromNow));
         Integer possibleRecipes = pantryItemRepository.countAllPossibleRecipes(user.getUserId());
 
         return new DashboardInfoDTO(

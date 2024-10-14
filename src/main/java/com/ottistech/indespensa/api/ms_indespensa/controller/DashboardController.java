@@ -16,7 +16,7 @@ public class DashboardController {
 
     private final DashboardService dashboardService;
 
-    @GetMapping("/{user_id}")
+    @GetMapping("/{user_id}/personal")
     public ResponseEntity<?> getDashInfo(@PathVariable("user_id") Long userId) {
 
         DashboardInfoDTO dashboardInfoDTO = dashboardService.getPantryItemDashInfo(userId);

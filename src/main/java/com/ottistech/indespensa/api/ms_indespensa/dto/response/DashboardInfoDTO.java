@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public record DashboardInfoDTO(
         Integer itemsInPantry,
         LocalDate lastPurchaseDate,
-        Integer itemsCloseExpirationDate,
+        Integer itemsCloseValidityDate,
         Integer possibleRecipesInPantry
 ) {
 }

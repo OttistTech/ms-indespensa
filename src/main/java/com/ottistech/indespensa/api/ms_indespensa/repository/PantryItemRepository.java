@@ -111,12 +111,12 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
         WHERE pi.user = :user
         AND pi.isActive = true
         AND pi.amount > 0
-        AND pi.validityDate BETWEEN :today AND :threeDaysFromNow
+        AND pi.validityDate BETWEEN :today AND :providedDaysFromNow
         """)
-    Integer countAllItemsWithValidityWithinNextThreeDays(
+    Integer countAllItemsWithValidityWithinNextProvidedDays(
             User user,
             LocalDate today,
-            LocalDate threeDaysFromNow
+            LocalDate providedDaysFromNow
     );
 
     @Query(value = """
