@@ -77,7 +77,7 @@ public class UserService {
         }
     }
 
-    @CacheEvict(value = {"user_credentials", "user_credentials_half_info"}, key = "#userId")
+    @CacheEvict(value = {"user_credentials", "user_credentials_half_info", "all_users_credentials_full_info"}, key = "#userId")
     public void deactivateUserById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist"));
@@ -128,11 +128,9 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No users found");
         }
 
-        // TODO: verify if we can do the repository return the dto
         List<UserFullInfoResponseDTO> userFullInfoResponses = new ArrayList<>();
 
         for (User user : users) {
-
             Address address = addressRepository.findByUserId(user.getUserId())
                     .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found for user with ID: " + user.getUserId()));
 
@@ -147,7 +145,7 @@ public class UserService {
         return userFullInfoResponses;
     }
 
-    @CacheEvict(value = {"user_credentials", "user_credentials_half_info"}, key = "#userId")
+    @CacheEvict(value = {"user_credentials", "user_credentials_half_info", "all_users_credentials_full_info"}, key = "#userId")
     public UserCredentialsResponseDTO updateUser(Long userId, UpdateUserDTO userDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
@@ -182,7 +180,7 @@ public class UserService {
         return UserCredentialsResponseDTO.fromUser(user, null);
     }
 
-    @CacheEvict(value = {"user_credentials", "user_credentials_half_info"}, key = "#userId")
+    @CacheEvict(value = {"user_credentials", "user_credentials_half_info", "all_users_credentials_full_info"}, key = "#userId")
     public void updateUserBecomePremium(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist")

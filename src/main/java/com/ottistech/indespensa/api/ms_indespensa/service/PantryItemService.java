@@ -40,7 +40,7 @@ public class PantryItemService {
         Product product = productService.getOrCreateProduct(pantryItemDTO.toProductDto());
 
         User user = userRepository.findById(userId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found and can't add an item to his pantry"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found and can't add an item to his pantry"));
 
         Optional<PantryItem> pantryItemOptional = pantryItemRepository.findExistentPantryItem(user, product, pantryItemDTO.validityDate());
         PantryItem pantryItem;
@@ -105,8 +105,7 @@ public class PantryItemService {
         return updatedItems;
     }
 
-
-    // @Cacheable(value = "pantry_item_details", key = "#pantryItemId")
+    //    @Cacheable(value = "pantry_item_details", key = "#pantryItemId")
     public PantryItemDetailsDTO getPantryItemDetails(Long pantryItemId) {
         return pantryItemRepository.findPantryItemDetailsById(pantryItemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No pantry item matching the given id"));
@@ -159,12 +158,12 @@ public class PantryItemService {
         }
 
         PantryItem pantryItem = pantryItemRepository
-            .findByUserIdAndProductIdAndValidityDateWhereIsActive(
-                shopItem.getUser().getUserId(),
-                shopItem.getProduct().getProductId(),
-                pantryItemDTO.validityDate()
-            )
-            .orElse(null);
+                .findByUserIdAndProductIdAndValidityDateWhereIsActive(
+                        shopItem.getUser().getUserId(),
+                        shopItem.getProduct().getProductId(),
+                        pantryItemDTO.validityDate()
+                )
+                .orElse(null);
 
         if (pantryItem != null) {
             pantryItem.setAmount(pantryItem.getAmount() + shopItem.getAmount());
@@ -184,5 +183,4 @@ public class PantryItemService {
 
         return PantryItemResponseDTO.fromPantryItem(pantryItem);
     }
-
 }

@@ -5,12 +5,12 @@ import com.ottistech.indespensa.api.ms_indespensa.model.Cep;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import jakarta.validation.constraints.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public record SignUpUserDTO(
         @NotNull(message = "Field type is required") String type,
         @NotNull(message = "Field name is required") String name,
-        Date birthDate,
+        LocalDate birthDate,
         String enterpriseType,
         @Email(message = "Email isn't right") @NotNull(message = "Field email is required") String email,
         @NotNull(message = "Field password is required") @Size(min = 8, message = "Field password shoud have at least 8 characters") String password,

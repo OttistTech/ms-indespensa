@@ -5,6 +5,7 @@ import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import com.ottistech.indespensa.api.ms_indespensa.repository.PantryItemRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,6 +18,8 @@ public class DashboardService {
     private final UserRepository userRepository;
     private final PantryItemRepository pantryItemRepository;
 
+    // TODO: verify when to cache_evict it
+    @Cacheable(value = "user_dash_info", key = "#userId")
     public DashboardInfoDTO getPantryItemDashInfo(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 

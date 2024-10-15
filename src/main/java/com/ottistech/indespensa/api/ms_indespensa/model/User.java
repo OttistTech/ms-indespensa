@@ -8,8 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -33,7 +33,7 @@ public class User {
     private String name;
 
     @Column(name = "birthdate")
-    private Date birthDate;
+    private LocalDate birthDate;
 
     @Column(name = "enterprise_type", length = 100)
     private String enterpriseType = null;
@@ -56,7 +56,7 @@ public class User {
     @Column(name = "is_premium")
     private Boolean isPremium = Boolean.FALSE;
 
-    public User(String type, String name, Date birthDate, String enterpriseType, String email, String password) {
+    public User(String type, String name, LocalDate birthDate, String enterpriseType, String email, String password) {
         this.type = type;
         this.name = name;
         this.birthDate = birthDate;

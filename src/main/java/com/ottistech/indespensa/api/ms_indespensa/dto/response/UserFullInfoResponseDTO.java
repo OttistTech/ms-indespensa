@@ -1,16 +1,20 @@
 package com.ottistech.indespensa.api.ms_indespensa.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.ottistech.indespensa.api.ms_indespensa.model.Address;
 import com.ottistech.indespensa.api.ms_indespensa.model.Cep;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 
-import java.util.Date;
+import java.time.LocalDate;
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
 public record UserFullInfoResponseDTO(
         Long userId,
         String type,
         String name,
-        Date birthDate,
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        LocalDate birthDate,
         String enterpriseType,
         String email,
         String password,
