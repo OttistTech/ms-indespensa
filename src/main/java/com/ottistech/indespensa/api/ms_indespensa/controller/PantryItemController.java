@@ -2,10 +2,8 @@ package com.ottistech.indespensa.api.ms_indespensa.controller;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddPantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreatePantryItemDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartialDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.*;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
 import com.ottistech.indespensa.api.ms_indespensa.service.PantryItemService;
 import jakarta.validation.Valid;
@@ -71,4 +69,5 @@ public class PantryItemController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(itemResponseDTO);
     }
+
 }

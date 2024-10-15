@@ -4,9 +4,7 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddPantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreatePantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartialDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.*;
 import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
@@ -16,7 +14,6 @@ import com.ottistech.indespensa.api.ms_indespensa.repository.ShopItemRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -108,6 +105,7 @@ public class PantryItemService {
         return updatedItems;
     }
 
+
     // @Cacheable(value = "pantry_item_details", key = "#pantryItemId")
     public PantryItemDetailsDTO getPantryItemDetails(Long pantryItemId) {
         return pantryItemRepository.findPantryItemDetailsById(pantryItemId)
@@ -186,4 +184,5 @@ public class PantryItemService {
 
         return PantryItemResponseDTO.fromPantryItem(pantryItem);
     }
+
 }
