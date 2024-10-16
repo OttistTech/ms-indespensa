@@ -139,6 +139,7 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
 
     @Query("""
     SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemsNextToValidityDate(
+        pi.pantryItemId,
         p.name,
         pi.amount,
         p.unit,
