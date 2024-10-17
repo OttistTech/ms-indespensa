@@ -4,6 +4,7 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.query.ShopPurchaseHistoryD
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
+import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -81,4 +82,14 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
     List<ShopPurchaseHistoryDTO> findAllPurchaseHistoryItemsByUserId(Long userId);
 
     List<ShopItem> findAllByUserUserIdAndPurchaseDateIsNullAndAmountGreaterThan(Long userId, Integer amount);
+
+    @Query("""
+    SELECT
+        COUNT(DISTINCT si.purchaseDate)
+    FROM ShopItem si
+    JOIN si.product p
+    WHERE si.user = :user
+    AND si.purchaseDate IS NOT NULL
+    """)
+    Integer countAllPurchaseHistoryItemsByUser(User user);
 }
