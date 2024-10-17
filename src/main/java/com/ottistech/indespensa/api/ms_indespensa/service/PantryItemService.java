@@ -190,7 +190,7 @@ public class PantryItemService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists")
         );
 
-        int daysFromNow = 3;
+        int daysFromNow = 15;
         List<PantryItemsNextToValidityDate> itemsNextToValidityDate = pantryItemRepository.findAllItemsWithValidityWithinNextProvidedDays(user, LocalDate.now(), LocalDate.now().plusDays(daysFromNow));
 
         if (itemsNextToValidityDate.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No pantry items next to validity date");

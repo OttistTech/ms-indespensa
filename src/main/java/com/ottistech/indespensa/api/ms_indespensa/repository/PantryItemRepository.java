@@ -152,6 +152,8 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
     AND pi.isActive = true
     AND pi.amount > 0
     AND pi.validityDate BETWEEN :today AND :providedDaysFromNow
+    ORDER BY pi.validityDate DESC
+    LIMIT 3
     """)
     List<PantryItemsNextToValidityDate> findAllItemsWithValidityWithinNextProvidedDays(
             User user,
