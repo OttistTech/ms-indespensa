@@ -136,4 +136,26 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
     ) AS matching_recipes
     """, nativeQuery = true)
     Integer countAllPossibleRecipes(Long userId);
+
+    @Query("""
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemsNextToValidityDate(
+        pi.pantryItemId,
+        p.name,
+        pi.amount,
+        p.unit,
+        pi.validityDate
+    )
+    FROM PantryItem pi
+    JOIN pi.product p
+    JOIN p.foodId f
+    WHERE pi.user = :user
+    AND pi.isActive = true
+    AND pi.amount > 0
+    AND pi.validityDate BETWEEN :today AND :providedDaysFromNow
+    """)
+    List<PantryItemsNextToValidityDate> findAllItemsWithValidityWithinNextProvidedDays(
+            User user,
+            LocalDate today,
+            LocalDate providedDaysFromNow
+    );
 }

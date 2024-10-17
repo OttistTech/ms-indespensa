@@ -70,4 +70,12 @@ public class PantryItemController {
         return ResponseEntity.status(HttpStatus.CREATED).body(itemResponseDTO);
     }
 
+    @GetMapping("/{user_id}/soon-to-expire")
+    public ResponseEntity<List<PantryItemsNextToValidityDate>> findExpiringPantryItemsByUser(@PathVariable("user_id") Long userId) {
+
+        List<PantryItemsNextToValidityDate> itemsNextToValidityDate = pantryItemService.getPantryItemsNextToValidityDate(userId);
+
+        return ResponseEntity.ok(itemsNextToValidityDate);
+    }
+
 }

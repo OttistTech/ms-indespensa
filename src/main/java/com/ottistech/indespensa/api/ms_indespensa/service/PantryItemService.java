@@ -185,4 +185,17 @@ public class PantryItemService {
         return PantryItemResponseDTO.fromPantryItem(pantryItem);
     }
 
+    public List<PantryItemsNextToValidityDate> getPantryItemsNextToValidityDate(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists")
+        );
+
+        int daysFromNow = 3;
+        List<PantryItemsNextToValidityDate> itemsNextToValidityDate = pantryItemRepository.findAllItemsWithValidityWithinNextProvidedDays(user, LocalDate.now(), LocalDate.now().plusDays(daysFromNow));
+
+        if (itemsNextToValidityDate.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No pantry items next to validity date");
+
+        return itemsNextToValidityDate;
+
+    }
 }
