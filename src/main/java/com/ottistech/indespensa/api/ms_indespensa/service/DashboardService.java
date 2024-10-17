@@ -1,6 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.DashboardInfoDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.DashboardPersonalInfoDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.DashboardProfileInfoDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import com.ottistech.indespensa.api.ms_indespensa.repository.CompletedRecipeRepository;
@@ -22,7 +22,7 @@ public class DashboardService {
     private final ShopItemRepository shopItemRepository;
     private final CompletedRecipeRepository completedRecipeRepository;
 
-    public DashboardInfoDTO getPantryItemDashInfo(Long userId) {
+    public DashboardPersonalInfoDTO getPantryItemDashInfo(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
         Integer itemsInPantryCount = pantryItemRepository.countAllActiveItemsByUser(user);
@@ -31,7 +31,7 @@ public class DashboardService {
         Integer itemsCloseToExpirationDateCount = pantryItemRepository.countAllItemsWithValidityWithinNextProvidedDays(user, LocalDate.now(), LocalDate.now().plusDays(daysFromNow));
         Integer possibleRecipes = pantryItemRepository.countAllPossibleRecipes(user.getUserId());
 
-        return DashboardInfoDTO.fromAllDetails(itemsInPantryCount, lastPurchaseDate, itemsCloseToExpirationDateCount, possibleRecipes);
+        return DashboardPersonalInfoDTO.fromAllDetails(itemsInPantryCount, lastPurchaseDate, itemsCloseToExpirationDateCount, possibleRecipes);
     }
 
     public DashboardProfileInfoDTO getProfileDashInfo(Long userId) {

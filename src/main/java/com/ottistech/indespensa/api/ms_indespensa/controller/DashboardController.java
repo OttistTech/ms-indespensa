@@ -1,6 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.DashboardInfoDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.response.DashboardPersonalInfoDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.response.DashboardProfileInfoDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.DashboardService;
 import lombok.AllArgsConstructor;
@@ -18,15 +18,15 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping("/{user_id}/personal")
-    public ResponseEntity<DashboardInfoDTO> getDashInfo(@PathVariable("user_id") Long userId) {
+    public ResponseEntity<DashboardPersonalInfoDTO> getDashInfo(@PathVariable("user_id") Long userId) {
 
-        DashboardInfoDTO dashboardInfoDTO = dashboardService.getPantryItemDashInfo(userId);
+        DashboardPersonalInfoDTO dashboardPersonalInfoDTO = dashboardService.getPantryItemDashInfo(userId);
 
-        return ResponseEntity.ok(dashboardInfoDTO);
+        return ResponseEntity.ok(dashboardPersonalInfoDTO);
     }
 
     @GetMapping("/{user_id}/profile")
-    public ResponseEntity<?> getProfileInfo(@PathVariable("user_id") Long userId) {
+    public ResponseEntity<DashboardProfileInfoDTO> getProfileInfo(@PathVariable("user_id") Long userId) {
 
         DashboardProfileInfoDTO dashboardProfileInfoDTO = dashboardService.getProfileDashInfo(userId);
 
