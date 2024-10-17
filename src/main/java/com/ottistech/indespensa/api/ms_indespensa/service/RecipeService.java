@@ -70,12 +70,12 @@ public class RecipeService {
         return RecipeFullInfoResponseDTO.fromRecipeAndIngredients(user, recipe, ingredients);
     }
 
-    // TODO: verify how to store it correctly
     public Page<RecipePartialResponseDTO> getPaginatedRecipes(
             Long userId,
             Pageable pageable,
             String pattern,
             Level level,
+            Boolean createdByYou,
             Availability availability,
             Integer startPreparationTime,
             Integer endPreparationTime
@@ -85,17 +85,21 @@ public class RecipeService {
 
         String strLevel = level == null ? "" : level.getStringLevel();
 
-        Page<RecipePartialResponseDTO> responseDTOPage;
+        Page<RecipePartialResponseDTO> recipes;
 
-        if (availability.equals(Availability.IN_PANTRY)) {
-            responseDTOPage = recipeRepository.findRecipesWithIngredientsInPantryAndRating(user, pageable, pattern, strLevel, startPreparationTime, endPreparationTime);
+        if (createdByYou) {
+            recipes = recipeRepository.findRecipesCreatedByYouWithIngredientsInPantryAndRating(user, pageable);
         } else {
-            responseDTOPage = recipeRepository.findRecipesWithIngredientsInOrNotInPantryAndRating(user, pageable, pattern, strLevel, startPreparationTime, endPreparationTime);
+            if (availability == Availability.IN_PANTRY) {
+                recipes = recipeRepository.findRecipesWithIngredientsInPantryAndRating(user, pageable, pattern, strLevel, startPreparationTime, endPreparationTime);
+            } else {
+                recipes = recipeRepository.findRecipesWithIngredientsInOrNotInPantryAndRating(user, pageable, pattern, strLevel, startPreparationTime, endPreparationTime);
+            }
         }
 
-        if (responseDTOPage.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No recipes found with this filters");
+        if (recipes.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No recipes found with this filters");
 
-        return responseDTOPage;
+        return recipes;
     }
 
     // TODO: this cache must be evicted when user evaluate a recipe, cause the avg will change
