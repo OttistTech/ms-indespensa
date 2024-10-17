@@ -158,4 +158,21 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
             LocalDate today,
             LocalDate providedDaysFromNow
     );
+
+    @Query(value = """
+    SELECT
+        COUNT(*)
+    FROM PantryItem pi
+    JOIN pi.product p
+    JOIN p.foodId f
+    WHERE
+        pi.user = :user AND
+        pi.isActive = true AND
+        pi.amount > 0 AND 
+        pi.validityDate < :today
+    """)
+    Integer countAllItemsAlreadyExpired(
+            User user,
+            LocalDate today
+    );
 }
