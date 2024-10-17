@@ -35,7 +35,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
         AND pi.isActive = TRUE
     LEFT JOIN CompletedRecipe cr ON cr.recipe.recipeId = r.recipeId
     WHERE
-        r.isShared = TRUE AND
+        (r.isShared = TRUE OR r.createdBy = :user) AND
         LOWER(r.level) LIKE CONCAT('%', LOWER(:level), '%') AND
         r.preparationTime BETWEEN :startPreparationTime AND :endPreparationTime AND
         LOWER(r.title) LIKE CONCAT(LOWER(:pattern), '%')
@@ -119,4 +119,34 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             @Param("recipeId") Long recipeId
     );
 
+    @Query("""
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO(
+        r.recipeId,
+        r.imageUrl,
+        r.title,
+        r.description,
+        CAST(COUNT(DISTINCT ri.ingredientFood.foodId) as int),
+        CAST(COUNT(DISTINCT pi.product.productId) as int),
+        r.level,
+        r.preparationTime,
+        r.preparationMethod,
+        CAST(ROUND(COALESCE(AVG(cr.numStars), 0), 2) AS bigdecimal)
+    )
+    FROM Recipe r
+    LEFT JOIN r.ingredients ri
+    LEFT JOIN Product p ON p.foodId = ri.ingredientFood
+    LEFT JOIN PantryItem pi ON pi.product.productId = p.productId
+        AND pi.user = :user
+        AND pi.amount > 0
+        AND pi.isActive = TRUE
+    LEFT JOIN CompletedRecipe cr ON cr.recipe.recipeId = r.recipeId
+    WHERE
+        r.createdBy = :user
+    GROUP BY r.recipeId, r.imageUrl, r.title, r.description, r.level, r.preparationTime
+    ORDER BY 6 DESC
+    """)
+    Page<RecipePartialResponseDTO> findRecipesCreatedByYouWithIngredientsInPantryAndRating(
+            @Param("user") User user,
+            Pageable pageable
+    );
 }

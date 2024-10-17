@@ -39,6 +39,7 @@ public class RecipeController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "") String pattern,
             @RequestParam(required = false, defaultValue = "") Level level,
+            @RequestParam(required = false) Boolean createdByYou,
             @RequestParam(required = false, defaultValue = "OUT_OF_PANTRY") Availability availability,
             @RequestParam(required = false, defaultValue = "0") Integer startPreparationTime,
             @RequestParam(required = false, defaultValue = "1440") Integer endPreparationTime
@@ -46,8 +47,7 @@ public class RecipeController {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return recipeService.getPaginatedRecipes(userId, pageable, pattern, level, availability, startPreparationTime, endPreparationTime);
-
+        return recipeService.getPaginatedRecipes(userId, pageable, pattern, level, createdByYou, availability, startPreparationTime, endPreparationTime);
     }
 
     @GetMapping("/{recipe_id}/details")
