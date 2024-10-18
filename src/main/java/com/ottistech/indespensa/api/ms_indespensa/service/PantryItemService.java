@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.ottistech.indespensa.api.ms_indespensa.utils.Constants.DAYS_FROM_NOW;
+
 @AllArgsConstructor
 @Service
 public class PantryItemService {
@@ -190,8 +192,7 @@ public class PantryItemService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists")
         );
 
-        int daysFromNow = 15;
-        List<PantryItemsNextToValidityDate> itemsNextToValidityDate = pantryItemRepository.findAllItemsWithValidityWithinNextProvidedDays(user, LocalDate.now(), LocalDate.now().plusDays(daysFromNow));
+        List<PantryItemsNextToValidityDate> itemsNextToValidityDate = pantryItemRepository.findAllItemsWithValidityWithinNextProvidedDays(user, LocalDate.now(), LocalDate.now().plusDays(DAYS_FROM_NOW));
 
         if (itemsNextToValidityDate.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No pantry items next to validity date");
 
