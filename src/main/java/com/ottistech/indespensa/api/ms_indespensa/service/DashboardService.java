@@ -14,6 +14,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 
+import static com.ottistech.indespensa.api.ms_indespensa.utils.Constants.DAYS_FROM_NOW;
+
 @Service
 @AllArgsConstructor
 public class DashboardService {
@@ -27,8 +29,7 @@ public class DashboardService {
 
         Integer itemsInPantryCount = pantryItemRepository.countAllActiveItemsByUser(user);
         LocalDate lastPurchaseDate = pantryItemRepository.getLastPurchaseDate(user);
-        int daysFromNow = 15;
-        Integer itemsCloseToExpirationDateCount = pantryItemRepository.countAllItemsWithValidityWithinNextProvidedDays(user, LocalDate.now(), LocalDate.now().plusDays(daysFromNow));
+        Integer itemsCloseToExpirationDateCount = pantryItemRepository.countAllItemsWithValidityWithinNextProvidedDays(user, LocalDate.now(), LocalDate.now().plusDays(DAYS_FROM_NOW));
         Integer possibleRecipes = pantryItemRepository.countAllPossibleRecipes(user.getUserId());
 
         return DashboardPersonalInfoDTO.fromAllDetails(itemsInPantryCount, lastPurchaseDate, itemsCloseToExpirationDateCount, possibleRecipes);
