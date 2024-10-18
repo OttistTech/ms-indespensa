@@ -39,7 +39,7 @@ public class RecipeController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "") String pattern,
             @RequestParam(required = false, defaultValue = "") Level level,
-            @RequestParam(required = false) Boolean createdByYou,
+            @RequestParam(required = false, defaultValue = "false") Boolean createdByYou,
             @RequestParam(required = false, defaultValue = "OUT_OF_PANTRY") Availability availability,
             @RequestParam(required = false, defaultValue = "0") Integer startPreparationTime,
             @RequestParam(required = false, defaultValue = "1440") Integer endPreparationTime
