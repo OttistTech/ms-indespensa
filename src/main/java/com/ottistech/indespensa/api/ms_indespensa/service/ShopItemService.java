@@ -103,6 +103,7 @@ public class ShopItemService {
                 allPurchaseHistoryItems.stream()
                         .collect(Collectors.groupingBy(
                                 ShopPurchaseHistoryDTO::purchaseDate,
+                                LinkedHashMap::new,
                                 Collectors.mapping(result -> new ShopPurchaseHistoryDataDTO(
                                         result.productId(),
                                         result.name(),
@@ -112,6 +113,7 @@ public class ShopItemService {
                         ));
 
         return historyMap.entrySet().stream()
+                .sorted(Map.Entry.<LocalDate, List<ShopPurchaseHistoryDataDTO>>comparingByKey().reversed())
                 .map(entry -> new ShopPurchaseHistoryItemDTO(
                         entry.getKey(),
                         entry.getValue().size(),
