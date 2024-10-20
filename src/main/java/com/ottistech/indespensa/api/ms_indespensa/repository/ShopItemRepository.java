@@ -78,6 +78,7 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
     WHERE si.user.userId = :userId
     AND si.purchaseDate IS NOT NULL
     GROUP BY 1, 2, 3, 4
+    ORDER BY si.purchaseDate DESC
     """)
     List<ShopPurchaseHistoryDTO> findAllPurchaseHistoryItemsByUserId(Long userId);
 
