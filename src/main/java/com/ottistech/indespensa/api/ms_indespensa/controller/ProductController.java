@@ -17,7 +17,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @GetMapping("/barcode/{barcode}")
+    @GetMapping("/barcode/{barcode}/details")
     public ResponseEntity<ProductResponseDTO> searchProductByBarcode(@PathVariable("barcode") String barcode) {
         ProductResponseDTO productResponseDTO = productService.getProductByBarcode(barcode);
 
