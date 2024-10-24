@@ -1,6 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.repository;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.recipe.response.RecipePartialResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.Recipe;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import org.springframework.data.domain.Page;
@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     @Query("""
-    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO(
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.recipe.response.RecipePartialResponseDTO(
         r.recipeId,
         r.imageUrl,
         r.title,
@@ -52,7 +52,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     );
 
     @Query("""
-    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO(
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.recipe.response.RecipePartialResponseDTO(
         r.recipeId,
         r.imageUrl,
         r.title,
@@ -91,7 +91,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     );
 
     @Query("""
-    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO(
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.recipe.response.RecipePartialResponseDTO(
         r.recipeId,
         r.imageUrl,
         r.title,
@@ -120,7 +120,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     );
 
     @Query("""
-    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO(
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.recipe.response.RecipePartialResponseDTO(
         r.recipeId,
         r.imageUrl,
         r.title,

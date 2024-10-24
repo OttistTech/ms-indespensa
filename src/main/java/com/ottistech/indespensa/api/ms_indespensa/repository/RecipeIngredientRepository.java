@@ -1,6 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.repository;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeIngredientDetailsDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.recipe_ingredient.response.RecipeIngredientDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.RecipeIngredient;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +12,7 @@ import java.util.List;
 public interface RecipeIngredientRepository extends JpaRepository<RecipeIngredient, Long> {
 
     @Query("""
-    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeIngredientDetailsDTO(
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.recipe_ingredient.response.RecipeIngredientDetailsDTO(
         ri.ingredientFood.foodId,
         ri.ingredientFood.foodName,
         ri.amount,

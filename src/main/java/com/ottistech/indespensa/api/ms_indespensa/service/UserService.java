@@ -1,10 +1,10 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.LoginUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.SignUpUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserCredentialsResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserFullInfoResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.request.LoginUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.request.SignUpUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.request.UpdateUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.response.UserCredentialsResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.response.UserFullInfoResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.exception.EmailAlreadyInUseException;
 import com.ottistech.indespensa.api.ms_indespensa.exception.IncorrectPasswordException;
 import com.ottistech.indespensa.api.ms_indespensa.exception.UserAlreadyDeactivatedException;
@@ -51,6 +51,7 @@ public class UserService {
         addressRepository.save(address);
 
         String token = null;
+
         if (user.getType().equals("ADMIN"))  {
             token = jwtTokenService.generateToken(user);
         }

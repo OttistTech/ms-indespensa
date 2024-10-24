@@ -1,7 +1,8 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.DashboardPersonalInfoDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.DashboardProfileInfoDTO;
+import com.ottistech.indespensa.api.ms_indespensa.controller.contract.DashboardContract;
+import com.ottistech.indespensa.api.ms_indespensa.dto.dashboard.response.DashboardPersonalInfoDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.dashboard.response.DashboardProfileInfoDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.DashboardService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,12 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/dashboard")
 @AllArgsConstructor
-public class DashboardController {
+public class DashboardController implements DashboardContract {
 
     private final DashboardService dashboardService;
 
     @GetMapping("/{user_id}/personal")
-    public ResponseEntity<DashboardPersonalInfoDTO> getDashInfo(@PathVariable("user_id") Long userId) {
+    public ResponseEntity<DashboardPersonalInfoDTO> getDashInfo(
+            @PathVariable("user_id")
+            Long userId
+    ) {
 
         DashboardPersonalInfoDTO dashboardPersonalInfoDTO = dashboardService.getPantryItemDashInfo(userId);
 
@@ -26,7 +30,10 @@ public class DashboardController {
     }
 
     @GetMapping("/{user_id}/profile")
-    public ResponseEntity<DashboardProfileInfoDTO> getProfileInfo(@PathVariable("user_id") Long userId) {
+    public ResponseEntity<DashboardProfileInfoDTO> getProfileInfo(
+            @PathVariable("user_id")
+            Long userId
+    ) {
 
         DashboardProfileInfoDTO dashboardProfileInfoDTO = dashboardService.getProfileDashInfo(userId);
 

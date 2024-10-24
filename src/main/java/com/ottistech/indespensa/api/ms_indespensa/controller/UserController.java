@@ -1,10 +1,11 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.LoginUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.SignUpUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserCredentialsResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserFullInfoResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.controller.contract.UserContract;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.request.LoginUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.request.SignUpUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.request.UpdateUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.response.UserCredentialsResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.response.UserFullInfoResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -18,12 +19,16 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/users")
-public class UserController {
+public class UserController implements UserContract {
 
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@RequestBody @Valid SignUpUserDTO signUpUserDTO) {
+    public ResponseEntity<UserCredentialsResponseDTO> registerUser(
+            @RequestBody
+            @Valid
+            SignUpUserDTO signUpUserDTO
+    ) {
 
         UserCredentialsResponseDTO userCredentialsResponse = userService.signUpUser(signUpUserDTO);
 
@@ -31,7 +36,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody @Valid LoginUserDTO loginUserDTO) {
+    public ResponseEntity<UserCredentialsResponseDTO> loginUser(
+            @RequestBody
+            @Valid
+            LoginUserDTO loginUserDTO
+    ) {
 
         UserCredentialsResponseDTO userCredentials = userService.getUserCredentials(loginUserDTO);
 
@@ -39,7 +48,10 @@ public class UserController {
     }
 
     @DeleteMapping("/deactivation/{id}")
-    public ResponseEntity<Void> deactivateUser(@PathVariable("id") Long userId) {
+    public ResponseEntity<Void> deactivateUser(
+            @PathVariable("id")
+            Long userId
+    ) {
 
         userService.deactivateUserById(userId);
 
@@ -47,8 +59,13 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserFullInfo(@PathVariable("id") Long userId,
-                                             @RequestParam("full-info") boolean fullInfo) {
+    public ResponseEntity<?> getUserFullInfo(
+            @PathVariable("id")
+            Long userId,
+
+            @RequestParam("full-info")
+            boolean fullInfo
+    ) {
 
         if (fullInfo) {
             UserFullInfoResponseDTO userFullInfo = userService.getUserFullInfo(userId);
@@ -69,26 +86,41 @@ public class UserController {
         return ResponseEntity.ok(userFullInfoList);
     }
 
+    @Override
     @GetMapping("/admin/{id}")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    public ResponseEntity<UserFullInfoResponseDTO> getOneUserFullInfo(@PathVariable("id") Long userId) {
+    public ResponseEntity<UserFullInfoResponseDTO> getOneUserFullInfo(
+            @PathVariable("id")
+            Long userId
+    ) {
 
         UserFullInfoResponseDTO userFullInfo = userService.getUserFullInfo(userId);
 
         return ResponseEntity.ok(userFullInfo);
     }
 
+    @Override
     @PutMapping("/update/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable("id") Long userId,
-                                        @RequestBody @Valid UpdateUserDTO userDTO) {
+    public ResponseEntity<UserCredentialsResponseDTO> updateUser(
+            @PathVariable("id")
+            Long userId,
+
+            @RequestBody
+            @Valid
+            UpdateUserDTO userDTO
+    ) {
 
         UserCredentialsResponseDTO userCredentials = userService.updateUser(userId, userDTO);
 
         return ResponseEntity.status(HttpStatus.OK).body(userCredentials);
     }
 
+    @Override
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateUserBecomePremium(@PathVariable("id") Long userId) {
+    public ResponseEntity<Void> updateUserBecomePremium(
+            @PathVariable("id")
+            Long userId
+    ) {
 
         userService.updateUserBecomePremium(userId);
 

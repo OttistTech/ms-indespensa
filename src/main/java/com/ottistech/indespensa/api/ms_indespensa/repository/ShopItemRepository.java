@@ -1,8 +1,8 @@
 package com.ottistech.indespensa.api.ms_indespensa.repository;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.query.ShopPurchaseHistoryDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemDetailsDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
 
     @Query("""
-       SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO(
+       SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemResponseDTO(
             si.listItemId,
             si.user.userId,
             f.foodName,
@@ -44,7 +44,7 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
     Optional<ShopItem> findByUserAndProductWithNullPurchaseDate(Long userId, Long productId);
 
     @Query("""
-            SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO(
+            SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemDetailsDTO(
                 si.listItemId,
                 si.user.userId,
                 si.product.productId,

@@ -1,10 +1,10 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.client.ProductClientService;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreateProductDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductResponseApiDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductSearchResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.request.CreateProductDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.response.ProductResponseApiDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.response.ProductResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.response.ProductSearchResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.repository.ProductRepository;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.repository;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductSearchResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.response.ProductSearchResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,7 +18,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<Product> findByNameNotNull(@Param("name") String name);
 
     @Query("""
-    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductSearchResponseDTO(
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.product.response.ProductSearchResponseDTO(
         p.productId,
         f.foodId,
         p.name,
