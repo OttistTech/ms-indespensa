@@ -80,16 +80,6 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
-    @ExceptionHandler(UserAlreadyIsPremiumException.class)
-    public ProblemDetail handleUserIsAlreadyPremiumException(UserAlreadyIsPremiumException ex) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.GONE, ex.getMessage());
-
-        problemDetail.setTitle("User already is premium");
-        problemDetail.setDetail(ex.getMessage());
-
-        return problemDetail;
-    }
-
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ProblemDetail> handleMissingParams(MissingServletRequestParameterException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());

@@ -141,18 +141,15 @@ public interface UserContract {
             UpdateUserDTO userDTO
     );
 
-    @Operation(summary = "Upgrade user to premium", description = "Upgrades the user to a premium account by their ID.")
+    @Operation(summary = "Upgrade/Cancel user to premium", description = "Upgrades the user to a premium account by their ID or cancel their premium account.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "User upgraded to premium"),
+            @ApiResponse(responseCode = "204", description = "User upgrated to premium or cancel his premium account"),
 
             @ApiResponse(responseCode = "404", description = "User not found",
-                    content = @Content(mediaType = "application/json")),
-
-            @ApiResponse(responseCode = "410", description = "User already is premium",
                     content = @Content(mediaType = "application/json"))
     })
-    ResponseEntity<Void> updateUserBecomePremium(
-            @Parameter(in = ParameterIn.PATH, description = "ID of the user to be upgraded to premium.", example = "1234", required = true)
+    ResponseEntity<Void> updateUserSwitchPremium(
+            @Parameter(in = ParameterIn.PATH, description = "ID of the user to be upgraded to premium or cancel his premium account.", example = "1234", required = true)
             Long userId
     );
 
