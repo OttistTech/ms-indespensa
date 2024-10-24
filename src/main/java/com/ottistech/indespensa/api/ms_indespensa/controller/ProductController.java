@@ -30,4 +30,11 @@ public class ProductController {
 
         return ResponseEntity.status(HttpStatus.OK).body(productsFound);
     }
+
+    @GetMapping("/{productId}/details")
+    public ResponseEntity<ProductResponseDTO> findProductById(@PathVariable("productId") Long productId) {
+        ProductResponseDTO product = productService.findById(productId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(product);
+    }
 }
