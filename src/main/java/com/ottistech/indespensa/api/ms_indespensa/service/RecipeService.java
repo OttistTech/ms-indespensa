@@ -1,11 +1,11 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreateRecipeDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.RateRecipeRequestDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeDetailsDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeFullInfoResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeIngredientDetailsDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.recipe.request.CreateRecipeDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.recipe.request.RateRecipeRequestDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.recipe.response.RecipeDetailsDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.recipe.response.RecipeFullInfoResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.recipe_ingredient.response.RecipeIngredientDetailsDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.recipe.response.RecipePartialResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.*;
 import com.ottistech.indespensa.api.ms_indespensa.repository.*;
 import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Availability;
@@ -102,8 +102,6 @@ public class RecipeService {
         return recipes;
     }
 
-    // TODO: this cache must be evicted when user evaluate a recipe, cause the avg will change
-//    @Cacheable(value = "recipe_details", key = "#userId + '_' + #recipeId")
     public RecipeDetailsDTO getRecipeDetails(Long userId, Long recipeId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist")
@@ -119,7 +117,6 @@ public class RecipeService {
 
     // TODO: remove/subtract the ingredients from pantry after user evaluate the recipe
     @Transactional
-//    @CacheEvict(value = "recipe_details", key = "#rateRecipeRequestDTO.userId + '_' + #recipeId")
     public void rateRecipe(Long recipeId, RateRecipeRequestDTO rateRecipeRequestDTO) {
         User user = userRepository.findById(rateRecipeRequestDTO.userId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist")

@@ -1,23 +1,22 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller.contract;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.LoginUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.SignUpUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserCredentialsResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserFullInfoResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.request.LoginUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.request.SignUpUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.request.UpdateUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.response.UserCredentialsResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.response.UserFullInfoResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-// TODO: verify why Swagger is adding some Status Code that doesn't make sense in some endpoints
 @Tag(name = "User", description = "Endpoints related to User management")
 public interface UserContract {
 
@@ -30,15 +29,12 @@ public interface UserContract {
                     content = @Content(mediaType = "application/json")),
 
             @ApiResponse(responseCode = "409", description = "Email already in use",
-                    content = @Content(mediaType = "application/json")),
-
-            @ApiResponse(responseCode = "410", description = "Email already deactivated",
-                    content = @Content(mediaType = "application/json")),
-
-            @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json"))
     })
-    ResponseEntity<UserCredentialsResponseDTO> registerUser(SignUpUserDTO signUpUserDTO);
+    ResponseEntity<UserCredentialsResponseDTO> registerUser(
+            @Parameter(description = "User registration details.", required = true)
+            SignUpUserDTO signUpUserDTO
+    );
 
     @Operation(summary = "Login a user", description = "Log in an existing user by providing valid credentials.")
     @ApiResponses(value = {
@@ -52,13 +48,12 @@ public interface UserContract {
                     content = @Content(mediaType = "application/json")),
 
             @ApiResponse(responseCode = "410", description = "User already deactivated",
-                    content = @Content(mediaType = "application/json")),
-
-            @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json"))
-
     })
-    ResponseEntity<UserCredentialsResponseDTO> loginUser(LoginUserDTO loginUserDTO);
+    ResponseEntity<UserCredentialsResponseDTO> loginUser(
+            @Parameter(description = "User login details.", required = true)
+            LoginUserDTO loginUserDTO
+    );
 
     @Operation(summary = "Deactivate a user", description = "Deactivates the user by his ID.")
     @ApiResponses(value = {
@@ -68,12 +63,12 @@ public interface UserContract {
                     content = @Content(mediaType = "application/json")),
 
             @ApiResponse(responseCode = "410", description = "User already deactivated",
-                    content = @Content(mediaType = "application/json")),
-
-            @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json"))
     })
-    ResponseEntity<Void> deactivateUser(@PathVariable("id") Long userId);
+    ResponseEntity<Void> deactivateUser(
+            @Parameter(in = ParameterIn.PATH, description = "ID of the user to deactivate.", example = "1234", required = true)
+            Long userId
+    );
 
     @Operation(summary = "Get user information", description = "Fetches either full or half user information depending on the 'full-info' parameter.")
     @ApiResponses(value = {
@@ -81,13 +76,15 @@ public interface UserContract {
                     content = {@Content(mediaType = "application/json", schema = @Schema(oneOf = {UserFullInfoResponseDTO.class, UserCredentialsResponseDTO.class}))}),
 
             @ApiResponse(responseCode = "404", description = "User not found",
-                    content = @Content(mediaType = "application/json")),
-
-            @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json"))
     })
-    ResponseEntity<?> getUserFullInfo(@PathVariable("id") Long userId,
-                                      @RequestParam("full-info") boolean fullInfo);
+    ResponseEntity<?> getUserFullInfo(
+            @Parameter(in = ParameterIn.PATH, description = "ID of the user to retrieve information for.", example = "1234", required = true)
+            Long userId,
+
+            @Parameter(in = ParameterIn.QUERY, description = "Flag indicating whether to return full user information.", required = true)
+            boolean fullInfo
+    );
 
     @Operation(summary = "Get all users' information", description = "Fetches full information of all users. Only accessible by admins.")
     @ApiResponses(value = {
@@ -98,9 +95,6 @@ public interface UserContract {
                     content = @Content(mediaType = "application/json")),
 
             @ApiResponse(responseCode = "403", description = "You must be authenticated to access this resource",
-                    content = @Content(mediaType = "application/json")),
-
-            @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json"))
     })
     ResponseEntity<List<UserFullInfoResponseDTO>> getAllUsersFullInfo();
@@ -113,15 +107,16 @@ public interface UserContract {
             @ApiResponse(responseCode = "401", description = "You can't access this resource",
                     content = @Content(mediaType = "application/json")),
 
-            @ApiResponse(responseCode = "403", description = "You must be authenticated to access this resource"),
-
-            @ApiResponse(responseCode = "404", description = "User not found",
+            @ApiResponse(responseCode = "403", description = "You must be authenticated to access this resource",
                     content = @Content(mediaType = "application/json")),
 
-            @ApiResponse(responseCode = "500", description = "Internal server error",
+            @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content(mediaType = "application/json"))
     })
-    ResponseEntity<UserFullInfoResponseDTO> getOneUserFullInfo(Long userId);
+    ResponseEntity<UserFullInfoResponseDTO> getOneUserFullInfo(
+            @Parameter(in = ParameterIn.PATH, description = "ID of the user to retrieve information for.", example = "1234", required = true)
+            Long userId
+    );
 
     @Operation(summary = "Update user information", description = "Updates the user's information using the provided user ID.")
     @ApiResponses(value = {
@@ -134,10 +129,17 @@ public interface UserContract {
             @ApiResponse(responseCode = "404", description = "User not found",
                     content = @Content(mediaType = "application/json")),
 
-            @ApiResponse(responseCode = "500", description = "Internal server error",
-                    content = @Content(mediaType = "application/json"))
+            @ApiResponse(responseCode = "409", description = "Email is already in use by another user",
+                    content = @Content(mediaType = "application/json")
+            )
     })
-    ResponseEntity<UserCredentialsResponseDTO> updateUser(Long userId, UpdateUserDTO userDTO);
+    ResponseEntity<UserCredentialsResponseDTO> updateUser(
+            @Parameter(in = ParameterIn.PATH, description = "ID of the user to updated.", example = "1234", required = true)
+            Long userId,
+
+            @Parameter(description = "New details to update for the user.", required = true)
+            UpdateUserDTO userDTO
+    );
 
     @Operation(summary = "Upgrade user to premium", description = "Upgrades the user to a premium account by their ID.")
     @ApiResponses(value = {
@@ -147,11 +149,11 @@ public interface UserContract {
                     content = @Content(mediaType = "application/json")),
 
             @ApiResponse(responseCode = "410", description = "User already is premium",
-                    content = @Content(mediaType = "application/json")),
-
-            @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json"))
     })
-    ResponseEntity<Void> updateUserBecomePremium(Long userId);
+    ResponseEntity<Void> updateUserBecomePremium(
+            @Parameter(in = ParameterIn.PATH, description = "ID of the user to be upgraded to premium.", example = "1234", required = true)
+            Long userId
+    );
 
 }

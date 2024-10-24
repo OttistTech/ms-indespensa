@@ -1,10 +1,11 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreateRecipeDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.RateRecipeRequestDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeDetailsDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipeFullInfoResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.RecipePartialResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.controller.contract.RecipeContract;
+import com.ottistech.indespensa.api.ms_indespensa.dto.recipe.request.CreateRecipeDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.recipe.request.RateRecipeRequestDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.recipe.response.RecipeDetailsDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.recipe.response.RecipeFullInfoResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.recipe.response.RecipePartialResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.RecipeService;
 import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Availability;
 import com.ottistech.indespensa.api.ms_indespensa.utils.enums.Level;
@@ -20,12 +21,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/recipes")
 @AllArgsConstructor
-public class RecipeController {
+public class RecipeController implements RecipeContract {
 
     private final RecipeService recipeService;
 
     @PostMapping("/create")
-    public ResponseEntity<RecipeFullInfoResponseDTO> createRecipe(@RequestBody @Valid CreateRecipeDTO recipeDTO) {
+    public ResponseEntity<RecipeFullInfoResponseDTO> createRecipe(
+            @RequestBody
+            @Valid
+            CreateRecipeDTO recipeDTO
+    ) {
 
         RecipeFullInfoResponseDTO recipe = recipeService.createRecipe(recipeDTO);
 
@@ -53,7 +58,8 @@ public class RecipeController {
     @GetMapping("/{recipe_id}/details")
     public ResponseEntity<RecipeDetailsDTO> getRecipe(
             @PathVariable("recipe_id") Long recipeId,
-            @RequestParam Long userId) {
+            @RequestParam Long userId
+    ) {
 
         RecipeDetailsDTO recipeDetail = recipeService.getRecipeDetails(userId, recipeId);
 
@@ -62,8 +68,13 @@ public class RecipeController {
 
     @PostMapping("/{recipe_id}/rating")
     public ResponseEntity<Void> rateRecipe(
-            @PathVariable("recipe_id") Long recipeId,
-            @Valid @RequestBody RateRecipeRequestDTO rateRecipeRequestDTO) {
+            @PathVariable("recipe_id")
+            Long recipeId,
+
+            @Valid
+            @RequestBody
+            RateRecipeRequestDTO rateRecipeRequestDTO
+    ) {
 
         recipeService.rateRecipe(recipeId, rateRecipeRequestDTO);
 

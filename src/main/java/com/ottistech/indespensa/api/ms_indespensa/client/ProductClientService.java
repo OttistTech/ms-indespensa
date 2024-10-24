@@ -3,7 +3,7 @@ package com.ottistech.indespensa.api.ms_indespensa.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductResponseApiDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.response.ProductResponseApiDTO;
 import com.ottistech.indespensa.api.ms_indespensa.exception.JsonParcealizationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

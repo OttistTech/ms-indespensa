@@ -1,5 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
+import com.ottistech.indespensa.api.ms_indespensa.controller.contract.CategoryContract;
 import com.ottistech.indespensa.api.ms_indespensa.service.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,13 +15,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/categories")
 @AllArgsConstructor
-public class CategoryController {
+public class CategoryController implements CategoryContract {
 
     private final CategoryService categoryService;
 
     @GetMapping("/list")
-    public ResponseEntity<?> listCategories(
-            @RequestParam(value = "match", required = false) String pattern) {
+    public ResponseEntity<List<String>> listCategories(
+            @RequestParam(value = "match", required = false)
+            String pattern
+    ) {
 
         List<String> categoriesFound = categoryService.listCategories(pattern);
 

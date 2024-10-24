@@ -1,7 +1,7 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.DashboardPersonalInfoDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.DashboardProfileInfoDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.dashboard.response.DashboardPersonalInfoDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.dashboard.response.DashboardProfileInfoDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import com.ottistech.indespensa.api.ms_indespensa.repository.CompletedRecipeRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.PantryItemRepository;

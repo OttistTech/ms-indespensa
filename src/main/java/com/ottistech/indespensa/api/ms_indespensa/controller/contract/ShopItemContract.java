@@ -1,13 +1,14 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller.contract;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopPurchaseHistoryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.request.AddShopItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.request.UpdateProductItemAmountDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemDetailsDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopPurchaseHistoryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,8 +17,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-
-// TODO: verify why Swagger is adding some Status Code that doesn't make sense in some endpoints
 
 @Tag(name = "Shop Items", description = "Endpoints related to Shop Item management")
 public interface ShopItemContract {
@@ -28,13 +27,10 @@ public interface ShopItemContract {
                     content = @Content(schema = @Schema(implementation = ShopItemResponseDTO.class))),
 
             @ApiResponse(responseCode = "404", description = "No items found or user does not exist",
-                    content = @Content(mediaType = "application/json")),
-
-            @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json"))
     })
     ResponseEntity<List<ShopItemResponseDTO>> getShopItemListInfo(
-            @Parameter(description = "User ID to retrieve shop items for", example = "1")
+            @Parameter(in = ParameterIn.PATH, description = "User ID to retrieve shop items for", example = "123")
             Long userId
     );
 
@@ -44,13 +40,10 @@ public interface ShopItemContract {
                     content = @Content(schema = @Schema(implementation = ShopItemResponseDTO.class), mediaType = "application/json")),
 
             @ApiResponse(responseCode = "404", description = "User or product not found",
-                    content = @Content(mediaType = "application/json")),
-
-            @ApiResponse(responseCode = "500", description = "Internal server error",
                     content = @Content(mediaType = "application/json"))
     })
     ResponseEntity<ShopItemResponseDTO> addShopItem(
-            @Parameter(description = "User ID to add the shop item for", example = "1")
+            @Parameter(in = ParameterIn.PATH, description = "User ID to add the shop item for", example = "123")
             Long userId,
 
             @Parameter(description = "Details of the shop item to be added")
@@ -65,7 +58,7 @@ public interface ShopItemContract {
             @ApiResponse(responseCode = "404", description = "Shop item not found")
     })
     ResponseEntity<ShopItemDetailsDTO> getShopItem(
-            @Parameter(description = "Shop item ID", example = "123")
+            @Parameter(in = ParameterIn.PATH, description = "Shop item ID", example = "123")
             Long shopItemId
     );
 
@@ -87,7 +80,7 @@ public interface ShopItemContract {
             @ApiResponse(responseCode = "404", description = "User or purchase history not found")
     })
     ResponseEntity<List<ShopPurchaseHistoryItemDTO>> getPurchaseHistoryInfo(
-            @Parameter(description = "User ID", example = "123")
+            @Parameter(in = ParameterIn.PATH, description = "User ID", example = "123")
             Long userId
     );
 }

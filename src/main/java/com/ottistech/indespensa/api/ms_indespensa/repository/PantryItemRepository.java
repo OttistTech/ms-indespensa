@@ -1,6 +1,8 @@
 package com.ottistech.indespensa.api.ms_indespensa.repository;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.*;
+import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemDetailsDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemPartialDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemsNextToValidityDate;
 import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
@@ -13,7 +15,7 @@ import java.util.Optional;
 
 public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
     @Query("""
-            SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartialDTO(
+            SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemPartialDTO(
                 pi.user.userId,
                 pi.pantryItemId,
                 pi.product.name,
@@ -33,7 +35,7 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
     List<PantryItemPartialDTO> findAllActiveItemsByUser(User user);
 
     @Query("""
-            SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO(
+            SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemDetailsDTO(
                 pi.pantryItemId,
                 pi.user.userId,
                 pi.product.productId,
@@ -138,7 +140,7 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
     Integer countAllPossibleRecipes(Long userId);
 
     @Query("""
-    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemsNextToValidityDate(
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemsNextToValidityDate(
         pi.pantryItemId,
         p.name,
         pi.amount,
@@ -170,7 +172,7 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
     WHERE
         pi.user = :user AND
         pi.isActive = true AND
-        pi.amount > 0 AND 
+        pi.amount > 0 AND
         pi.validityDate < :today
     """)
     Integer countAllItemsAlreadyExpired(
