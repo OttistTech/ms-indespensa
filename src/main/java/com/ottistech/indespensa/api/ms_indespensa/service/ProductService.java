@@ -85,4 +85,11 @@ public class ProductService {
 
         return productsFound;
     }
+
+    @Cacheable(value = "product_by_id", key = "#productId")
+    public ProductResponseDTO findById(Long productId) {
+        return productRepository.findById(productId)
+                .map(ProductResponseDTO::fromProduct)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find product with id"));
+    }
 }
