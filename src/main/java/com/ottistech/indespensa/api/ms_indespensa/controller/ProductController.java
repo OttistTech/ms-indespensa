@@ -17,7 +17,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @GetMapping("/barcode/{barcode}/details")
+    @GetMapping("/barcode/{barcode}")
     public ResponseEntity<ProductResponseDTO> searchProductByBarcode(@PathVariable("barcode") String barcode) {
         ProductResponseDTO productResponseDTO = productService.getProductByBarcode(barcode);
 
@@ -31,7 +31,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productsFound);
     }
 
-    @GetMapping("/{productId}")
+    @GetMapping("/{productId}/details")
     public ResponseEntity<ProductResponseDTO> findProductById(@PathVariable("productId") Long productId) {
         ProductResponseDTO product = productService.findById(productId);
 
