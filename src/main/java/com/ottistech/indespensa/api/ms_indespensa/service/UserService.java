@@ -8,7 +8,6 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.user.response.UserFullInfo
 import com.ottistech.indespensa.api.ms_indespensa.exception.EmailAlreadyInUseException;
 import com.ottistech.indespensa.api.ms_indespensa.exception.IncorrectPasswordException;
 import com.ottistech.indespensa.api.ms_indespensa.exception.UserAlreadyDeactivatedException;
-import com.ottistech.indespensa.api.ms_indespensa.exception.UserAlreadyIsPremiumException;
 import com.ottistech.indespensa.api.ms_indespensa.model.Address;
 import com.ottistech.indespensa.api.ms_indespensa.model.Cep;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
@@ -184,13 +183,17 @@ public class UserService {
     }
 
     @CacheEvict(value = {"user_credentials", "user_credentials_half_info"}, key = "#userId")
-    public void updateUserBecomePremium(Long userId) {
+    public void updateUserSwitchPremium(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist")
         );
 
         if (user.getIsPremium()) {
-            throw new UserAlreadyIsPremiumException("User already is premium");
+            user.setIsPremium(false);
+
+            userRepository.save(user);
+
+            return;
         }
 
         user.setIsPremium(true);

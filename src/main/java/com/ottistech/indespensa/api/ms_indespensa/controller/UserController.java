@@ -86,7 +86,6 @@ public class UserController implements UserContract {
         return ResponseEntity.ok(userFullInfoList);
     }
 
-    @Override
     @GetMapping("/admin/{id}")
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     public ResponseEntity<UserFullInfoResponseDTO> getOneUserFullInfo(
@@ -99,7 +98,6 @@ public class UserController implements UserContract {
         return ResponseEntity.ok(userFullInfo);
     }
 
-    @Override
     @PutMapping("/update/{id}")
     public ResponseEntity<UserCredentialsResponseDTO> updateUser(
             @PathVariable("id")
@@ -115,16 +113,17 @@ public class UserController implements UserContract {
         return ResponseEntity.status(HttpStatus.OK).body(userCredentials);
     }
 
-    @Override
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateUserBecomePremium(
+    public ResponseEntity<Void> updateUserSwitchPremium(
             @PathVariable("id")
             Long userId
     ) {
 
-        userService.updateUserBecomePremium(userId);
+        userService.updateUserSwitchPremium(userId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+
 
 }
