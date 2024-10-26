@@ -108,15 +108,13 @@ public class PantryItemService {
         return updatedItems;
     }
 
-
-    // @Cacheable(value = "pantry_item_details", key = "#pantryItemId")
     public PantryItemDetailsDTO getPantryItemDetails(Long pantryItemId) {
         return pantryItemRepository.findPantryItemDetailsById(pantryItemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No pantry item matching the given id"));
     }
 
     @Transactional
-    @CacheEvict(value = {"pantry_items", "pantry_item_details"}, allEntries = true)
+    @CacheEvict(value = {"pantry_items", "pantry_item_details", "shop_items_list"}, allEntries = true)
     public void addAllFromShopList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
@@ -143,9 +141,7 @@ public class PantryItemService {
                 pantryItemRepository.save(newPantryItem);
             }
 
-            shopItem.setAmount(0);
             shopItem.setPurchaseDate(LocalDate.now());
-
         }
 
         shopItemRepository.saveAll(userShopItems);

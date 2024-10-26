@@ -1,12 +1,11 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
 import com.ottistech.indespensa.api.ms_indespensa.controller.contract.ShopItemContract;
-import com.ottistech.indespensa.api.ms_indespensa.dto.shop.request.AddShopItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.product.request.UpdateProductItemAmountDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.request.AddShopItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopPurchaseHistoryItemDTO;
-import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import com.ottistech.indespensa.api.ms_indespensa.service.ShopItemService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -23,7 +22,6 @@ public class ShopItemController implements ShopItemContract {
 
     private final ShopItemService shopItemService;
 
-    @Override
     @GetMapping("/{user_id}/list")
     public ResponseEntity<List<ShopItemResponseDTO>> getShopItemListInfo(
             @PathVariable("user_id")
@@ -35,7 +33,6 @@ public class ShopItemController implements ShopItemContract {
         return ResponseEntity.ok(listItemResponse);
     }
 
-    @Override
     @PostMapping("/{user_id}/add")
     public ResponseEntity<ShopItemResponseDTO> addShopItem(
             @PathVariable("user_id")
@@ -51,7 +48,6 @@ public class ShopItemController implements ShopItemContract {
         return ResponseEntity.status(HttpStatus.CREATED).body(itemResponseDTO);
     }
 
-    @Override
     @GetMapping("/{shop_item_id}/details")
     public ResponseEntity<ShopItemDetailsDTO> getShopItem(
             @PathVariable("shop_item_id")
@@ -63,20 +59,18 @@ public class ShopItemController implements ShopItemContract {
         return ResponseEntity.ok(shopItem);
     }
 
-    @Override
     @PatchMapping("/update-items-amount")
-    public ResponseEntity<List<ShopItem>> updateShopItemsAmount(
+    public ResponseEntity<Void> updateShopItemsAmount(
             @RequestBody
             @Valid
             List<UpdateProductItemAmountDTO> shopItems
     ) {
 
-        List<ShopItem> updatedItems = shopItemService.updateShopItemsAmount(shopItems);
+        shopItemService.updateShopItemsAmount(shopItems);
 
-        return ResponseEntity.ok(updatedItems);
+        return ResponseEntity.ok().build();
     }
 
-    @Override
     @GetMapping("/{user_id}/list/history")
     public ResponseEntity<List<ShopPurchaseHistoryItemDTO>> getPurchaseHistoryInfo(
             @PathVariable("user_id")

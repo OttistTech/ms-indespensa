@@ -72,21 +72,19 @@ public class ShopItemService {
     }
 
     @CacheEvict(value = {"shop_items_details", "shop_items_list", "shop_items_purchase_history"}, allEntries = true)
-    public List<ShopItem> updateShopItemsAmount(List<UpdateProductItemAmountDTO> shopItems) {
-        List<ShopItem> updatedItems = new ArrayList<>();
+    public void updateShopItemsAmount(List<UpdateProductItemAmountDTO> shopItems) {
+        List<Long> itemIds = shopItems.stream()
+                .map(UpdateProductItemAmountDTO::itemId)
+                .collect(Collectors.toList());
 
-        for(UpdateProductItemAmountDTO itemUpdate : shopItems) {
-            ShopItem item = shopItemRepository.findById(itemUpdate.itemId()).orElse(null);
+        List<ShopItem> items = shopItemRepository.findAllById(itemIds);
 
-            if(item != null) {
-                item.setAmount(itemUpdate.amount());
-                updatedItems.add(item);
-            }
-        }
+        Map<Long, Integer> itemAmounts = shopItems.stream()
+                .collect(Collectors.toMap(UpdateProductItemAmountDTO::itemId, UpdateProductItemAmountDTO::amount));
 
-        shopItemRepository.saveAll(updatedItems);
+        items.forEach(item -> item.setAmount(itemAmounts.get(item.getListItemId())));
 
-        return updatedItems;
+        shopItemRepository.saveAll(items);
     }
 
     public List<ShopPurchaseHistoryItemDTO> getPurchaseHistoryItems(Long userId) {
