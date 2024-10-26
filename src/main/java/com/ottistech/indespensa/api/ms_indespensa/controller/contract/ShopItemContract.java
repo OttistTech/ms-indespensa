@@ -14,7 +14,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -43,9 +45,11 @@ public interface ShopItemContract {
                     content = @Content(mediaType = "application/json"))
     })
     ResponseEntity<ShopItemResponseDTO> addShopItem(
-            @Parameter(in = ParameterIn.PATH, description = "User ID to add the shop item for", example = "123")
+            @Parameter(in = ParameterIn.PATH, description = "User ID to retrieve shop items for", example = "123")
             Long userId,
 
+            @Valid
+            @RequestBody
             @Parameter(description = "Details of the shop item to be added")
             AddShopItemDTO shopItemDTO
     );
@@ -67,7 +71,9 @@ public interface ShopItemContract {
             @ApiResponse(responseCode = "200", description = "Shop items successfully updated",
                     content = @Content(schema = @Schema(implementation = ShopItem.class)))
     })
-    ResponseEntity<List<ShopItem>> updateShopItemsAmount(
+    ResponseEntity<Void> updateShopItemsAmount(
+            @RequestBody
+            @Valid
             @Parameter(description = "List of shop items with updated amounts")
             List<UpdateProductItemAmountDTO> shopItems
     );

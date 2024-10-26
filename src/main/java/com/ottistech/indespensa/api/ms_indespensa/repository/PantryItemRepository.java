@@ -179,4 +179,5 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
             User user,
             LocalDate today
     );
+
 }
