@@ -114,8 +114,6 @@ public class RecipeService {
 
         List<RecipeIngredientDetailsDTO> ingredientDetails = ingredientRepository.findIngredientsByRecipeId(recipeId, user);
 
-        ingredientDetails.forEach(System.out::println);
-
         return RecipeDetailsDTO.fromPartialResponseDTO(recipe, ingredientDetails);
     }
 
