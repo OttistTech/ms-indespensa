@@ -149,4 +149,5 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
             @Param("user") User user,
             Pageable pageable
     );
+
 }

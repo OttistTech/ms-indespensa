@@ -51,6 +51,7 @@ public record RecipeFullInfoResponseDTO(
                         ingredient.getAmount(),
                         ingredient.getUnit(),
                         ingredient.getIsEssential(),
+                        null,
                         null
                 ))
                 .collect(Collectors.toList());

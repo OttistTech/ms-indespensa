@@ -21,6 +21,11 @@ public interface RecipeIngredientRepository extends JpaRepository<RecipeIngredie
         CASE
             WHEN COUNT(DISTINCT pi) > 0 THEN TRUE
             ELSE FALSE
+        END,
+        CASE
+           WHEN COUNT(pi) > 0 THEN
+                CASE WHEN SUM(CASE WHEN pi.wasOpened THEN 1 ELSE 0 END) > 0 THEN TRUE ELSE FALSE END
+           ELSE FALSE
         END
     )
     FROM Recipe r
@@ -31,9 +36,19 @@ public interface RecipeIngredientRepository extends JpaRepository<RecipeIngredie
         AND pi.amount > 0
         AND pi.isActive = TRUE
     WHERE r.recipeId = :recipeId
-    GROUP BY ri.ingredientFood.foodId, ri.ingredientFood.foodName, ri.amount, ri.unit, ri.isEssential
+    GROUP BY
+        ri.ingredientFood.foodId,
+        ri.ingredientFood.foodName,
+        ri.amount,
+        ri.unit,
+        ri.isEssential
     """)
-    List<RecipeIngredientDetailsDTO> findIngredientsByRecipeId(@Param("recipeId") Long recipeId, @Param("user") User user);
+    List<RecipeIngredientDetailsDTO> findIngredientsByRecipeId(
+            @Param("recipeId")
+            Long recipeId,
 
+            @Param("user")
+            User user
+    );
 
 }

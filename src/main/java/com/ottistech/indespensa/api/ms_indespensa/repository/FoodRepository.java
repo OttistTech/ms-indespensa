@@ -10,5 +10,9 @@ import java.util.Optional;
 public interface FoodRepository extends JpaRepository<Food, Long> {
 
     @Query("SELECT f FROM Food f WHERE LOWER(f.foodName) = LOWER(:foodName)")
-    Optional<Food> findByFoodName(@Param("foodName") String alias);
+    Optional<Food> findByFoodName(
+            @Param("foodName")
+            String alias
+    );
+
 }
