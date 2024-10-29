@@ -1,13 +1,16 @@
 package com.ottistech.indespensa.api.ms_indespensa.repository;
 
+import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.query.PantryItemWithAvailabilityDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemPartialDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemsNextToValidityDate;
+import com.ottistech.indespensa.api.ms_indespensa.model.Food;
 import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -47,7 +50,8 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
                 pi.product.amount,
                 pi.product.unit,
                 pi.amount,
-                pi.validityDate
+                pi.validityDate,
+                pi.wasOpened
             ) FROM PantryItem pi
             JOIN pi.product p
             JOIN pi.user u
@@ -178,5 +182,31 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
     Integer countAllItemsAlreadyExpired(
             User user,
             LocalDate today
+    );
+
+    @Query("""
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.pantry.query.PantryItemWithAvailabilityDTO(
+            pi,
+        CASE
+            WHEN COUNT(DISTINCT pi) > 0 THEN TRUE
+            ELSE FALSE
+        END
+    )
+    FROM Recipe r
+    JOIN r.ingredients ri
+    LEFT JOIN Product p ON p.foodId = ri.ingredientFood
+    LEFT JOIN PantryItem pi ON pi.product.productId = p.productId
+        AND pi.user = :user
+        AND pi.amount > 0
+        AND pi.isActive = TRUE
+    WHERE r.recipeId = :recipeId
+    GROUP BY pi.pantryItemId, pi.amount, pi.isActive, pi.product, pi.purchaseDate, pi.user, pi.validityDate, pi.wasOpened
+    """)
+    List<PantryItemWithAvailabilityDTO> findPantryItemsByRecipeAndUser(
+            @Param("recipeId")
+            Long recipeId,
+
+            @Param("user")
+            User user
     );
 }

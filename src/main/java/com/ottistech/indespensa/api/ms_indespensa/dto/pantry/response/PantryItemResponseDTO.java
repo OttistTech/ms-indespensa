@@ -52,7 +52,10 @@ public record PantryItemResponseDTO(
         LocalDate pantryItemPurchaseDate,
 
         @Schema(description = "Indicates whether the pantry item is currently active", example = "true")
-        Boolean pantryItemIsActive
+        Boolean pantryItemIsActive,
+
+        @Schema(description = "Flag indicating if product was already used by user", example = "false")
+        Boolean wasOpened
 ) {
 
     public static PantryItemResponseDTO fromPantryItem(PantryItem pantryItem) {
@@ -71,7 +74,8 @@ public record PantryItemResponseDTO(
                 pantryItem.getAmount(),
                 pantryItem.getValidityDate(),
                 pantryItem.getPurchaseDate(),
-                pantryItem.getIsActive()
+                pantryItem.getIsActive(),
+                pantryItem.getWasOpened()
         );
     }
 }

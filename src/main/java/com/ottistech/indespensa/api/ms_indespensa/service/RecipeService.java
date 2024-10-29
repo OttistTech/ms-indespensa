@@ -1,5 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
+import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.query.PantryItemWithAvailabilityDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.recipe.request.CreateRecipeDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.recipe.request.RateRecipeRequestDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.recipe.response.RecipeDetailsDTO;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,6 +33,7 @@ public class RecipeService {
     private final FoodRepository foodRepository;
     private final RecipeIngredientRepository ingredientRepository;
     private final CompletedRecipeRepository completedRecipeRepository;
+    private final PantryItemRepository pantryItemRepository;
 
     @Transactional
     public RecipeFullInfoResponseDTO createRecipe(CreateRecipeDTO recipeDTO) {
@@ -112,10 +115,11 @@ public class RecipeService {
 
         List<RecipeIngredientDetailsDTO> ingredientDetails = ingredientRepository.findIngredientsByRecipeId(recipeId, user);
 
+        ingredientDetails.forEach(System.out::println);
+
         return RecipeDetailsDTO.fromPartialResponseDTO(recipe, ingredientDetails);
     }
 
-    // TODO: remove/subtract the ingredients from pantry after user evaluate the recipe
     @Transactional
     public void rateRecipe(Long recipeId, RateRecipeRequestDTO rateRecipeRequestDTO) {
         User user = userRepository.findById(rateRecipeRequestDTO.userId()).orElseThrow(
@@ -138,6 +142,16 @@ public class RecipeService {
 
             completedRecipeRepository.save(newRating);
         }
-    }
 
+        List<PantryItemWithAvailabilityDTO> pantryItems = pantryItemRepository.findPantryItemsByRecipeAndUser(recipeId, user);
+
+        pantryItems.stream()
+                .filter(PantryItemWithAvailabilityDTO::isInPantry)
+                .map(PantryItemWithAvailabilityDTO::pantryItem)
+                .forEach(pantryItem -> {
+                    pantryItem.setWasOpened(true);
+                    pantryItemRepository.save(pantryItem);
+                });
+
+    }
 }

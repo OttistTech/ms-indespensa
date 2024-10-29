@@ -123,7 +123,4 @@ public class UserController implements UserContract {
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
-
-
 }

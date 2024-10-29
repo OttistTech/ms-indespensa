@@ -23,6 +23,9 @@ public record RecipeIngredientDetailsDTO(
         Boolean isEssential,
 
         @Schema(description = "Indicates if the ingredient is available in the user's pantry", example = "false")
-        Boolean isInPantry
+        Boolean isInPantry,
+
+        @Schema(description = "Flag indicating if product was already used by user", example = "false")
+        Boolean wasOpened
 ) {
 }
