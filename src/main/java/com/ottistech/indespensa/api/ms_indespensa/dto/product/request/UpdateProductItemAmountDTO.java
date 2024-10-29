@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "DTO for updating the amount of a pantry item.")
 public record UpdateProductItemAmountDTO(
+
         @Schema(description = "Unique identifier of the pantry item to be updated.", example = "1")
         @NotNull(message = "Field itemId is required")
         @Min(value = 1, message = "Field itemId should be at least 1")
