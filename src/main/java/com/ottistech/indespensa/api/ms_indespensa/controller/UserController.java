@@ -67,6 +67,8 @@ public class UserController implements UserContract {
             boolean fullInfo
     ) {
 
+        // verify if user_id passed is the same of the email in repository
+
         if (fullInfo) {
             UserFullInfoResponseDTO userFullInfo = userService.getUserFullInfo(userId);
             return ResponseEntity.ok(userFullInfo);
