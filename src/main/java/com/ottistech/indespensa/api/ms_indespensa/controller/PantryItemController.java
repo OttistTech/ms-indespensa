@@ -3,12 +3,11 @@ package com.ottistech.indespensa.api.ms_indespensa.controller;
 import com.ottistech.indespensa.api.ms_indespensa.controller.contract.PantryItemContract;
 import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.request.AddPantryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.request.CreatePantryItemDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.product.request.UpdateProductItemAmountDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemPartialDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemsNextToValidityDate;
-import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.request.UpdateProductItemAmountDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.PantryItemService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -52,13 +51,15 @@ public class PantryItemController implements PantryItemContract {
     }
 
     @PatchMapping("/update-items-amount")
-    public ResponseEntity<List<PantryItem>> updatePantryItemsAmount(
-            @RequestBody @Valid List<UpdateProductItemAmountDTO> pantryItems
+    public ResponseEntity<Void> updatePantryItemsAmount(
+            @RequestBody
+            @Valid
+            List<UpdateProductItemAmountDTO> pantryItems
     ) {
 
-        List<PantryItem> updatedItems = pantryItemService.updatePantryItemsAmount(pantryItems);
+        pantryItemService.updatePantryItemsAmount(pantryItems);
 
-        return ResponseEntity.ok(updatedItems);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{pantry_item_id}/details")

@@ -23,10 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.ottistech.indespensa.api.ms_indespensa.utils.Constants.DAYS_FROM_NOW;
 
@@ -86,26 +84,19 @@ public class PantryItemService {
 
     @Transactional
     @CacheEvict(value = {"pantry_items", "pantry_item_details"}, allEntries = true)
-    public List<PantryItem> updatePantryItemsAmount(List<UpdateProductItemAmountDTO> pantryItems) {
-        List<PantryItem> updatedItems = new ArrayList<>();
+    public void updatePantryItemsAmount(List<UpdateProductItemAmountDTO> pantryItems) {
+        List<Long> itemIds = pantryItems.stream()
+                .map(UpdateProductItemAmountDTO::itemId)
+                .collect(Collectors.toList());
 
-        for(UpdateProductItemAmountDTO itemUpdate : pantryItems) {
-            PantryItem item = pantryItemRepository.findById(itemUpdate.itemId()).orElse(null);
+        List<PantryItem> items = pantryItemRepository.findAllById(itemIds);
 
-            if(item != null) {
-                item.setAmount(itemUpdate.amount());
+        Map<Long, Integer> itemAmounts = pantryItems.stream()
+                .collect(Collectors.toMap(UpdateProductItemAmountDTO::itemId, UpdateProductItemAmountDTO::amount));
 
-                if(item.getAmount() == 0) {
-                    item.setIsActive(false);
-                }
+        items.forEach(item -> item.setAmount(itemAmounts.get(item.getPantryItemId())));
 
-                updatedItems.add(item);
-            }
-        }
-
-        pantryItemRepository.saveAll(updatedItems);
-
-        return updatedItems;
+        pantryItemRepository.saveAll(items);
     }
 
     public PantryItemDetailsDTO getPantryItemDetails(Long pantryItemId) {

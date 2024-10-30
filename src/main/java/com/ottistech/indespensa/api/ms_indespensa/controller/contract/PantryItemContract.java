@@ -16,7 +16,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -39,6 +41,8 @@ public interface PantryItemContract {
             Long userId,
 
             @Parameter(description = "Details of the pantry item to be created", required = true)
+            @RequestBody
+            @Valid
             CreatePantryItemDTO pantryItem
     );
 
@@ -66,8 +70,10 @@ public interface PantryItemContract {
             @ApiResponse(responseCode = "404", description = "Pantry items not found",
                     content = @Content(mediaType = "application/json"))
     })
-    ResponseEntity<List<PantryItem>> updatePantryItemsAmount(
+    ResponseEntity<Void> updatePantryItemsAmount(
             @Parameter(description = "List of pantry items with updated amounts", required = true)
+            @RequestBody
+            @Valid
             List<UpdateProductItemAmountDTO> pantryItems
     );
 
@@ -117,6 +123,8 @@ public interface PantryItemContract {
             Long userId,
 
             @Parameter(description = "Details of the pantry item to be added", required = true)
+            @RequestBody
+            @Valid
             AddPantryItemDTO pantryItemDTO
     );
 
