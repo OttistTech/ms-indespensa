@@ -4,7 +4,6 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.query.PantryItemWit
 import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemDetailsDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemPartialDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemsNextToValidityDate;
-import com.ottistech.indespensa.api.ms_indespensa.model.Food;
 import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
@@ -26,7 +25,8 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
                 pi.product.amount,
                 pi.product.unit,
                 pi.amount,
-                pi.validityDate
+                pi.validityDate,
+                pi.wasOpened
             ) FROM PantryItem pi
             JOIN pi.product p
             JOIN p.foodId f
