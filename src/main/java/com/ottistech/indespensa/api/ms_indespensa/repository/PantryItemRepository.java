@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
+
     @Query("""
             SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemPartialDTO(
                 pi.user.userId,

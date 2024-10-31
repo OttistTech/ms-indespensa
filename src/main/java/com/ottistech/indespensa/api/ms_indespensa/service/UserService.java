@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,12 +43,21 @@ public class UserService {
         }
 
         User user = signUpUserDTO.toUser();
-        user = userRepository.save(user);
 
-        Cep cep = cepService.getOrCreateCep(signUpUserDTO.toCep());
-
-        Address address = signUpUserDTO.toAddress(user, cep);
-        addressRepository.save(address);
+        userRepository.addNewUserAndAddress(
+                user.getEmail(),
+                user.getPassword(),
+                user.getType(),
+                user.getName(),
+                user.getBirthDate(),
+                user.getEnterpriseType(),
+                user.getIsPremium(),
+                signUpUserDTO.cep(),
+                signUpUserDTO.addressNumber(),
+                signUpUserDTO.city(),
+                signUpUserDTO.street(),
+                signUpUserDTO.state()
+        );
 
         String token = jwtTokenService.generateToken(user);
 
