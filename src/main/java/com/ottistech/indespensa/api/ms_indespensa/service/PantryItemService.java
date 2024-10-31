@@ -94,7 +94,12 @@ public class PantryItemService {
         Map<Long, Integer> itemAmounts = pantryItems.stream()
                 .collect(Collectors.toMap(UpdateProductItemAmountDTO::itemId, UpdateProductItemAmountDTO::amount));
 
-        items.forEach(item -> item.setAmount(itemAmounts.get(item.getPantryItemId())));
+        items.forEach(item -> {
+            Integer newAmount = itemAmounts.get(item.getPantryItemId());
+            item.setAmount(newAmount);
+
+            item.setIsActive(newAmount == null || newAmount != 0);
+        });
 
         pantryItemRepository.saveAll(items);
     }
@@ -168,6 +173,7 @@ public class PantryItemService {
         }
 
         shopItem.setPurchaseDate(LocalDate.now());
+        pantryItem.setIsActive(true);
 
         pantryItemRepository.save(pantryItem);
         shopItemRepository.save(shopItem);
