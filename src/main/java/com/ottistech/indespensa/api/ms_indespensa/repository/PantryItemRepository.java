@@ -26,7 +26,8 @@ public interface PantryItemRepository extends JpaRepository<PantryItem, Long> {
                 pi.product.amount,
                 pi.product.unit,
                 pi.amount,
-                pi.validityDate
+                pi.validityDate,
+                pi.wasOpened
             ) FROM PantryItem pi
             JOIN pi.product p
             JOIN p.foodId f

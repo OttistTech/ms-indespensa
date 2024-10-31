@@ -30,5 +30,8 @@ public record PantryItemPartialDTO(
         Integer pantryAmount,
 
         @Schema(description = "Validity date of the pantry item", example = "2024-12-31")
-        LocalDate validityDate
+        LocalDate validityDate,
+
+        @Schema(description = "Flag indicating if product was already used by user", example = "false")
+        Boolean wasOpened
 ) {}
