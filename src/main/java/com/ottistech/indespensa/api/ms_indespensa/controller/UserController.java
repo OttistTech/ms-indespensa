@@ -6,15 +6,12 @@ import com.ottistech.indespensa.api.ms_indespensa.dto.user.request.SignUpUserDTO
 import com.ottistech.indespensa.api.ms_indespensa.dto.user.request.UpdateUserDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.user.response.UserCredentialsResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.dto.user.response.UserFullInfoResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import com.ottistech.indespensa.api.ms_indespensa.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
