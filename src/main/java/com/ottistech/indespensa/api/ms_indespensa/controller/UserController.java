@@ -66,7 +66,6 @@ public class UserController implements UserContract {
             @RequestParam("full-info")
             boolean fullInfo
     ) {
-
         if (fullInfo) {
             UserFullInfoResponseDTO userFullInfo = userService.getUserFullInfo(userId);
             return ResponseEntity.ok(userFullInfo);
