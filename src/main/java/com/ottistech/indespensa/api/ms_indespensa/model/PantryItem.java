@@ -43,6 +43,9 @@ public class PantryItem {
     @Column(name = "is_active")
     private Boolean isActive = Boolean.FALSE;
 
+    @Column(name = "was_opened")
+    private Boolean wasOpened = Boolean.FALSE;
+
     public PantryItem(User user, Product product) {
         this.user = user;
         this.product = product;

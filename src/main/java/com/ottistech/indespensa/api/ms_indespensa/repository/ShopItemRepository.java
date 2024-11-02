@@ -1,9 +1,10 @@
 package com.ottistech.indespensa.api.ms_indespensa.repository;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.query.ShopPurchaseHistoryDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemDetailsDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
+import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -13,7 +14,7 @@ import java.util.Optional;
 public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
 
     @Query("""
-       SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO(
+       SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemResponseDTO(
             si.listItemId,
             si.user.userId,
             f.foodName,
@@ -43,7 +44,7 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
     Optional<ShopItem> findByUserAndProductWithNullPurchaseDate(Long userId, Long productId);
 
     @Query("""
-            SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO(
+            SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemDetailsDTO(
                 si.listItemId,
                 si.user.userId,
                 si.product.productId,
@@ -77,8 +78,19 @@ public interface ShopItemRepository extends JpaRepository<ShopItem, Long> {
     WHERE si.user.userId = :userId
     AND si.purchaseDate IS NOT NULL
     GROUP BY 1, 2, 3, 4
+    ORDER BY si.purchaseDate DESC
     """)
     List<ShopPurchaseHistoryDTO> findAllPurchaseHistoryItemsByUserId(Long userId);
 
     List<ShopItem> findAllByUserUserIdAndPurchaseDateIsNullAndAmountGreaterThan(Long userId, Integer amount);
+
+    @Query("""
+    SELECT
+        COUNT(DISTINCT si.purchaseDate)
+    FROM ShopItem si
+    JOIN si.product p
+    WHERE si.user = :user
+    AND si.purchaseDate IS NOT NULL
+    """)
+    Integer countAllPurchaseHistoryItemsByUser(User user);
 }

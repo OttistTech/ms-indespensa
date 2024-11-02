@@ -1,11 +1,13 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.LoginUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.SignUpUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateUserDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserCredentialsResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.UserFullInfoResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.exception.*;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.request.LoginUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.request.SignUpUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.request.UpdateUserDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.response.UserCredentialsResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.user.response.UserFullInfoResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.exception.EmailAlreadyInUseException;
+import com.ottistech.indespensa.api.ms_indespensa.exception.IncorrectPasswordException;
+import com.ottistech.indespensa.api.ms_indespensa.exception.UserAlreadyDeactivatedException;
 import com.ottistech.indespensa.api.ms_indespensa.model.Address;
 import com.ottistech.indespensa.api.ms_indespensa.model.Cep;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
@@ -13,6 +15,8 @@ import com.ottistech.indespensa.api.ms_indespensa.repository.AddressRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.CepRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,8 +33,10 @@ public class UserService {
     private final AddressRepository addressRepository;
     private final CepRepository cepRepository;
     private final CepService cepService;
+    private final JwtTokenService jwtTokenService;
 
-    public UserCredentialsResponseDTO singUpUser(SignUpUserDTO signUpUserDTO) {
+    @CacheEvict(value = "all_users_credentials_full_info", allEntries = true)
+    public UserCredentialsResponseDTO signUpUser(SignUpUserDTO signUpUserDTO) {
         if (userRepository.findByEmail(signUpUserDTO.email()).isPresent()) {
             throw new EmailAlreadyInUseException("Email already in use");
         }
@@ -43,7 +49,13 @@ public class UserService {
         Address address = signUpUserDTO.toAddress(user, cep);
         addressRepository.save(address);
 
-        return UserCredentialsResponseDTO.fromUser(user);
+        String token = null;
+
+        if (user.getType().equals("ADMIN"))  {
+            token = jwtTokenService.generateToken(user);
+        }
+
+        return UserCredentialsResponseDTO.fromUser(user, token);
     }
 
     public UserCredentialsResponseDTO getUserCredentials(LoginUserDTO loginUserDTO) {
@@ -53,12 +65,19 @@ public class UserService {
         if (user.getDeactivatedAt() != null) {
             throw new UserAlreadyDeactivatedException("User already deactivated");
         } else if(loginUserDTO.password().equals(user.getPassword())) {
-            return UserCredentialsResponseDTO.fromUser(user);
+            String token = null;
+
+            if (user.getType().equals("ADMIN")) {
+                token = jwtTokenService.generateToken(user);
+            }
+
+            return UserCredentialsResponseDTO.fromUser(user, token);
         } else {
             throw new IncorrectPasswordException("Password does not match");
         }
     }
 
+    @CacheEvict(value = {"user_credentials", "user_credentials_half_info"}, key = "#userId")
     public void deactivateUserById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist"));
@@ -71,9 +90,14 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Cacheable(value = "user_credentials", key = "#userId")
     public UserFullInfoResponseDTO getUserFullInfo(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User doesn't exist"));
+
+        if (user.getDeactivatedAt() != null) {
+            throw new UserAlreadyDeactivatedException("User already deactivated");
+        }
 
         Address address = addressRepository.findByUserId(user.getUserId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Address not found for this user"));
@@ -84,13 +108,19 @@ public class UserService {
         return UserFullInfoResponseDTO.fromUserCepAddress(user, cep, address);
     }
 
+    @Cacheable(value = "user_credentials_half_info", key = "#userId")
     public UserCredentialsResponseDTO getUserHalfInfo(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
-        return UserCredentialsResponseDTO.fromUser(user);
+        if (user.getDeactivatedAt() != null) {
+            throw new UserAlreadyDeactivatedException("User already deactivated");
+        }
+
+        return UserCredentialsResponseDTO.fromUser(user, null);
     }
 
+    @Cacheable(value = "all_users_credentials_full_info")
     public List<UserFullInfoResponseDTO> getAllUsersFullInfo() {
         List<User> users = userRepository.findAll();
 
@@ -117,6 +147,7 @@ public class UserService {
         return userFullInfoResponses;
     }
 
+    @CacheEvict(value = {"user_credentials", "user_credentials_half_info"}, key = "#userId")
     public UserCredentialsResponseDTO updateUser(Long userId, UpdateUserDTO userDTO) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
@@ -148,16 +179,21 @@ public class UserService {
         userRepository.save(user);
         addressRepository.save(address);
 
-        return UserCredentialsResponseDTO.fromUser(user);
+        return UserCredentialsResponseDTO.fromUser(user, null);
     }
 
-    public void updateUserBecomePremium(Long userId) {
+    @CacheEvict(value = {"user_credentials", "user_credentials_half_info"}, key = "#userId")
+    public void updateUserSwitchPremium(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist")
         );
 
         if (user.getIsPremium()) {
-            throw new UserAlreadyIsPremiumException("User already is premium");
+            user.setIsPremium(false);
+
+            userRepository.save(user);
+
+            return;
         }
 
         user.setIsPremium(true);

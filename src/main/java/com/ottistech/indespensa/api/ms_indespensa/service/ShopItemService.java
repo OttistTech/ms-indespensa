@@ -1,12 +1,12 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.dto.query.ShopPurchaseHistoryDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopPurchaseHistoryDataDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopPurchaseHistoryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.request.AddShopItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.request.UpdateProductItemAmountDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemDetailsDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopPurchaseHistoryDataDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopPurchaseHistoryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
@@ -15,6 +15,8 @@ import com.ottistech.indespensa.api.ms_indespensa.repository.ShopItemRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,6 +33,7 @@ public class ShopItemService {
     private final ShopItemRepository shopItemRepository;
     private final ProductRepository productRepository;
 
+    @Cacheable(value = "shop_items_list", key = "#userId")
     public List<ShopItemResponseDTO> getListItem(Long userId) {
         List<ShopItemResponseDTO> listItemResponses = shopItemRepository.findAllShopItemResponseDTOByUser(userId);
 
@@ -39,6 +42,7 @@ public class ShopItemService {
         return listItemResponses;
     }
 
+    @CacheEvict(value = "shop_items_list", key = "#userId")
     @Transactional
     public ShopItemResponseDTO addShopItem(Long userId, AddShopItemDTO shopItemDTO) {
         ShopItem shopItem = shopItemRepository.findByUserAndProductWithNullPurchaseDate(userId, shopItemDTO.productId())
@@ -61,26 +65,26 @@ public class ShopItemService {
         return shopItemDTO.toShopItemResponseDto(shopItem);
     }
 
+    @Cacheable(value = "shop_items_details", key = "#shopItemId")
     public ShopItemDetailsDTO getShopItemDetails(Long shopItemId) {
         return shopItemRepository.findShopItemDetailsById(shopItemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No shop item matching the given id"));
     }
 
-    public List<ShopItem> updateShopItemsAmount(List<UpdateProductItemAmountDTO> shopItems) {
-        List<ShopItem> updatedItems = new ArrayList<>();
+    @CacheEvict(value = {"shop_items_details", "shop_items_list", "shop_items_purchase_history"}, allEntries = true)
+    public void updateShopItemsAmount(List<UpdateProductItemAmountDTO> shopItems) {
+        List<Long> itemIds = shopItems.stream()
+                .map(UpdateProductItemAmountDTO::itemId)
+                .collect(Collectors.toList());
 
-        for(UpdateProductItemAmountDTO itemUpdate : shopItems) {
-            ShopItem item = shopItemRepository.findById(itemUpdate.itemId()).orElse(null);
+        List<ShopItem> items = shopItemRepository.findAllById(itemIds);
 
-            if(item != null) {
-                item.setAmount(itemUpdate.amount());
-                updatedItems.add(item);
-            }
-        }
+        Map<Long, Integer> itemAmounts = shopItems.stream()
+                .collect(Collectors.toMap(UpdateProductItemAmountDTO::itemId, UpdateProductItemAmountDTO::amount));
 
-        shopItemRepository.saveAll(updatedItems);
+        items.forEach(item -> item.setAmount(itemAmounts.get(item.getListItemId())));
 
-        return updatedItems;
+        shopItemRepository.saveAll(items);
     }
 
     public List<ShopPurchaseHistoryItemDTO> getPurchaseHistoryItems(Long userId) {
@@ -95,6 +99,7 @@ public class ShopItemService {
                 allPurchaseHistoryItems.stream()
                         .collect(Collectors.groupingBy(
                                 ShopPurchaseHistoryDTO::purchaseDate,
+                                LinkedHashMap::new,
                                 Collectors.mapping(result -> new ShopPurchaseHistoryDataDTO(
                                         result.productId(),
                                         result.name(),
@@ -104,6 +109,7 @@ public class ShopItemService {
                         ));
 
         return historyMap.entrySet().stream()
+                .sorted(Map.Entry.<LocalDate, List<ShopPurchaseHistoryDataDTO>>comparingByKey().reversed())
                 .map(entry -> new ShopPurchaseHistoryItemDTO(
                         entry.getKey(),
                         entry.getValue().size(),

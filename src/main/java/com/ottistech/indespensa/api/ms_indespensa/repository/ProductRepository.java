@@ -1,5 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.repository;
 
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.response.ProductSearchResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,5 +17,17 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE LOWER(p.name) = LOWER(:name)")
     Optional<Product> findByNameNotNull(@Param("name") String name);
 
-    List<Product> findAllByNameStartingWithIgnoreCase(String pattern);
+    @Query("""
+    SELECT new com.ottistech.indespensa.api.ms_indespensa.dto.product.response.ProductSearchResponseDTO(
+        p.productId,
+        f.foodId,
+        p.name,
+        f.foodName,
+        p.imageUrl
+    )
+    FROM Product p
+    JOIN p.foodId f
+    WHERE LOWER(p.name) LIKE LOWER(CONCAT(:pattern, '%'))
+    """)
+    List<ProductSearchResponseDTO> findAllByNameStartingWithIgnoreCase(String pattern);
 }

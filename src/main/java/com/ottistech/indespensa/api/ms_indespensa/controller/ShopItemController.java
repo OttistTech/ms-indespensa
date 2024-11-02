@@ -1,11 +1,11 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemDetailsDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopItemResponseDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ShopPurchaseHistoryItemDTO;
-import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
+import com.ottistech.indespensa.api.ms_indespensa.controller.contract.ShopItemContract;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.request.UpdateProductItemAmountDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.request.AddShopItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemDetailsDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.response.ShopPurchaseHistoryItemDTO;
 import com.ottistech.indespensa.api.ms_indespensa.service.ShopItemService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -18,12 +18,15 @@ import java.util.List;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/shop")
-public class ShopItemController {
+public class ShopItemController implements ShopItemContract {
 
     private final ShopItemService shopItemService;
 
     @GetMapping("/{user_id}/list")
-    public ResponseEntity<List<ShopItemResponseDTO>> getShopItemListInfo(@PathVariable("user_id") Long userId) {
+    public ResponseEntity<List<ShopItemResponseDTO>> getShopItemListInfo(
+            @PathVariable("user_id")
+            Long userId
+    ) {
 
         List<ShopItemResponseDTO> listItemResponse = shopItemService.getListItem(userId);
 
@@ -31,8 +34,14 @@ public class ShopItemController {
     }
 
     @PostMapping("/{user_id}/add")
-    public ResponseEntity<ShopItemResponseDTO> addShopItem(@PathVariable("user_id") Long userId,
-                                                              @Valid @RequestBody AddShopItemDTO shopItemDTO) {
+    public ResponseEntity<ShopItemResponseDTO> addShopItem(
+            @PathVariable("user_id")
+            Long userId,
+
+            @Valid
+            @RequestBody
+            AddShopItemDTO shopItemDTO
+    ) {
 
         ShopItemResponseDTO itemResponseDTO = shopItemService.addShopItem(userId, shopItemDTO);
 
@@ -40,7 +49,10 @@ public class ShopItemController {
     }
 
     @GetMapping("/{shop_item_id}/details")
-    public ResponseEntity<ShopItemDetailsDTO> getShopItem(@PathVariable("shop_item_id") Long shopItemId) {
+    public ResponseEntity<ShopItemDetailsDTO> getShopItem(
+            @PathVariable("shop_item_id")
+            Long shopItemId
+    ) {
 
         ShopItemDetailsDTO shopItem = shopItemService.getShopItemDetails(shopItemId);
 
@@ -48,16 +60,21 @@ public class ShopItemController {
     }
 
     @PatchMapping("/update-items-amount")
-    public ResponseEntity<List<ShopItem>> updateShopItemsAmount(@RequestBody @Valid List<UpdateProductItemAmountDTO> shopItems) {
+    public ResponseEntity<Void> updateShopItemsAmount(
+            @RequestBody
+            @Valid
+            List<UpdateProductItemAmountDTO> shopItems
+    ) {
 
-        List<ShopItem> updatedItems = shopItemService.updateShopItemsAmount(shopItems);
+        shopItemService.updateShopItemsAmount(shopItems);
 
-        return ResponseEntity.ok(updatedItems);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{user_id}/list/history")
     public ResponseEntity<List<ShopPurchaseHistoryItemDTO>> getPurchaseHistoryInfo(
-            @PathVariable("user_id") Long userId
+            @PathVariable("user_id")
+            Long userId
     ) {
 
         List<ShopPurchaseHistoryItemDTO> historyItems = shopItemService.getPurchaseHistoryItems(userId);

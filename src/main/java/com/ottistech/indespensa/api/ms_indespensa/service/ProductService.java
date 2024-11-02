@@ -1,12 +1,14 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.client.ProductClientService;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreateProductDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductResponseApiDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.ProductResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.request.CreateProductDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.response.ProductResponseApiDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.response.ProductResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.response.ProductSearchResponseDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.repository.ProductRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -24,6 +26,7 @@ public class ProductService {
     private final BrandService brandService;
     private final CategoryService categoryService;
 
+    @Cacheable(value = "product_by_barcode", key = "#barcode")
     public ProductResponseDTO getProductByBarcode(String barcode) {
         return productRepository.findByEanCodeNotNull(barcode)
                 .map(ProductResponseDTO::fromProduct)
@@ -72,15 +75,21 @@ public class ProductService {
         return product;
     }
 
-    public List<ProductResponseDTO> findProductsByNamePattern(String pattern) {
-        List<Product> productsFound = productRepository.findAllByNameStartingWithIgnoreCase(pattern);
+    @Cacheable(value = "product_by_pattern", key = "#pattern")
+    public List<ProductSearchResponseDTO> findProductsByNamePattern(String pattern) {
+        List<ProductSearchResponseDTO> productsFound = productRepository.findAllByNameStartingWithIgnoreCase(pattern);
 
         if(productsFound.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No products matching name pattern");
         }
 
-        return productsFound.stream()
+        return productsFound;
+    }
+
+    @Cacheable(value = "product_by_id", key = "#productId")
+    public ProductResponseDTO findById(Long productId) {
+        return productRepository.findById(productId)
                 .map(ProductResponseDTO::fromProduct)
-                .toList();
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Could not find product with id"));
     }
 }

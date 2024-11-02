@@ -1,31 +1,32 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddPantryItemDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.AddShopItemDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.CreatePantryItemDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.request.UpdateProductItemAmountDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemDetailsDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemPartialDTO;
-import com.ottistech.indespensa.api.ms_indespensa.dto.response.PantryItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.request.AddPantryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemDetailsDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemPartialDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemResponseDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.response.PantryItemsNextToValidityDate;
+import com.ottistech.indespensa.api.ms_indespensa.dto.shop.request.AddShopItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.pantry.request.CreatePantryItemDTO;
+import com.ottistech.indespensa.api.ms_indespensa.dto.product.request.UpdateProductItemAmountDTO;
 import com.ottistech.indespensa.api.ms_indespensa.model.PantryItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.Product;
 import com.ottistech.indespensa.api.ms_indespensa.model.ShopItem;
 import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import com.ottistech.indespensa.api.ms_indespensa.repository.PantryItemRepository;
-import com.ottistech.indespensa.api.ms_indespensa.repository.ProductRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.ShopItemRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.ottistech.indespensa.api.ms_indespensa.utils.Constants.DAYS_FROM_NOW;
 
 @AllArgsConstructor
 @Service
@@ -36,6 +37,8 @@ public class PantryItemService {
     private final UserRepository userRepository;
     private final ProductService productService;
 
+    @Transactional
+    @CacheEvict(value = "pantry_items", key = "#userId")
     public PantryItemResponseDTO createPantryItem(Long userId, CreatePantryItemDTO pantryItemDTO) {
         Product product = productService.getOrCreateProduct(pantryItemDTO.toProductDto());
 
@@ -79,26 +82,26 @@ public class PantryItemService {
         return userActivePantryItems;
     }
 
-    public List<PantryItem> updatePantryItemsAmount(List<UpdateProductItemAmountDTO> pantryItems) {
-        List<PantryItem> updatedItems = new ArrayList<>();
+    @Transactional
+    @CacheEvict(value = {"pantry_items", "pantry_item_details"}, allEntries = true)
+    public void updatePantryItemsAmount(List<UpdateProductItemAmountDTO> pantryItems) {
+        List<Long> itemIds = pantryItems.stream()
+                .map(UpdateProductItemAmountDTO::itemId)
+                .collect(Collectors.toList());
 
-        for(UpdateProductItemAmountDTO itemUpdate : pantryItems) {
-            PantryItem item = pantryItemRepository.findById(itemUpdate.itemId()).orElse(null);
+        List<PantryItem> items = pantryItemRepository.findAllById(itemIds);
 
-            if(item != null) {
-                item.setAmount(itemUpdate.amount());
+        Map<Long, Integer> itemAmounts = pantryItems.stream()
+                .collect(Collectors.toMap(UpdateProductItemAmountDTO::itemId, UpdateProductItemAmountDTO::amount));
 
-                if(item.getAmount() == 0) {
-                    item.setIsActive(false);
-                }
+        items.forEach(item -> {
+            Integer newAmount = itemAmounts.get(item.getPantryItemId());
+            item.setAmount(newAmount);
 
-                updatedItems.add(item);
-            }
-        }
+            item.setIsActive(newAmount == null || newAmount != 0);
+        });
 
-        pantryItemRepository.saveAll(updatedItems);
-
-        return updatedItems;
+        pantryItemRepository.saveAll(items);
     }
 
     public PantryItemDetailsDTO getPantryItemDetails(Long pantryItemId) {
@@ -106,6 +109,8 @@ public class PantryItemService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No pantry item matching the given id"));
     }
 
+    @Transactional
+    @CacheEvict(value = {"pantry_items", "pantry_item_details", "shop_items_list"}, allEntries = true)
     public void addAllFromShopList(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
@@ -132,15 +137,14 @@ public class PantryItemService {
                 pantryItemRepository.save(newPantryItem);
             }
 
-            shopItem.setAmount(0);
             shopItem.setPurchaseDate(LocalDate.now());
-
         }
 
         shopItemRepository.saveAll(userShopItems);
     }
 
     @Transactional
+    @CacheEvict(value = {"pantry_items", "pantry_item_details"}, allEntries = true)
     public PantryItemResponseDTO addPantryItem(Long userId, AddPantryItemDTO pantryItemDTO) {
         ShopItem shopItem = shopItemRepository.findById(pantryItemDTO.shopItemId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Shop list item not found"));
@@ -169,10 +173,24 @@ public class PantryItemService {
         }
 
         shopItem.setPurchaseDate(LocalDate.now());
+        pantryItem.setIsActive(true);
 
         pantryItemRepository.save(pantryItem);
         shopItemRepository.save(shopItem);
 
         return PantryItemResponseDTO.fromPantryItem(pantryItem);
+    }
+
+    public List<PantryItemsNextToValidityDate> getPantryItemsNextToValidityDate(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists")
+        );
+
+        List<PantryItemsNextToValidityDate> itemsNextToValidityDate = pantryItemRepository.findAllItemsWithValidityWithinNextProvidedDays(user, LocalDate.now(), LocalDate.now().plusDays(DAYS_FROM_NOW));
+
+        if (itemsNextToValidityDate.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No pantry items next to validity date");
+
+        return itemsNextToValidityDate;
+
     }
 }
