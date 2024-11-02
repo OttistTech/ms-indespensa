@@ -30,7 +30,7 @@ public class Recipe {
     private User createdBy;
 
     @NotNull(message = "Field title is required")
-    @Column(name = "title", nullable = false, length = 255)
+    @Column(name = "title", nullable = false)
     private String title;
 
     @NotNull(message = "Field description is required")
