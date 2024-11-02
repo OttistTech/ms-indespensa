@@ -29,12 +29,20 @@ public class RecipeIngredient {
     @JoinColumn(name = "ingredient_food_id", referencedColumnName = "food_id")
     private Food ingredientFood;
 
-    @Column(name = "amount", nullable = false, precision = 10, scale = 2)
+    @Column(name = "amount", precision = 10, scale = 2)
     private BigDecimal amount;
 
-    @Column(name = "unit", nullable = false, length = 50)
+    @Column(name = "unit", length = 50)
     private String unit;
 
     @Column(name = "is_essential")
     private Boolean isEssential;
+
+    public RecipeIngredient(Recipe recipe, Food ingredientFood, BigDecimal amount, String unit, Boolean isEssential) {
+        this.recipe = recipe;
+        this.ingredientFood = ingredientFood;
+        this.amount = amount;
+        this.unit = unit;
+        this.isEssential = isEssential;
+    }
 }
