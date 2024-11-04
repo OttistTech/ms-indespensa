@@ -32,6 +32,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final CepRepository cepRepository;
+    private final CepService cepService;
     private final JwtTokenService jwtTokenService;
 
     @CacheEvict(value = "all_users_credentials_full_info", allEntries = true)
@@ -41,21 +42,12 @@ public class UserService {
         }
 
         User user = signUpUserDTO.toUser();
+        user = userRepository.save(user);
 
-        userRepository.addNewUserAndAddress(
-                user.getEmail(),
-                user.getPassword(),
-                user.getType(),
-                user.getName(),
-                user.getBirthDate(),
-                user.getEnterpriseType(),
-                user.getIsPremium(),
-                signUpUserDTO.cep(),
-                signUpUserDTO.addressNumber(),
-                signUpUserDTO.city(),
-                signUpUserDTO.street(),
-                signUpUserDTO.state()
-        );
+        Cep cep = cepService.getOrCreateCep(signUpUserDTO.toCep());
+
+        Address address = signUpUserDTO.toAddress(user, cep);
+        addressRepository.save(address);
 
         String token = jwtTokenService.generateToken(user);
 
