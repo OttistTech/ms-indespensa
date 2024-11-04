@@ -21,7 +21,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,6 @@ public class UserService {
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
     private final CepRepository cepRepository;
-    private final CepService cepService;
     private final JwtTokenService jwtTokenService;
 
     @CacheEvict(value = "all_users_credentials_full_info", allEntries = true)
@@ -130,7 +128,6 @@ public class UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No users found");
         }
 
-        // TODO: verify if we can do the repository return the dto
         List<UserFullInfoResponseDTO> userFullInfoResponses = new ArrayList<>();
 
         for (User user : users) {
