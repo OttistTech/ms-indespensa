@@ -21,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -175,19 +176,10 @@ public class UserService {
 
     @CacheEvict(value = {"user_credentials", "user_credentials_half_info"}, key = "#userId")
     public void updateUserSwitchPremium(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(
+        userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist")
         );
 
-        if (user.getIsPremium()) {
-            user.setIsPremium(false);
-
-            userRepository.save(user);
-
-            return;
-        }
-
-        user.setIsPremium(true);
-        userRepository.save(user);
+        userRepository.switchUserPlan(BigInteger.valueOf(userId));
     }
 }
