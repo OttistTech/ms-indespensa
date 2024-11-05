@@ -83,7 +83,7 @@ public class RecipeService {
             Integer endPreparationTime
     ) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist"));
 
         String strLevel = level == null ? "" : level.getStringLevel();
 

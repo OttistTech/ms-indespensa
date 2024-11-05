@@ -25,7 +25,6 @@ public class JwtTokenService {
                 .issuedAt(now)
                 .expiresAt(now.plus(365, ChronoUnit.DAYS))
                 .subject(user.getEmail())
-                .claim("user_id", user.getUserId())
                 .claim("scope", user.getType().toUpperCase())
                 .build();
 
