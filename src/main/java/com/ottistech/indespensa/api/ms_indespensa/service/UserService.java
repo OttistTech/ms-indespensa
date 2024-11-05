@@ -14,6 +14,7 @@ import com.ottistech.indespensa.api.ms_indespensa.model.User;
 import com.ottistech.indespensa.api.ms_indespensa.repository.AddressRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.CepRepository;
 import com.ottistech.indespensa.api.ms_indespensa.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,8 +22,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigInteger;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,8 +78,7 @@ public class UserService {
             throw new UserAlreadyDeactivatedException("User already deactivated");
         }
 
-        user.setDeactivatedAt(LocalDateTime.now());
-        userRepository.save(user);
+        userRepository.deactivateUser(userId.intValue());
     }
 
     @Cacheable(value = "user_credentials", key = "#userId")
@@ -174,12 +172,13 @@ public class UserService {
         return UserCredentialsResponseDTO.fromUser(user, null);
     }
 
+    @Transactional
     @CacheEvict(value = {"user_credentials", "user_credentials_half_info"}, key = "#userId")
     public void updateUserSwitchPremium(Long userId) {
         userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exist")
         );
 
-        userRepository.switchUserPlan(BigInteger.valueOf(userId));
+        userRepository.switchUserPlan(userId.intValue());
     }
 }

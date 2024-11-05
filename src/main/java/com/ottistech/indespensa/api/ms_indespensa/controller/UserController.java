@@ -112,6 +112,7 @@ public class UserController implements UserContract {
         return ResponseEntity.status(HttpStatus.OK).body(userCredentials);
     }
 
+
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateUserSwitchPremium(
             @PathVariable("id")
