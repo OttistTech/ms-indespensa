@@ -32,6 +32,5 @@ public class JwtTokenService {
 
         return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader, claimsSet)).getTokenValue();
     }
-
 }
 

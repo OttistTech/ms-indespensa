@@ -46,3 +46,4 @@ public class RecipeIngredient {
         this.isEssential = isEssential;
     }
 }
+
