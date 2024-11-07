@@ -1,5 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.exception;
 
+import feign.FeignException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -121,6 +122,21 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleJsonError(HttpMessageNotReadableException ex) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
         problemDetail.setTitle("Serialization error");
+
+        return problemDetail;
+    }
+
+    @ExceptionHandler(FeignException.class)
+    public ProblemDetail handleFeignException(FeignException ex) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Provided CEP is invalid.");
+
+        if (ex.status() == 400) {
+            problemDetail.setTitle("Error while consulting CEP.");
+
+            return problemDetail;
+        }
+
+        problemDetail.setTitle("Erro ao comunicar com a API externa: " + ex.getMessage());
 
         return problemDetail;
     }
