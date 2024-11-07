@@ -126,18 +126,20 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
-    @ExceptionHandler(FeignException.class)
-    public ProblemDetail handleFeignException(FeignException ex) {
+    @ExceptionHandler(FeignException.BadRequest.class)
+    public ProblemDetail handleFeignBadRequestException() {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Provided CEP is invalid.");
-
-        if (ex.status() == 400) {
-            problemDetail.setTitle("Error while consulting CEP.");
-
-            return problemDetail;
-        }
-
-        problemDetail.setTitle("Erro ao comunicar com a API externa: " + ex.getMessage());
+        problemDetail.setTitle("Error while consulting CEP.");
 
         return problemDetail;
     }
+
+    @ExceptionHandler(FeignException.NotFound.class)
+    public ProblemDetail handleFeignNotFoundException() {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, "CEP not found");
+        problemDetail.setTitle("CEP not found in our database");
+
+        return problemDetail;
+    }
+
 }
