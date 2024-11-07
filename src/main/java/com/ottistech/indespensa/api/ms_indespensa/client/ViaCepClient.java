@@ -23,7 +23,7 @@ public class ViaCepClient {
 
     private void validateCep(String cep) {
         if (cep == null || !cep.matches("\\d{8}")) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "O CEP informado é inválido: " + cep);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O CEP deve ter 8 caracteres: " + cep);
         }
     }
 }
