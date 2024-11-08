@@ -4,16 +4,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record CepApiResponse(
 
-        @JsonProperty("cep_id")
-        String cep,
+        @JsonProperty("cep")
+        String cepId,
 
-        @JsonProperty("street")
-        String logradouro,
+        @JsonProperty("logradouro")
+        String street,
 
-        @JsonProperty("state")
-        String uf,
+        @JsonProperty("uf")
+        String state,
 
-        @JsonProperty("city")
-        String localidade
+        @JsonProperty("localidade")
+        String city
 ) {
+
+        public static AddressResponse toAddressResponse(CepApiResponse cepApiResponse) {
+                return new AddressResponse(
+                        cepApiResponse.cepId,
+                        cepApiResponse.street,
+                        cepApiResponse.state,
+                        cepApiResponse.city
+                );
+        }
 }

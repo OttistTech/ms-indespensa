@@ -1,6 +1,7 @@
 package com.ottistech.indespensa.api.ms_indespensa.service;
 
 import com.ottistech.indespensa.api.ms_indespensa.client.ViaCepClient;
+import com.ottistech.indespensa.api.ms_indespensa.dto.cep.response.AddressResponse;
 import com.ottistech.indespensa.api.ms_indespensa.dto.cep.response.CepApiResponse;
 import com.ottistech.indespensa.api.ms_indespensa.model.Cep;
 import com.ottistech.indespensa.api.ms_indespensa.repository.CepRepository;
@@ -21,15 +22,20 @@ public class CepService {
                 .orElseGet(() -> cepRepository.save(cep));
     }
 
-    public CepApiResponse fetchCepFromViaCep(String cep) {
+    public AddressResponse fetchCepFromViaCep(String cep) {
 
         return viaCepClient.fetchAddressByCep(cep);
     }
 
-    public CepApiResponse findCep(String cep) {
+    public AddressResponse findCep(String cep) {
         Optional<CepApiResponse> optionalCep = cepRepository.findCep(cep);
 
-        return optionalCep.orElseGet(() -> fetchCepFromViaCep(cep));
+        if (optionalCep.isPresent()) {
+            return CepApiResponse.toAddressResponse(optionalCep.get());
+        }
+
+
+        return fetchCepFromViaCep(cep);
 
     }
 }

@@ -1,5 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.controller;
 
+import com.ottistech.indespensa.api.ms_indespensa.dto.cep.response.AddressResponse;
 import com.ottistech.indespensa.api.ms_indespensa.dto.cep.response.CepApiResponse;
 import com.ottistech.indespensa.api.ms_indespensa.service.CepService;
 import lombok.AllArgsConstructor;
@@ -17,12 +18,12 @@ public class AddressController {
     private final CepService cepService;
 
     @GetMapping("/{cep}")
-    public ResponseEntity<CepApiResponse> findCep(
+    public ResponseEntity<AddressResponse> findCep(
             @PathVariable("cep")
             String cep
     ) {
 
-        CepApiResponse address = cepService.findCep(cep);
+        AddressResponse address = cepService.findCep(cep);
 
         return ResponseEntity.ok(address);
     }

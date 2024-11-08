@@ -1,5 +1,6 @@
 package com.ottistech.indespensa.api.ms_indespensa.client;
 
+import com.ottistech.indespensa.api.ms_indespensa.dto.cep.response.AddressResponse;
 import com.ottistech.indespensa.api.ms_indespensa.dto.cep.response.CepApiResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -14,11 +15,13 @@ public class ViaCepClient {
     private final ViaCepRequest viaCepRequest;
 
     @Cacheable(value = {"cep"}, key = "#cep")
-    public CepApiResponse fetchAddressByCep(String cep) {
+    public AddressResponse fetchAddressByCep(String cep) {
 
         validateCep(cep);
+        CepApiResponse cepApiResponse = viaCepRequest.findCep(cep).getBody();
 
-        return viaCepRequest.findCep(cep).getBody();
+        assert cepApiResponse != null;
+        return CepApiResponse.toAddressResponse(cepApiResponse);
     }
 
     private void validateCep(String cep) {
